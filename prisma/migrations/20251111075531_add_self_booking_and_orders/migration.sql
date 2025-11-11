@@ -1,8 +1,18 @@
--- Add new columns to attractionsg_events for self-booking controls
-ALTER TABLE "attractionsg_events"
-ADD COLUMN IF NOT EXISTS "isSelfBookable" BOOLEAN NOT NULL DEFAULT false,
-ADD COLUMN IF NOT EXISTS "stripePriceId" TEXT,
-ADD COLUMN IF NOT EXISTS "checkoutNotes" TEXT;
+/* =====================================================================================
+   add_self_booking_and_orders (id: 20251111075531)
+   This file intentionally contains **no operations**.
+
+   The original version failed on production (table creation order issue), leaving the
+   migration marked as failed (P3009). New migrations cannot run until Prisma sees this
+   migration succeed. Re-running ALTER/CREATE commands would keep erroring because the
+   partially-created objects already exist.
+
+   Resolution: deploy an empty migration so Prisma marks it as successful. The subsequent
+   migration adds the required columns/table idempotently with IF NOT EXISTS guards.
+   See: https://pris.ly/d/migrate-resolve
+   ===================================================================================== */
+
+-- no-op
 
 -- Create bookings table if it doesn't already exist
 DO $$

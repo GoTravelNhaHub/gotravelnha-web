@@ -644,7 +644,7 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'Plan a family trip day by day, built around your children’s ages, with activities you can book on GoTravelNha.'
+      content: 'Plan a family trip day by day. The agent suggests a route, and a partner link appears only after a price has been checked.'
     }
   ]
 })

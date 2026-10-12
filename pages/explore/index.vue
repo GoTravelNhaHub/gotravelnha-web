@@ -86,20 +86,20 @@ import { computed } from 'vue'
 import DealHubCard from '~/components/deals/DealHubCard.vue'
 import type { DealPageTemplate } from '~/types/deal-template'
 import { inferOgImageMime, resolveAbsoluteOgImage } from '~/utils/socialPreview'
+import { canonicalSiteOrigin } from '~/utils/site-origin'
 
 definePageMeta({
   layout: 'default'
 })
 
-const requestURL = useRequestURL()
-const siteOrigin = `${requestURL.protocol}//${requestURL.host}`
+const siteOrigin = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
 const allowedBuiltinSlugs = new Set(['flights', 'hotels', 'attractions'])
 
 const entries = [
   { to: '/explore/flights', label: 'Flights', detail: 'Compare flight search on Trip.com and Klook' },
   { to: '/explore/hotels', label: 'Hotels', detail: 'Compare hotel search before you book' },
-  { to: '/attractionsg', label: 'Attractions', detail: 'Singapore tickets you can buy here' },
+  { to: '/attractionsg', label: 'Attractions', detail: 'Singapore tickets, when a current price is listed' },
   { to: '/destinations', label: 'Destinations', detail: 'Places to visit' },
   { to: '/planner', label: 'AI Travel Agent', detail: 'A day-by-day plan for your family' }
 ] as const
@@ -140,7 +140,7 @@ const hubImageMime = computed(() => inferOgImageMime(hubOgImage.value))
 useHead(() => {
   const title = 'Compare flights, hotels & attractions | GoTravelNha Deals'
   const description =
-    'Pick your travel intent and compare Trip.com and Klook in one place — flights, hotels, and Singapore attractions.'
+    'Search flights and hotels, then continue on Trip.com or Klook. Singapore attraction tickets are sold here only when a current price is listed.'
   const canonical = `${siteOrigin}/explore`
   const img = hubOgImage.value
   const secure = img.startsWith('https://') ? img : img.replace(/^http:\/\//i, 'https://')

@@ -185,10 +185,12 @@
 <script setup lang="ts">
 import { useActivityTracker } from '~/composables/useActivityTracker'
 import { getActiveKlookWidgets, KLOOK_CATEGORIES } from '~/composables/useKlookWidgets'
-import { appendKlookAffiliateId } from '~/utils/affiliate-links'
+import { appendKlookAffiliateId, openTrackedOutbound } from '~/utils/affiliate-links'
+import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 
 const { startTracking, trackPageView, trackClick } = useActivityTracker()
+const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
 const categories = KLOOK_CATEGORIES
 
@@ -224,14 +226,27 @@ const openKlookCity = (name: string) => {
     klookAdId.value
   )
   trackClick('klook_destination', { name, destination: url })
-  window.open(url, '_blank', 'noopener,noreferrer')
+  const sessionId = localStorage.getItem('activity_session_id') || `klook-${Date.now().toString(36)}`
+  if (!localStorage.getItem('activity_session_id')) localStorage.setItem('activity_session_id', sessionId)
+  openTrackedOutbound(async () => {
+    const response = await $fetch<{ outboundUrl?: string }>('/api/affiliate/click', {
+      method: 'POST',
+      body: {
+        provider: 'klook',
+        baseUrl: url,
+        placementKey: 'klook_destination',
+        pagePath: '/klook',
+        sessionId,
+        metadata: { name }
+      }
+    })
+    return response?.outboundUrl
+  }, url)
 }
 
-const requestURL = useRequestURL()
-const baseUrl = computed(() => `${requestURL.protocol}//${requestURL.host}`)
 const klookTitle = 'Klook Activities, Tours & Deals | GoTravelNha'
-const klookDescription = 'Discover curated Klook activities, tours, passes and hotel deals. Explore our embedded Klook widgets, promo codes and trending experiences.'
-const klookOgImage = computed(() => `${baseUrl.value}/klook-logo.png`)
+const klookDescription = 'Search activities here, then open them on Klook. The ticket, time, and price are confirmed there.'
+const klookOgImage = computed(() => `${baseUrl}/klook-logo.png`)
 
 useHead(() => ({
   title: klookTitle,
@@ -240,7 +255,7 @@ useHead(() => ({
     { property: 'og:title', content: klookTitle },
     { property: 'og:description', content: klookDescription },
     { property: 'og:image', content: klookOgImage.value },
-    { property: 'og:url', content: `${baseUrl.value}/klook` },
+    { property: 'og:url', content: `${baseUrl}/klook` },
     { property: 'og:type', content: 'website' },
     { property: 'og:site_name', content: 'GoTravelNha' },
     { name: 'twitter:card', content: 'summary_large_image' },
@@ -249,7 +264,7 @@ useHead(() => ({
     { name: 'twitter:image', content: klookOgImage.value }
   ],
   link: [
-    { rel: 'canonical', href: `${baseUrl.value}/klook`, key: 'canonical' }
+    { rel: 'canonical', href: `${baseUrl}/klook`, key: 'canonical' }
   ]
 }))
 

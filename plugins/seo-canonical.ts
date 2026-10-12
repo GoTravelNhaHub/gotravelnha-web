@@ -1,7 +1,8 @@
+import { canonicalSiteOrigin } from '~/utils/site-origin'
+
 export default defineNuxtPlugin(() => {
   const route = useRoute()
-  const requestURL = useRequestURL()
-  const origin = `${requestURL.protocol}//${requestURL.host}`
+  const origin = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
   const privatePrefixes = ['/admin', '/user', '/login', '/register', '/forgot-password', '/reset-password', '/bookings', '/trips']
 
   useHead(() => {

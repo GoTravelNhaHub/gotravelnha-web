@@ -51,6 +51,7 @@ import { useRoute } from 'vue-router'
 import HighConvertingDealTemplate from '~/components/deals/HighConvertingDealTemplate.vue'
 import type { DealPageTemplate } from '~/types/deal-template'
 import { inferOgImageMime, resolveAbsoluteOgImage } from '~/utils/socialPreview'
+import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { openTrackedOutbound } from '~/utils/affiliate-links'
 
 definePageMeta({
@@ -59,8 +60,7 @@ definePageMeta({
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
-const requestURL = useRequestURL()
-const baseUrl = computed(() => `${requestURL.protocol}//${requestURL.host}`)
+const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
 const { data: templateResponse } = await useAsyncData(`deal-template-${slug.value}`, () =>
   $fetch<{ success: boolean; data: DealPageTemplate | null }>(`/api/deal-templates/${slug.value}`).catch(() => ({
@@ -142,10 +142,10 @@ useHead(() => {
   const description = page
     ? page.description
     : legacy?.description || 'This deal page is unavailable. Browse all latest travel deals on GoTravelNha.'
-  const canonical = `${baseUrl.value}/explore/${slug.value}`
+  const canonical = `${baseUrl}/explore/${slug.value}`
 
   const rawImage = page?.heroImage || legacy?.image || null
-  const ogImage = resolveAbsoluteOgImage(rawImage, baseUrl.value)
+  const ogImage = resolveAbsoluteOgImage(rawImage, baseUrl)
   const ogImageSecure = ogImage.startsWith('https://') ? ogImage : ogImage.replace(/^http:\/\//i, 'https://')
   const imageMime = inferOgImageMime(ogImage)
   const imageAlt = page?.title || legacy?.title || 'GoTravelNha travel deals'

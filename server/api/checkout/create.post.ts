@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import type { Prisma } from '@prisma/client'
 import prisma from '~/server/utils/prisma'
 import { estimateStripeFee } from '~/utils/pricing'
-import { feeConfig, formatSgd, supplierOptions, ticketPrice } from '~/server/utils/attraction-pricing'
+import { attractionForSale, feeConfig, formatSgd, supplierOptions, ticketPrice } from '~/server/utils/attraction-pricing'
 import { generateBookingReference } from '~/server/utils/booking-reference'
 import { readAttribution, readVisitorSession } from '~/server/utils/attribution'
 import { getSessionUser } from '~/server/utils/session'
@@ -86,7 +86,7 @@ export default defineEventHandler(async (event) => {
     where: { id: eventId }
   })
 
-  if (!attraction || !attraction.isPublished || !attraction.isSelfBookable) {
+  if (!attraction || !attractionForSale(attraction)) {
     throw createError({
       statusCode: 404,
       message: 'Attraction not available for self checkout.'

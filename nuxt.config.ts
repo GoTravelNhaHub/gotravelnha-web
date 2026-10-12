@@ -21,14 +21,14 @@ export default defineNuxtConfig({
     },
     app: {
         head: {
-          title: 'GoTravelNha - Discover, Compare & Book Travel Deals | Trip.com, Klook & More',
+          title: 'GoTravelNha - Search trips, then book with the partner',
           htmlAttrs: {
             lang: 'en'
           },
           meta: [
             { charset: 'utf-8' },
             { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-            { name: 'description', content: 'Compare and book the best travel deals across Trip.com, Klook, and Singapore Attractions. Save on flights, hotels, activities, and attractions. Your all-in-one travel platform.' },
+            { name: 'description', content: 'Search flights and hotels, then continue on Trip.com or Klook. Plan a family trip with the AI Travel Agent. Singapore attraction tickets are sold here only when a current price is listed.' },
             { name: 'keywords', content: 'travel deals, compare travel prices, trip.com deals, klook deals, vietnam travel, singapore attractions, hotel bookings, flight bookings, travel comparison' },
             { name: 'author', content: 'GoTravelNha' },
             { name: 'robots', content: 'index, follow', key: 'robots' },
@@ -36,8 +36,8 @@ export default defineNuxtConfig({
             { name: 'revisit-after', content: '7 days' },
     
             // Social: Open Graph (Facebook, WhatsApp, Zalo, Telegram, LinkedIn — use raster, not SVG)
-            { property: 'og:title', content: 'GoTravelNha - Discover, Compare & Book Travel Deals' },
-            { property: 'og:description', content: 'Compare and book the best travel deals across Trip.com, Klook, and Singapore Attractions. Save on flights, hotels, activities, and more.' },
+            { property: 'og:title', content: 'GoTravelNha - Search trips, then book with the partner' },
+            { property: 'og:description', content: 'Search flights and hotels, then continue on Trip.com or Klook. Singapore attraction tickets are sold here only when a current price is listed.' },
             { property: 'og:image', content: 'https://storage.googleapis.com/travella_assets_images/app_icon.png', key: 'og-image' },
             { property: 'og:image:secure_url', content: 'https://storage.googleapis.com/travella_assets_images/app_icon.png', key: 'og-image-secure' },
             { property: 'og:image:type', content: 'image/png', key: 'og-image-type' },
@@ -48,8 +48,8 @@ export default defineNuxtConfig({
     
             // Social: Twitter / X
             { name: 'twitter:card', content: 'summary_large_image' },
-            { name: 'twitter:title', content: 'GoTravelNha - Discover, Compare & Book Travel Deals' },
-            { name: 'twitter:description', content: 'Compare and book the best travel deals across Trip.com, Klook, and Singapore Attractions.' },
+            { name: 'twitter:title', content: 'GoTravelNha - Search trips, then book with the partner' },
+            { name: 'twitter:description', content: 'Search flights and hotels, then continue on Trip.com or Klook.' },
             { name: 'twitter:image', content: 'https://storage.googleapis.com/travella_assets_images/app_icon.png', key: 'twitter-image' },
             { name: 'twitter:site', content: '@GoTravelNha' }
           ],
@@ -66,22 +66,18 @@ export default defineNuxtConfig({
               type: 'application/ld+json',
               children: JSON.stringify({
                 '@context': 'https://schema.org',
-                '@type': 'TravelAgency',
+                '@type': 'Organization',
                 name: 'GoTravelNha',
-                url: 'https://gotravelnha.com',
-                logo: '/favicon.svg',
-                description: 'Compare and book the best travel deals across Trip.com, Klook, and Singapore Attractions',
+                url: 'https://www.gotravelnha.com',
+                logo: 'https://www.gotravelnha.com/favicon.svg',
+                description: 'Search flights and hotels on Trip.com and Klook, and plan a family trip. Singapore attraction tickets are sold here only when a current price is listed.',
                 sameAs: [],
                 contactPoint: {
                   '@type': 'ContactPoint',
                   contactType: 'Customer Service',
                   availableLanguage: ['English']
                 },
-                areaServed: 'Worldwide',
-                offers: {
-                  '@type': 'AggregateOffer',
-                  priceCurrency: 'USD'
-                }
+                areaServed: 'Worldwide'
               })
             }
           ]
@@ -150,7 +146,7 @@ export default defineNuxtConfig({
         KLOOK_AFFILIATE_HOTEL_REDIRECT_URL: process.env.KLOOK_AFFILIATE_HOTEL_REDIRECT_URL,
         KLOOK_AFFILIATE_ATTRACTION_REDIRECT_URL: process.env.KLOOK_AFFILIATE_ATTRACTION_REDIRECT_URL,
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
-             siteUrl: process.env.NUXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://gotravelnha.com',
+             siteUrl: process.env.NUXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.gotravelnha.com',
              /** Customer support address shown on contact, help and booking pages. Hidden when unset. */
              supportEmail: process.env.NUXT_PUBLIC_SUPPORT_EMAIL || '',
              enableBestDealsNav: process.env.NUXT_PUBLIC_ENABLE_BEST_DEALS_NAV ?? 'true',

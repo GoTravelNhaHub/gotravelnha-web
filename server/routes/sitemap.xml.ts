@@ -1,5 +1,6 @@
 import prisma from '~/server/utils/prisma'
 import { destinationSlug } from '~/utils/destination-slug'
+import { canonicalSiteOrigin } from '~/utils/site-origin'
 
 const staticPaths = [
   '/explore',
@@ -24,7 +25,7 @@ const escapeXml = (value: string) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 export default defineEventHandler(async (event) => {
-  const site = String(useRuntimeConfig().public.siteUrl || 'https://gotravelnha.com').replace(/\/$/, '')
+  const site = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
   const urls = new Map<string, string>()
   for (const path of staticPaths) urls.set(path, '')
 

@@ -105,7 +105,7 @@
             :category="item.ticket.category || undefined"
             :price="item.ticket.price || undefined"
             :original-price="item.ticket.originalPrice || undefined"
-            :bookable="!!item.ticket.isSelfBookable"
+            :bookable="!!item.ticket.forSale"
             action="View ticket"
             @navigate="rememberScrollPosition"
           />
@@ -164,6 +164,7 @@ import { useActivityTracker } from '~/composables/useActivityTracker'
 import AttractionCard from '~/components/attractions/AttractionCard.vue'
 import { CURATED_PARTNER_ATTRACTIONS, type CuratedPartnerAttraction } from '~/utils/curated-partner-attractions'
 import { openTrackedOutbound } from '~/utils/affiliate-links'
+import { canonicalSiteOrigin } from '~/utils/site-origin'
 
 const { startTracking, trackPageView } = useActivityTracker()
 
@@ -219,11 +220,10 @@ const destinationFilter = ref('all')
 const categoryFilter = ref('all')
 const route = useRoute()
 
-const requestURL = useRequestURL()
-const baseUrl = computed(() => `${requestURL.protocol}//${requestURL.host}`)
+const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 const listingTitle = 'Singapore Attractions & Tickets | GoTravelNha'
-const listingDescription = 'Browse exclusive Singapore Attractions tickets, passes, and experiences curated by GoTravelNha. Compare deals, find promo codes, and plan your adventure.'
-const listingImage = computed(() => `${baseUrl.value}/sg-attractions-logo.svg`)
+const listingDescription = 'Singapore attraction tickets on GoTravelNha. A ticket is sold here only when a current price is listed.'
+const listingImage = computed(() => `${baseUrl}/sg-attractions-logo.svg`)
 
 useHead(() => ({
   title: listingTitle,
@@ -232,7 +232,7 @@ useHead(() => ({
     { property: 'og:title', content: listingTitle },
     { property: 'og:description', content: listingDescription },
     { property: 'og:image', content: listingImage.value },
-    { property: 'og:url', content: `${baseUrl.value}/attractionsg`, key: 'og-url' },
+    { property: 'og:url', content: `${baseUrl}/attractionsg`, key: 'og-url' },
     { property: 'og:type', content: 'website' },
     { property: 'og:site_name', content: 'GoTravelNha' },
     { name: 'twitter:card', content: 'summary_large_image' },
@@ -241,7 +241,7 @@ useHead(() => ({
     { name: 'twitter:image', content: listingImage.value }
   ],
   link: [
-    { rel: 'canonical', href: `${baseUrl.value}/attractionsg`, key: 'canonical' }
+    { rel: 'canonical', href: `${baseUrl}/attractionsg`, key: 'canonical' }
   ]
 }))
 

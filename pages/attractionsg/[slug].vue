@@ -462,7 +462,7 @@
             >
               <div class="mb-4 sm:mb-6 flex items-center justify-between">
                 <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-                  {{ canSelfBook ? 'Book Your Ticket' : 'Request a Booking' }}
+                  {{ canSelfBook ? 'Book Your Ticket' : salePaused ? 'Not for sale' : 'Request a Booking' }}
                 </h2>
               </div>
 
@@ -562,6 +562,14 @@
                   <NuxtLink to="/refund-policy" class="text-emerald-700 hover:underline">Refund policy</NuxtLink> ·
                   <NuxtLink to="/contact" class="text-emerald-700 hover:underline">Contact us</NuxtLink>
                 </p>
+              </template>
+              <template v-else-if="salePaused">
+                <p class="text-sm leading-relaxed text-slate-600">
+                  This ticket is not currently for sale. We only take payment when the supplier price was checked in the last 7 days.
+                </p>
+                <NuxtLink to="/attractionsg" class="mt-4 inline-flex text-sm font-semibold text-emerald-700 hover:underline">
+                  Browse other attractions
+                </NuxtLink>
               </template>
               <template v-else>
                 <div class="space-y-5">
@@ -685,8 +693,11 @@ import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import type { Ref } from 'vue'
 import { partnersForDirectSlug, type CuratedPartnerAttraction } from '~/utils/curated-partner-attractions'
 import { openTrackedOutbound } from '~/utils/affiliate-links'
+import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { useRouter } from 'vue-router'
 import BookingRequestForm from '~/components/BookingRequestForm.vue'
+
+const siteOrigin = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
 const route = useRoute()
 const router = useRouter()
@@ -1028,7 +1039,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 
 const hasOptions = computed(() => ticketOptions.value.length > 0)
-const canSelfBook = computed(() => !!event.value?.isSelfBookable)
+const canSelfBook = computed(() => !!event.value?.forSale)
+const salePaused = computed(() => !!event.value?.isSelfBookable && !event.value?.forSale)
 
 const savingsText = (option: Record<string, any>) => {
   if (!option?.originalPriceAmount || !option?.priceAmount) return ''
@@ -1196,13 +1208,13 @@ const scrollToOptions = () => {
 
 const shareImage = computed(() => resolveImageUrl(activeImage.value || event.value?.image))
 const pageTitle = computed(() =>
-  event.value ? `${event.value.title} | Singapore Attractions Deals | GoTravelNha` : 'Attraction Details | GoTravelNha'
+  event.value ? `${event.value.title} | Singapore Attractions | GoTravelNha` : 'Attraction Details | GoTravelNha'
 )
 const pageDescription = computed(() =>
-  event.value?.description || 'Book Singapore attractions with exclusive deals from GoTravelNha.'
+  event.value?.description || 'Singapore attraction details on GoTravelNha. Tickets are sold here only when a current price is listed.'
 )
 const canonicalUrl = computed(() =>
-  `${baseUrl.value}/attractionsg/${event.value?.slug || event.value?.id || currentSlug.value || ''}`
+  `${siteOrigin}/attractionsg/${event.value?.slug || event.value?.id || currentSlug.value || ''}`
 )
 
 watch(

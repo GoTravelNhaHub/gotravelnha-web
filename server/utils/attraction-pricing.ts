@@ -105,6 +105,24 @@ export function publicTicketOptions(source: PriceSource, fees: FeeConfig): Publi
   })
 }
 
+/** A self-checkout price older than this is not offered. Matches the planner's checked-price window. */
+export const ATTRACTION_FRESH_DAYS = 7
+
+export function attractionForSale(
+  record: {
+    isActive?: boolean | null
+    isPublished?: boolean | null
+    isSelfBookable?: boolean | null
+    lastSeenAt?: Date | string | null
+  },
+  now = new Date()
+) {
+  if (!record.isActive || !record.isPublished || !record.isSelfBookable || !record.lastSeenAt) return false
+  const seen = new Date(record.lastSeenAt)
+  if (Number.isNaN(seen.getTime())) return false
+  return seen.getTime() >= now.getTime() - ATTRACTION_FRESH_DAYS * 86_400_000
+}
+
 /** Lowest ticket price for list cards and the page header. */
 export function fromPrice(source: PriceSource, fees: FeeConfig): number | null {
   const options = publicTicketOptions(source, fees)
@@ -129,6 +147,7 @@ type PublicSource = PriceSource &
       | 'cancellation'
       | 'validFrom'
       | 'validTo'
+      | 'isActive'
       | 'isPublished'
       | 'publishedAt'
       | 'isSelfBookable'
@@ -176,6 +195,7 @@ export function toPublicAttraction(record: PublicSource, fees: FeeConfig) {
     isPublished: record.isPublished ?? false,
     publishedAt: record.publishedAt ?? null,
     isSelfBookable: record.isSelfBookable ?? false,
+    forSale: attractionForSale(record),
     checkoutNotes: record.checkoutNotes ?? null,
     // When the supplier price was last read
     lastUpdated: lastSeen && !Number.isNaN(lastSeen.getTime()) ? lastSeen.toISOString() : null

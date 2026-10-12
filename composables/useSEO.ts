@@ -3,7 +3,11 @@
  * Provides SEO helpers for pages with dynamic meta tags and structured data
  */
 
+import { canonicalSiteOrigin } from '~/utils/site-origin'
+
 export const useSEO = () => {
+  const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
+
   const setPageSEO = (options: {
     title?: string
     description?: string
@@ -14,7 +18,6 @@ export const useSEO = () => {
     structuredData?: any
   }) => {
     const siteName = 'GoTravelNha'
-    const baseUrl = 'https://gotravelnha.com'
     const defaultImage = 'https://storage.googleapis.com/travella_assets_images/app_icon.png'
     
     const title = options.title 
@@ -22,7 +25,7 @@ export const useSEO = () => {
       : `${siteName} - Discover, Compare & Book Travel Deals`
     
     const description = options.description || 
-      'Compare and book the best travel deals across Trip.com, Klook, and Singapore Attractions'
+      'Search flights and hotels, then continue on Trip.com or Klook. Singapore attraction tickets are sold here only when a current price is listed.'
     
     const url = options.url || baseUrl
     const image = options.image || defaultImage

@@ -1,5 +1,7 @@
+import { canonicalSiteOrigin } from '~/utils/site-origin'
+
 export default defineEventHandler((event) => {
-  const site = String(useRuntimeConfig().public.siteUrl || 'https://gotravelnha.com').replace(/\/$/, '')
+  const site = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
   setHeader(event, 'content-type', 'text/plain; charset=utf-8')
   return [
     'User-agent: *',

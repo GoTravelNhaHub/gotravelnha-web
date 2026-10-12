@@ -176,6 +176,9 @@ model AttractionsgEvent {
   @@map("attractionsg_events")
   @@index([category])
   @@index([isActive])
+  @@index([isPublished])
+  @@index([slug])
+  @@index([isActive, isPublished])
   @@index([title])
 }
 

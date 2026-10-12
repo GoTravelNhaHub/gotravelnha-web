@@ -277,8 +277,6 @@ const handleRegister = async () => {
 }
 
 onMounted(async () => {
-  console.log('👤 Registration page loaded')
-  
   // Track referral click if code exists in URL (before user fills form)
   if (referralCode) {
     await trackReferralClick(referralCode)

@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
 import type { H3Event } from 'h3'
-import { chromium } from 'playwright'
+import { launchBrowser } from '~/server/utils/browser'
 import * as cheerio from 'cheerio'
 import { createError } from 'h3'
 import { writeFile, readFile, mkdir } from 'fs/promises'
@@ -260,7 +260,7 @@ async function executeCrawl(body: CrawlRequest, event?: H3Event) {
   }
   const waitAfterNavigation = body.fullCrawl ? 3000 : 2000
 
-  const browser = await chromium.launch({
+  const browser = await launchBrowser({
     headless: true,
     args: [
       '--no-sandbox',

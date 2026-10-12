@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col">
-    <img v-if="activity.image" :src="activity.image" :alt="activity.title" loading="lazy" class="h-40 w-full object-cover" />
+    <img v-if="activity.image" :src="activity.image" :alt="activity.title" width="640" height="360" loading="lazy" decoding="async" class="h-40 w-full object-cover" />
     <div v-else class="h-40 w-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-4xl">🎟️</div>
     <div class="p-4 flex-1 flex flex-col">
       <div v-if="activity.category" class="text-xs font-semibold uppercase tracking-wide text-emerald-700">{{ activity.category }}</div>

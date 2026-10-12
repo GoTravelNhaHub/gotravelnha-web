@@ -8,6 +8,8 @@
           <img
             :src="template.heroImage"
             :alt="template.title"
+            width="1200"
+            height="640"
             class="w-full h-full object-cover"
             loading="eager"
             decoding="async"

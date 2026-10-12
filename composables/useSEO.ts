@@ -36,7 +36,7 @@ export const useSEO = () => {
         { property: 'og:title', content: title },
         { property: 'og:description', content: description },
         { property: 'og:image', content: image },
-        { property: 'og:url', content: url },
+        { property: 'og:url', content: url, key: 'og-url' },
         { property: 'og:type', content: type },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: title },
@@ -44,7 +44,7 @@ export const useSEO = () => {
         { name: 'twitter:image', content: image }
       ],
       link: [
-        { rel: 'canonical', href: url }
+        { rel: 'canonical', href: url, key: 'canonical' }
       ],
       script: options.structuredData ? [
         {

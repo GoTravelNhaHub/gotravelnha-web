@@ -163,27 +163,6 @@
                 <span class="text-xl">🎫</span>
                 <span class="font-medium text-gray-900">View All Bookings</span>
               </button>
-              <button
-                @click="navigateToPoints"
-                class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
-              >
-                <span class="text-xl">⭐</span>
-                <span class="font-medium text-gray-900">Redeem Points</span>
-              </button>
-              <button
-                @click="editProfile"
-                class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
-              >
-                <span class="text-xl">⚙️</span>
-                <span class="font-medium text-gray-900">Edit Profile</span>
-              </button>
-              <button
-                @click="viewSettings"
-                class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
-              >
-                <span class="text-xl">🔔</span>
-                <span class="font-medium text-gray-900">Settings</span>
-              </button>
             </div>
           </div>
 
@@ -318,18 +297,6 @@ const loadRecentBookings = async () => {
 const favoriteDeals = ref([])
 
 const navigateToBookings = () => navigateTo('/bookings')
-
-const navigateToPoints = () => {
-  alert('Loyalty points page coming soon!')
-}
-
-const editProfile = () => {
-  alert('Edit profile coming soon!')
-}
-
-const viewSettings = () => {
-  alert('Settings page coming soon!')
-}
 
 onMounted(() => {
   loadRecentBookings()

@@ -220,7 +220,16 @@ const { startTracking, trackPageView, trackClick } = useActivityTracker()
 
 const categories = KLOOK_CATEGORIES
 
-const activeWidgets = ref<any[]>([])
+const { data: loadedWidgets } = await useAsyncData('klook-widgets', async () => {
+  try {
+    const response = await $fetch<{ success?: boolean; data?: any[] }>('/api/klook/widgets')
+    if (response.success) return response.data || []
+  } catch (error) {
+    console.error('Failed to load widgets:', error)
+  }
+  return getActiveKlookWidgets()
+})
+const activeWidgets = ref<any[]>(loadedWidgets.value || [])
 const selectedTab = ref<'things_to_do' | 'hotels'>('things_to_do')
 const runtimeConfig = useRuntimeConfig()
 const klookAdId = computed(() => String(runtimeConfig.public?.KLOOK_AD_ID || '1041352'))
@@ -248,7 +257,7 @@ useHead(() => ({
     { name: 'twitter:image', content: klookOgImage.value }
   ],
   link: [
-    { rel: 'canonical', href: `${baseUrl.value}/klook` }
+    { rel: 'canonical', href: `${baseUrl.value}/klook`, key: 'canonical' }
   ]
 }))
 
@@ -299,23 +308,6 @@ const loadKlookWidgetScripts = () => {
       })
     }, 200) // Small delay to ensure DOM is settled
   })
-}
-
-const loadWidgets = async () => {
-  try {
-    // Load all widgets (both things_to_do and hotels)
-    const response = await $fetch('/api/klook/widgets') as any
-    if (response.success) {
-      activeWidgets.value = response.data || []
-    } else {
-      // Fallback to composable if DB fails
-      activeWidgets.value = getActiveKlookWidgets()
-    }
-  } catch (error) {
-    console.error('Failed to load widgets:', error)
-    // Fallback to composable
-    activeWidgets.value = getActiveKlookWidgets()
-  }
 }
 
 // Watch for tab changes and reload scripts for new widgets
@@ -394,8 +386,6 @@ const scrollToWidget = (category: any) => {
 onMounted(async () => {
   startTracking()
   trackPageView('/klook', { platform: 'klook' })
-  
-  await loadWidgets()
   
   // Wait for Vue to render widgets
   await nextTick()

@@ -4,8 +4,6 @@ import { requireAdmin } from '~/server/utils/session'
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
   try {
-    console.log('🔄 Triggering AttractionsSG data refresh in background...')
-    
     // Import the crawl handler directly to avoid HTTP call overhead
     const { default: crawlHandler } = await import('./crawl')
     

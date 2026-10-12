@@ -149,7 +149,11 @@
             <img 
               v-if="ticket.image"
               :src="ticket.image" 
-              :alt="ticket.title" 
+              :alt="ticket.title"
+              width="640"
+              height="360"
+              loading="lazy"
+              decoding="async"
               class="w-full h-44 sm:h-48 lg:h-52 object-cover transition-transform duration-300 group-active:scale-105 sm:group-hover:scale-110"
               @error="handleImageError"
             />
@@ -332,7 +336,7 @@ useHead(() => ({
     { property: 'og:title', content: listingTitle },
     { property: 'og:description', content: listingDescription },
     { property: 'og:image', content: listingImage.value },
-    { property: 'og:url', content: `${baseUrl.value}/attractionsg` },
+    { property: 'og:url', content: `${baseUrl.value}/attractionsg`, key: 'og-url' },
     { property: 'og:type', content: 'website' },
     { property: 'og:site_name', content: 'GoTravelNha' },
     { name: 'twitter:card', content: 'summary_large_image' },
@@ -341,7 +345,7 @@ useHead(() => ({
     { name: 'twitter:image', content: listingImage.value }
   ],
   link: [
-    { rel: 'canonical', href: `${baseUrl.value}/attractionsg` }
+    { rel: 'canonical', href: `${baseUrl.value}/attractionsg`, key: 'canonical' }
   ]
 }))
 
@@ -352,7 +356,6 @@ const loadTickets = async () => {
     loading.value = true
     error.value = null
 
-    console.log('📡 loadTickets: Fetching AttractionsSG events...')
     const aggregated: AttractionEvent[] = []
     let page = 1
     let totalPages = 1
@@ -380,14 +383,10 @@ const loadTickets = async () => {
       aggregated.push(...batch)
 
       totalPages = res.pagination?.totalPages ?? totalPages
-      console.log(`📄 loadTickets: page ${page}/${totalPages} -> ${batch.length} records`)
-
       page += 1
     } while (page <= totalPages)
 
     tickets.value = aggregated
-    console.log(`📊 loadTickets: Loaded ${tickets.value.length} published tickets`)
-
   } catch (err) {
     console.error('❌ loadTickets: API error:', err)
     error.value = 'Unable to fetch tickets. Please try again later.'
@@ -497,6 +496,8 @@ const loadMoreTickets = () => {
   visibleCount.value = Math.min(visibleCount.value + ITEMS_PER_BATCH, filteredTickets.value.length)
 }
 
+await loadTickets()
+
 onMounted(() => {
   startTracking()
   trackPageView('/attractionsg', { platform: 'attractionsg' })
@@ -511,9 +512,6 @@ onMounted(() => {
   } else {
     visibleCount.value = ITEMS_PER_BATCH
   }
-
-  // Auto-load tickets on mount
-  loadTickets()
 
   if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
     observer.value = new IntersectionObserver(

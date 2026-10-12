@@ -5,6 +5,9 @@ export default defineNuxtConfig({
     modules: ['@nuxtjs/tailwindcss'],
     css: ['@/assets/css/tailwind.css'],
     nitro: {
+      externals: {
+        external: ['playwright']
+      },
       vercel: {
         // The trip planner's model call can take up to a minute. Applies to the whole
         // server function; Vercel caps it at the plan's maximum.
@@ -23,7 +26,7 @@ export default defineNuxtConfig({
             { name: 'description', content: 'Compare and book the best travel deals across Trip.com, Klook, and Singapore Attractions. Save on flights, hotels, activities, and attractions. Your all-in-one travel platform.' },
             { name: 'keywords', content: 'travel deals, compare travel prices, trip.com deals, klook deals, vietnam travel, singapore attractions, hotel bookings, flight bookings, travel comparison' },
             { name: 'author', content: 'GoTravelNha' },
-            { name: 'robots', content: 'index, follow' },
+            { name: 'robots', content: 'index, follow', key: 'robots' },
             { name: 'language', content: 'English' },
             { name: 'revisit-after', content: '7 days' },
     
@@ -34,7 +37,6 @@ export default defineNuxtConfig({
             { property: 'og:image:secure_url', content: 'https://storage.googleapis.com/travella_assets_images/app_icon.png', key: 'og-image-secure' },
             { property: 'og:image:type', content: 'image/png', key: 'og-image-type' },
             { property: 'og:image:alt', content: 'GoTravelNha travel deals', key: 'og-image-alt' },
-            { property: 'og:url', content: 'https://gotravelnha.com/' },
             { property: 'og:type', content: 'website' },
             { property: 'og:site_name', content: 'GoTravelNha' },
             { property: 'og:locale', content: 'en_US' },
@@ -49,8 +51,7 @@ export default defineNuxtConfig({
           link: [
             { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
             { rel: 'icon', type: 'image/png', href: '/favicon.svg' },
-            { rel: 'apple-touch-icon', href: '/apple-touch-icon.svg' },
-            { rel: 'canonical', href: 'https://gotravelnha.com/' }
+            { rel: 'apple-touch-icon', href: '/apple-touch-icon.svg' }
           ],
           script: [
             {
@@ -66,7 +67,7 @@ export default defineNuxtConfig({
                 contactPoint: {
                   '@type': 'ContactPoint',
                   contactType: 'Customer Service',
-                  availableLanguage: ['English', 'Vietnamese']
+                  availableLanguage: ['English']
                 },
                 areaServed: 'Worldwide',
                 offers: {
@@ -77,6 +78,29 @@ export default defineNuxtConfig({
             }
           ]
         }
+    },
+    routeRules: {
+      '/': { redirect: { to: '/deals', statusCode: 301 } },
+      '/deals': { swr: 3600 },
+      '/deals/**': { swr: 3600 },
+      '/attractionsg': { swr: 3600 },
+      '/attractionsg/**': { swr: 1800 },
+      '/destinations': { swr: 3600 },
+      '/destinations/**': { swr: 3600 },
+      '/klook': { swr: 3600 },
+      '/compare': { swr: 600 },
+      '/privacy': { prerender: true },
+      '/terms': { prerender: true },
+      '/refund-policy': { prerender: true },
+      '/help': { prerender: true },
+      '/admin/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      '/user/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      '/login': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      '/register': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      '/forgot-password': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      '/reset-password': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      '/bookings/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      '/trips/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } }
     },
     runtimeConfig: {
       SMTP_HOST: process.env.SMTP_HOST,

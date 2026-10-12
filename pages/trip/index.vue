@@ -90,7 +90,7 @@ useHead(() => ({
     { name: 'twitter:image', content: tripOgImage.value }
   ],
   link: [
-    { rel: 'canonical', href: `${baseUrl.value}/trip` }
+    { rel: 'canonical', href: `${baseUrl.value}/trip`, key: 'canonical' }
   ]
 }))
 

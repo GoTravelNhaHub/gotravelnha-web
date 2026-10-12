@@ -84,17 +84,6 @@
               </NuxtLink>
 
               <NuxtLink
-                to="/trip-promotions-demo"
-                class="flex items-center gap-3 p-4 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-colors group"
-              >
-                <span class="text-2xl">🔍</span>
-                <div>
-                  <div class="font-semibold text-gray-900 group-hover:text-orange-600">Scraper Demo</div>
-                  <div class="text-sm text-gray-600">Test Trip.com scraper</div>
-                </div>
-              </NuxtLink>
-
-              <NuxtLink
                 to="/admin/deal-template-generator"
                 class="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors group"
               >

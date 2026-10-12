@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed } from 'vue'
 
 interface Destination {
   slug: string
@@ -37,21 +37,11 @@ interface Destination {
   activityCount: number
 }
 
-const destinations = ref<Destination[]>([])
-const loading = ref(false)
-const error = ref<string | null>(null)
-
-onMounted(async () => {
-  try {
-    loading.value = true
-    const response = await $fetch<{ data: Destination[] }>('/api/destinations')
-    destinations.value = response.data
-  } catch (err: any) {
-    error.value = err?.data?.message || 'Could not load destinations.'
-  } finally {
-    loading.value = false
-  }
-})
+const { data, error: loadError, pending: loading } = await useAsyncData('destinations', () =>
+  $fetch<{ data: Destination[] }>('/api/destinations')
+)
+const destinations = computed(() => data.value?.data || [])
+const error = computed(() => (loadError.value ? 'Could not load destinations.' : null))
 
 useHead({
   title: 'Family Travel Destinations | GoTravelNha',

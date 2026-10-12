@@ -233,7 +233,6 @@ const handleLogin = async () => {
 }
 
 onMounted(() => {
-  console.log('🔐 Unified login page loaded')
   checkOAuthResult()
 })
 </script>

@@ -239,7 +239,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { openTrackedOutbound } from '~/utils/affiliate-links'
 import { useActivityTracker } from '~/composables/useActivityTracker'
@@ -252,53 +252,40 @@ const route = useRoute()
 const { trackClick } = useActivityTracker()
 
 // State
-const loading = ref(false)
-const comparisons = ref<any[]>([])
 const searchKeyword = ref('')
 const searchLocation = ref('')
 const searchCategory = ref('')
 
-// Load on mount
-onMounted(() => {
-  loadComparisons()
-})
-
-// Load comparisons
 async function loadComparisons() {
-  loading.value = true
-  try {
-    const params: any = {
-      limit: 20
-    }
-    
-    if (searchKeyword.value) params.keyword = searchKeyword.value
-    if (searchLocation.value) params.location = searchLocation.value
-    if (searchCategory.value) params.category = searchCategory.value
+  const params: Record<string, string | number> = { limit: 20 }
+  if (searchKeyword.value) params.keyword = searchKeyword.value
+  if (searchLocation.value) params.location = searchLocation.value
+  if (searchCategory.value) params.category = searchCategory.value
 
-    const response: any = await $fetch('/api/deals/compare', { params })
-    
-    if (response && response.success) {
-      comparisons.value = response.data || []
-    }
+  try {
+    const response = await $fetch<{ success?: boolean; data?: any[] }>('/api/deals/compare', { params })
+    return response?.success ? response.data || [] : []
   } catch (error) {
     console.error('Failed to load comparisons:', error)
-    comparisons.value = []
-  } finally {
-    loading.value = false
+    return []
   }
 }
 
-// Search deals
+const { data: comparisonData, pending: loading, refresh: reloadComparisons } = await useAsyncData(
+  'compare-deals',
+  loadComparisons
+)
+const comparisons = computed(() => comparisonData.value || [])
+
 async function searchDeals() {
-  await loadComparisons()
+  await reloadComparisons()
 }
 
-// Clear search
 function clearSearch() {
   searchKeyword.value = ''
   searchLocation.value = ''
   searchCategory.value = ''
-  loadComparisons()
+  searchDeals()
 }
 
 // Stats

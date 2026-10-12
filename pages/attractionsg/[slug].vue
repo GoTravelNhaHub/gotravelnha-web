@@ -26,6 +26,9 @@
             <img
               :src="activeImage"
               :alt="event.title"
+              width="1200"
+              height="840"
+              decoding="async"
               class="h-full w-full object-cover transition-transform duration-500 ease-out hover:scale-105 active:scale-100"
             />
           </button>
@@ -70,6 +73,9 @@
             <img
               :src="activeImage"
               :alt="event.title"
+              width="1200"
+              height="840"
+              decoding="async"
               class="h-full w-full object-cover transition-transform duration-500 ease-out hover:scale-105 active:scale-100"
             />
           </button>
@@ -113,6 +119,10 @@
               <img
                 :src="image"
                 :alt="`${event.title} photo ${index + 1}`"
+                width="160"
+                height="112"
+                loading="lazy"
+                decoding="async"
                 class="h-full w-full object-cover"
               />
               <span
@@ -617,6 +627,9 @@
               <img
                 :src="galleryImages[lightboxIndex]"
                 :alt="`${event?.title} enlarged photo ${lightboxIndex + 1}`"
+                width="1200"
+                height="800"
+                decoding="async"
                 class="h-auto w-full rounded-xl sm:rounded-2xl bg-black/20 object-contain shadow-2xl max-h-[85vh] sm:max-h-[90vh]"
               />
               <div
@@ -812,15 +825,21 @@ const shouldDisplayOptionCode = (option: any) => {
 const initialSlugParam = Array.isArray(route.params.slug) ? route.params.slug[0] : route.params.slug
 const currentSlug = ref(initialSlugParam)
 
-const { data: initialEventData } = await useAsyncData<{ event?: Record<string, any> }>(
+const { data: initialEventData, error: eventError } = await useAsyncData<{ event?: Record<string, any> }>(
   `attractionsg-event-${initialSlugParam}`,
   () => $fetch(`/api/attractionsg/event/${initialSlugParam}`)
 )
 
-if (initialEventData.value?.event) {
-  event.value = initialEventData.value.event as Record<string, any>
-  loading.value = false
+const eventStatus = (eventError.value as { statusCode?: number } | null)?.statusCode
+if (eventStatus && eventStatus !== 404) {
+  throw createError({ statusCode: eventStatus, statusMessage: 'Could not load this attraction' })
 }
+if (eventError.value || !initialEventData.value?.event) {
+  throw createError({ statusCode: 404, statusMessage: 'Attraction not found' })
+}
+
+event.value = initialEventData.value.event as Record<string, any>
+loading.value = false
 
 const ticketOptions = computed<Record<string, any>[]>(() => {
   // Options from the API already carry our sell price, not the supplier cost
@@ -969,10 +988,6 @@ const savingsText = (option: Record<string, any>) => {
   const diff = option.originalPriceAmount - option.priceAmount
   if (diff <= 0) return ''
   return `Save ${formatCurrency(diff)}`
-}
-
-const filterPublished = (items: Record<string, any>[]) => {
-  return (items || []).filter((item: Record<string, any>) => item && item.isPublished === true)
 }
 
 const handleRequestOption = (option: Record<string, any>) => {
@@ -1186,68 +1201,11 @@ watch([selectedOption, quantityAdults, quantityChildren], () => {
   cartError.value = ''
 })
 
-onMounted(async () => {
+onMounted(() => {
   if (typeof window !== 'undefined') {
     window.addEventListener('keydown', handleKeydown)
   }
-
-  if (event.value) {
-    handleCheckoutQuery()
-    return
-  }
-
-  console.log(`🔍 Looking for event with slug/ID: ${currentSlug.value}`)
-  notFound.value = false
-  
-  try {
-    // Fetch all events (slug already contains the ID)
-    let allEvents: Record<string, any>[] = []
-    
-    try {
-      console.log('📡 Trying API endpoint...')
-      const res = await $fetch('/api/attractionsg/events', {
-        method: 'POST',
-        body: {
-          limit: 1000 // Get all events to find by ID
-        }
-      })
-      console.log('📊 Detail page API response:', res)
-      allEvents = filterPublished(res.data || [])
-      console.log(`✅ API returned ${allEvents.length} events`)
-    } catch (apiErr) {
-      console.error('❌ API error, trying direct fetch:', apiErr)
-    }
-    
-    console.log(`📊 Total events loaded: ${allEvents.length}`)
-    console.log(
-      `🔍 First 3 event IDs:`,
-      allEvents.slice(0, 3).map((e: Record<string, any>) => e.id)
-    )
-    
-    // Find the matching event by ID
-    const foundEvent = allEvents.find(
-      (e: Record<string, any>) => e.slug === currentSlug.value || e.id === currentSlug.value
-    )
-    
-    if (foundEvent) {
-      console.log(`✅ Found event: ${foundEvent.title}`)
-      event.value = foundEvent
-      notFound.value = false
-      currentSlug.value = foundEvent.slug || foundEvent.id || currentSlug.value
-      if (foundEvent.slug && foundEvent.slug !== initialSlugParam) {
-        console.log(`🔄 Updating slug in URL to canonical slug: ${foundEvent.slug}`)
-        navigateTo(`/attractionsg/${foundEvent.slug}`, { replace: true })
-      }
-      handleCheckoutQuery()
-    } else {
-      console.error(`❌ Event not found or unpublished with slug/ID: ${currentSlug.value}`)
-      notFound.value = true
-    }
-  } catch (err) {
-    console.error('❌ Error loading event:', err)
-  } finally {
-    loading.value = false
-  }
+  if (event.value) handleCheckoutQuery()
 })
 
 watch(
@@ -1314,7 +1272,7 @@ useHead(() => ({
     { property: 'og:image', content: shareImage.value },
     { property: 'og:image:secure_url', content: shareImage.value },
     { property: 'og:image:alt', content: event.value?.title || 'GoTravelNha Attraction' },
-    { property: 'og:url', content: canonicalUrl.value },
+    { property: 'og:url', content: canonicalUrl.value, key: 'og-url' },
     { property: 'og:type', content: 'article' },
     { property: 'og:site_name', content: 'GoTravelNha' },
     ...(event.value?.publishedAt
@@ -1328,7 +1286,7 @@ useHead(() => ({
     { name: 'twitter:image:alt', content: event.value?.title || 'GoTravelNha Attraction' }
   ],
   link: [
-    { rel: 'canonical', href: canonicalUrl.value }
+    { rel: 'canonical', href: canonicalUrl.value, key: 'canonical' }
   ]
 }))
 

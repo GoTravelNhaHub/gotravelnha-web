@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
 import { requireAdmin } from '~/server/utils/session'
-import { chromium } from 'playwright'
+import { launchBrowser } from '~/server/utils/browser'
 import * as cheerio from 'cheerio'
 import { createError } from 'h3'
 
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
     const isProduction = process.env.NODE_ENV === 'production'
 
     // Initialize browser
-    const browser = await chromium.launch({
+    const browser = await launchBrowser({
       headless: isProduction,
       args: [
         '--no-sandbox',
@@ -57,7 +57,6 @@ export default defineEventHandler(async (event) => {
 
     try {
       // Navigate to login page
-      console.log('🔐 Logging into AttractionsSG...')
       await page.goto('https://mobile.attractionsg.com/', {
         waitUntil: 'networkidle',
         timeout: 30000
@@ -76,8 +75,6 @@ export default defineEventHandler(async (event) => {
       // Wait for navigation or success indicator
       await page.waitForTimeout(3000)
       
-      console.log('✅ Successfully logged in')
-
       // Extract tickets data based on request
       let tickets: TicketData[] = []
 

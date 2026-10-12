@@ -83,6 +83,24 @@ const interests = ref('')
 const useFamily = ref(false)
 const personalised = ref(false)
 const usedFamily = ref(false)
+
+const { data: initialDestination, error: destinationError } = await useAsyncData(`destination-${slug.value}`, () =>
+  $fetch<{
+    destination: { name: string }
+    personalised: boolean
+    usedFamily: boolean
+    data: RecommendedActivity[]
+  }>(`/api/destinations/${slug.value}`)
+)
+if ((destinationError.value as { statusCode?: number } | null)?.statusCode === 404) {
+  throw createError({ statusCode: 404, statusMessage: 'Destination not found' })
+}
+if (initialDestination.value) {
+  name.value = initialDestination.value.destination.name
+  activities.value = initialDestination.value.data
+  personalised.value = initialDestination.value.personalised
+  usedFamily.value = initialDestination.value.usedFamily
+}
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -115,7 +133,7 @@ const load = async () => {
 
 onMounted(() => {
   useFamily.value = isAuthenticated.value
-  load()
+  if (useFamily.value) load()
 })
 
 useHead(() => ({

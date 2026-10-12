@@ -72,6 +72,10 @@
               v-if="item.heroImage"
               :src="item.heroImage"
               :alt="item.title"
+              width="640"
+              height="360"
+              loading="lazy"
+              decoding="async"
               class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
             />
           </div>
@@ -104,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import KlookIcon from '~/components/KlookIcon.vue'
 import TripWordmark from '~/components/TripWordmark.vue'
 import type { DealPageTemplate } from '~/types/deal-template'
@@ -117,8 +121,6 @@ definePageMeta({
 const requestURL = useRequestURL()
 const siteOrigin = `${requestURL.protocol}//${requestURL.host}`
 
-const dealTemplates = ref<DealPageTemplate[]>([])
-const loadingTemplates = ref(false)
 const searchText = ref('')
 const activeCategory = ref<'all' | 'flight' | 'hotel' | 'activity'>('all')
 const allowedBuiltinSlugs = new Set(['flights', 'hotels', 'attractions'])
@@ -130,19 +132,17 @@ const categoryChips = [
   { id: 'activity', label: 'Attractions', icon: '🎡' }
 ] as const
 
-const loadTemplates = async () => {
+const { data: templateList, pending: loadingTemplates } = await useAsyncData('deal-hub-templates', async () => {
   try {
-    loadingTemplates.value = true
-    const response: any = await $fetch('/api/deal-templates')
+    const response = await $fetch<{ success?: boolean; data?: DealPageTemplate[] }>('/api/deal-templates')
     const list = response?.success ? (response.data || []) : []
-    dealTemplates.value = list.filter((item: DealPageTemplate) => allowedBuiltinSlugs.has(item.slug))
+    return list.filter((item) => allowedBuiltinSlugs.has(item.slug))
   } catch (error) {
     console.error('Failed to load deal templates:', error)
-    dealTemplates.value = []
-  } finally {
-    loadingTemplates.value = false
+    return []
   }
-}
+})
+const dealTemplates = computed(() => templateList.value || [])
 
 const hubOutcomeFallback: Record<string, string> = {
   flights: 'Side-by-side flight search — fewer tabs, clearer fares.',
@@ -187,10 +187,6 @@ const filteredTemplates = computed(() => {
     const haystack = [item.title, item.description, item.destination, item.category, item.badge].join(' ').toLowerCase()
     return haystack.includes(keyword)
   })
-})
-
-onMounted(async () => {
-  await loadTemplates()
 })
 
 const hubOgImage = computed(() => {

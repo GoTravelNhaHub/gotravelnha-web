@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody, getQuery } from 'h3'
 import prisma from '~/server/utils/prisma'
-import { chromium } from 'playwright'
+import { launchBrowser } from '~/server/utils/browser'
 import * as cheerio from 'cheerio'
 import { createError } from 'h3'
 
@@ -160,7 +160,7 @@ async function runScraperJob(jobId: string) {
 
   try {
     // Launch browser
-    const browser = await chromium.launch({
+    const browser = await launchBrowser({
       headless: true,
       args: [
         '--no-sandbox',
@@ -193,8 +193,6 @@ async function runScraperJob(jobId: string) {
 
       // Debug: Log page title to see if we got the right page
       const pageTitle = $('title').text()
-      console.log(`Page title: ${pageTitle}`)
-      
       // Check if we hit a login page
       if (pageTitle.toLowerCase().includes('login') || 
           pageTitle.toLowerCase().includes('sign in') ||
@@ -205,8 +203,6 @@ async function runScraperJob(jobId: string) {
       // Extract deals based on platform and job type
       const deals = await extractDeals($, job.platform, job.jobType, job.sourceUrl)
       
-      console.log(`Extracted ${deals.length} deals from page`)
-
       // Save to database
       for (const deal of deals) {
         await prisma.tripScrapedData.create({
@@ -251,8 +247,6 @@ async function runScraperJob(jobId: string) {
 
       await browser.close()
 
-      console.log(`✅ Job ${jobId} completed: ${deals.length} items scraped`)
-
     } catch (error: any) {
       await browser.close()
       throw error
@@ -291,7 +285,6 @@ async function extractDeals(
     
     if (isGridPage) {
       // Grid page - extract multiple deal links and scrape each
-      console.log('Detected grid page, extracting multiple deals')
       const gridDeals = extractGridDeals($, platform, sourceUrl)
       deals.push(...gridDeals)
     }
@@ -301,7 +294,6 @@ async function extractDeals(
     
     if (isSalePage) {
       // Single-product sale pages - extract from entire page
-      console.log('Detected single-product sale page, extracting from page content')
       const deal = extractSingleSalePage($, platform, sourceUrl)
       if (deal && deal.title && deal.title.length > 5) {
         deals.push(deal)
@@ -332,7 +324,6 @@ async function extractDeals(
       for (const selector of promoSelectors) {
         const items = $(selector)
         if (items.length > 0) {
-          console.log(`Found ${items.length} items with selector: ${selector}`)
           items.each((_, element) => {
             const $item = $(element)
             const deal = extractPromotionalDealInfo($item, platform, sourceUrl)
@@ -396,8 +387,6 @@ function extractGridDeals($: cheerio.CheerioAPI, platform: string, sourceUrl: st
   for (const selector of gridSelectors) {
     const cards = $(selector)
     if (cards.length > 0) {
-      console.log(`Found ${cards.length} deal cards with selector: ${selector}`)
-      
       cards.each((_, card) => {
         const $card = $(card)
         

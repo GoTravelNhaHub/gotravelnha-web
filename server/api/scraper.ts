@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { chromium } from 'playwright'
+import { launchBrowser } from '~/server/utils/browser'
 import * as cheerio from 'cheerio'
 import { createError } from 'h3'
 import { requireAdmin } from '~/server/utils/session'
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
     const isProduction = process.env.NODE_ENV === 'production'
 
     // Initialize browser
-    const browser = await chromium.launch({
+    const browser = await launchBrowser({
       headless: isProduction,
       args: [
         '--no-sandbox',

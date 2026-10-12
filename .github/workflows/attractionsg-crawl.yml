@@ -29,8 +29,8 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright for the crawler
+        run: npm install --no-save playwright@1.48.0 && npx playwright install --with-deps chromium
 
       - name: Run AttractionsSG crawler
         run: npm run crawl:attractionsg

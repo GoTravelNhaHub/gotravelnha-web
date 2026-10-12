@@ -41,8 +41,6 @@ export default defineEventHandler(async (event): Promise<AnalyticsResponse> => {
       topPerforming: []
     }
     
-    console.log('📊 Analytics API called - returning aggregated data')
-    
     // TODO: Implement database queries
     // const clicks = await db.analytics.count({ platform: 'trip.com' })
     // const impressions = await db.analytics.count({ type: 'impression' })

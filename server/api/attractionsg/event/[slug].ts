@@ -10,21 +10,19 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
     const record = await prisma.attractionsgEvent.findFirst({
       where: {
         isPublished: true,
         OR: [
           { slug: { equals: slug, mode: 'insensitive' } },
-          { id: slug }
+          ...(isUuid ? [{ id: slug }] : [])
         ]
       }
     })
 
     if (!record) {
-      return {
-        success: false,
-        event: null
-      }
+      throw createError({ statusCode: 404, message: 'Attraction not found' })
     }
 
     return {
@@ -32,8 +30,9 @@ export default defineEventHandler(async (event) => {
       // Sell prices only; supplier cost, raw crawl data and admin notes stay server-side
       event: toPublicAttraction(record, feeConfig())
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to load attractionsg event:', error)
+    if (error?.statusCode && error.statusCode < 500) throw error
     throw createError({ statusCode: 500, message: 'Failed to load attraction' })
   }
 })

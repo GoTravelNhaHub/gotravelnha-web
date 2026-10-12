@@ -101,6 +101,10 @@ const legacyDeal = computed(() => {
   )
 })
 
+if (!template.value && !legacyDeal.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Deal not found' })
+}
+
 const openLegacyDeal = async () => {
   if (!legacyDeal.value?.affiliateLink) return
   const deal = legacyDeal.value

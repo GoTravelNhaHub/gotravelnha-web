@@ -636,8 +636,6 @@ const paginatedEvents = computed(() => {
 })
 
 onMounted(() => {
-  console.log('🎫 ATTRACTIONSG.VUE - Events Management Page loaded')
-  console.log('🎫 Route path:', route.path, 'Route name:', route.name)
   if (route.path !== '/admin/scrapers/attractionsg') {
     console.error('❌ ROUTE MISMATCH! This component should only load for /admin/scrapers/attractionsg')
   }

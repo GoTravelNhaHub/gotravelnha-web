@@ -1,5 +1,6 @@
 import prisma from '~/server/utils/prisma'
 import type { LiveActivity } from '~/types/trip'
+import { isApprovedPartnerUrl } from '~/utils/partner-url'
 
 // Catalogue ids handed to the model are prefixed so one string identifies the table:
 //   sg:<AttractionsgEvent.id>   self-checkout attractions (Singapore)
@@ -171,6 +172,7 @@ export async function resolveActivities(ids: string[]): Promise<Record<string, L
       offer.availabilityStatus === 'available' &&
       offer.entity.status === 'active' &&
       (!offer.expiresAt || offer.expiresAt > now)
+    const verified = available && !!offer.lastVerifiedAt && offer.lastVerifiedAt.getTime() >= checkedSince
     result[`offer:${offer.id}`] = {
       id: `offer:${offer.id}`,
       kind: 'offer',
@@ -178,12 +180,13 @@ export async function resolveActivities(ids: string[]): Promise<Record<string, L
       image: metadataImage(offer.metadata),
       category: offer.entity.category,
       available,
-      verified: available && !!offer.lastVerifiedAt && offer.lastVerifiedAt.getTime() >= checkedSince,
+      verified,
       priceFrom: typeof offer.priceAmount === 'number' && offer.priceAmount > 0 ? offer.priceAmount : null,
       currency: offer.currency || 'SGD',
       priceText: offer.priceText,
       href: null,
       offerId: offer.id,
+      partnerUrl: verified && isApprovedPartnerUrl(offer.baseUrl) ? offer.baseUrl : null,
       provider: offer.provider,
       checkedAt: (offer.lastVerifiedAt ?? offer.updatedAt).toISOString(),
       location: offer.entity.location

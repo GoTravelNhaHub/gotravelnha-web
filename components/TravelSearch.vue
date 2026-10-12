@@ -17,7 +17,7 @@
       </button>
     </div>
 
-    <form v-if="mode === 'flight'" @submit.prevent="searchFlights" class="space-y-4">
+    <form v-if="mode === 'flight'" @submit.prevent="searchFlights" @focusin="markStarted" class="space-y-4">
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">
         <label class="block min-w-0">
           <span class="field-label">From</span>
@@ -69,7 +69,7 @@
       </div>
     </form>
 
-    <form v-else @submit.prevent="searchHotels" class="space-y-4">
+    <form v-else @submit.prevent="searchHotels" @focusin="markStarted" class="space-y-4">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <label class="block min-w-0">
           <span class="field-label">City</span>
@@ -108,8 +108,8 @@
     </form>
 
     <p v-if="error" class="mt-3 text-sm text-red-600">{{ error }}</p>
-    <p class="mt-3 text-sm leading-relaxed text-ink/70">
-      Opens Trip.com in a new tab with your search filled in. Prices, taxes and availability are set by Trip.com and shown there before you pay.
+      <p class="mt-3 text-sm leading-relaxed text-ink/70">
+      Checkout happens on Trip.com, which confirms the price and availability. GoTravelNha does not charge you for this booking.
     </p>
   </div>
 </template>
@@ -117,8 +117,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { openTrackedOutbound } from '~/utils/affiliate-links'
+import { appendTripAffiliateIds, openTrackedOutbound } from '~/utils/affiliate-links'
 import { SEARCH_CITIES, tripFlightUrl, tripHotelUrl } from '~/utils/trip-search'
+import { getVisitorSessionId } from '~/utils/visitor-session'
 
 const props = withDefaults(defineProps<{ initialMode?: 'flight' | 'hotel'; placement?: string }>(), {
   initialMode: 'flight',
@@ -126,6 +127,8 @@ const props = withDefaults(defineProps<{ initialMode?: 'flight' | 'hotel'; place
 })
 
 const route = useRoute()
+const config = useRuntimeConfig().public
+const { track } = useFunnel()
 const cities = SEARCH_CITIES
 const tabs = [
   { id: 'flight' as const, label: 'Flights', icon: '✈️' },
@@ -151,9 +154,19 @@ const hotel = reactive({ cityId: 359, checkIn: '', checkOut: '', adults: 2, chil
 
 const count = (value: unknown, min: number) => Math.max(min, Math.floor(Number(value) || 0))
 
-const open = (provider: string, url: string, search: Record<string, unknown>) => {
-  const sessionId = localStorage.getItem('activity_session_id') || `search-${Date.now().toString(36)}`
-  if (!localStorage.getItem('activity_session_id')) localStorage.setItem('activity_session_id', sessionId)
+const markStarted = () => {
+  track('travel_search_started', { provider: 'trip', placement: props.placement, searchType: mode.value }, true)
+}
+
+const open = (provider: string, url: string, search: Record<string, string | number | boolean | null>) => {
+  const sessionId = getVisitorSessionId()
+  track('travel_search_submitted', {
+    provider,
+    placement: `${props.placement}_${mode.value}`,
+    searchType: mode.value,
+    destination: typeof search.to === 'string' ? search.to : typeof search.cityId === 'number' ? String(search.cityId) : null
+  })
+  const fallback = appendTripAffiliateIds(url, String(config.TRIP_ALLIANCE_ID || ''), String(config.TRIP_SID || ''))
 
   openTrackedOutbound(async () => {
     const response: any = await $fetch('/api/affiliate/click', {
@@ -164,12 +177,11 @@ const open = (provider: string, url: string, search: Record<string, unknown>) =>
         placementKey: `${props.placement}_${mode.value}`,
         pagePath: route.path,
         sessionId,
-        // What people search for, so demand can be measured
-        metadata: { search }
+        metadata: { search, funnel: 'affiliate_outbound_clicked' }
       }
     })
     return response?.outboundUrl
-  }, url)
+  }, fallback)
 }
 
 const searchFlights = () => {

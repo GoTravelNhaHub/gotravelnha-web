@@ -4,6 +4,8 @@
  * Works both client-side and server-side
  */
 
+import { resolveHandoffUrl } from './partner-url'
+
 /**
  * Append Klook affiliate ID to a Klook URL
  * @param url Original Klook URL
@@ -95,7 +97,7 @@ export function generateAffiliateLink(url: string, platform: string): string {
 /**
  * Opens the partner tab synchronously inside the click handler so popup blockers allow it,
  * then points it at the tracked URL once the click is recorded. Uses fallbackUrl if tracking fails.
- * Client-side only.
+ * Client-side only. A failed click record does not cancel a valid partner URL.
  */
 export async function openTrackedOutbound(
   resolveUrl: () => Promise<string | null | undefined>,
@@ -104,11 +106,17 @@ export async function openTrackedOutbound(
   const tab = window.open('', '_blank')
   if (tab) tab.opener = null
 
-  let url = fallbackUrl
+  let tracked: string | null = null
   try {
-    url = (await resolveUrl()) || fallbackUrl
+    tracked = (await resolveUrl()) || null
   } catch (error) {
     console.error('Affiliate click tracking failed:', error)
+  }
+
+  const url = resolveHandoffUrl(tracked, fallbackUrl)
+  if (!url) {
+    if (tab) tab.close()
+    return
   }
 
   if (tab) {

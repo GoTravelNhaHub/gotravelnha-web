@@ -113,6 +113,9 @@
                   <p class="text-xs font-semibold uppercase tracking-wide" :class="kindTone(item)">{{ itemKind(item) }}</p>
                   <p class="mt-0.5 text-[14px] font-semibold leading-5 text-[#101D3A]">{{ item.title }}</p>
                   <p class="mt-1 text-[12px] leading-[18px] text-[#64748B]">{{ item.description }}</p>
+                  <p v-if="itemKind(item) === 'Suggestion'" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">
+                    Suggestion only. A partner has not confirmed this ticket or its price.
+                  </p>
                   <p v-if="item.familyTip" class="mt-2 rounded-lg bg-sand px-2.5 py-1.5 text-sm text-ink">
                     <span class="font-semibold">For parents. </span>{{ item.familyTip }}
                   </p>
@@ -226,10 +229,34 @@
                     class="mt-auto inline-flex min-h-11 items-center justify-center rounded-lg border border-line text-sm font-semibold text-ink hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
                     @click="openOffer(activity)"
                   >
-                    View details
+                    Check on {{ providerLabel(activity.provider) }}
                   </button>
                 </div>
               </article>
+            </div>
+          </section>
+
+          <section class="rounded-2xl border border-[#E2E8F0] bg-white p-3">
+            <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#101D3A]">Search this destination</h3>
+            <p class="mt-1 text-[12px] leading-[18px] text-[#64748B]">
+              Live activities and rooms open on Klook or Trip.com. A search is not a confirmed booking.
+            </p>
+            <div class="mt-3 flex flex-col gap-2">
+              <button
+                type="button"
+                class="inline-flex min-h-11 items-center justify-center rounded-lg border border-line px-3 text-sm font-semibold text-ink hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                @click="searchActivities"
+              >
+                Search activities on Klook
+              </button>
+              <button
+                v-if="hotelSearchUrl"
+                type="button"
+                class="inline-flex min-h-11 items-center justify-center rounded-lg border border-line px-3 text-sm font-semibold text-ink hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                @click="searchHotels"
+              >
+                Search hotels on Trip.com
+              </button>
             </div>
           </section>
         </aside>
@@ -330,8 +357,11 @@ import { computed, ref, watch } from 'vue'
 import PlannerIcon from '~/components/planner/PlannerIcon.vue'
 import type { PlannerIconName } from '~/components/planner/PlannerIcon.vue'
 import type { Itinerary, ItineraryItem, LiveActivity } from '~/types/trip'
+import { appendKlookAffiliateId, appendTripAffiliateIds, openTrackedOutbound } from '~/utils/affiliate-links'
 import { destinationPhoto } from '~/utils/destination-photos'
 import { cityOf, destinationSlug } from '~/utils/destination-slug'
+import { SEARCH_CITIES, tripHotelUrl } from '~/utils/trip-search'
+import { getVisitorSessionId } from '~/utils/visitor-session'
 
 interface BoardRequest {
   destination: string
@@ -355,6 +385,8 @@ defineEmits<{
 }>()
 
 const { openOffer, priceLabel } = usePartnerOffer('trip_planner')
+const { track } = useFunnel()
+const config = useRuntimeConfig().public
 
 const slotLabels = { morning: 'Morning', afternoon: 'Afternoon', evening: 'Evening' } as const
 const slotIcons: Record<ItineraryItem['slot'], PlannerIconName> = { morning: 'sun', afternoon: 'sunset', evening: 'moon' }
@@ -386,6 +418,57 @@ const city = computed(() => cityOf(props.request.destination))
 const slug = computed(() => destinationSlug(props.request.destination))
 const cityPhoto = computed(() => destinationPhoto(props.request.destination, 160))
 const cityPhotoLarge = computed(() => destinationPhoto(props.request.destination, 800))
+
+const hotelCity = computed(() => SEARCH_CITIES.find((entry) => entry.name.toLowerCase() === city.value.toLowerCase()) || null)
+
+const hotelSearchUrl = computed(() => {
+  const match = hotelCity.value
+  if (!match || !props.request.startDate || !props.request.endDate || props.request.endDate <= props.request.startDate) return ''
+  const adults = props.request.party.filter((person) => person.age >= 18).length || 1
+  const children = props.request.party.filter((person) => person.age < 18).length
+  return tripHotelUrl({
+    cityId: match.hotelCityId,
+    checkIn: props.request.startDate,
+    checkOut: props.request.endDate,
+    adults,
+    children,
+    rooms: 1
+  })
+})
+
+const openPartnerSearch = (provider: 'klook' | 'trip', url: string, searchType: 'activity' | 'hotel') => {
+  const sessionId = getVisitorSessionId()
+  const placement = 'trip_planner_search'
+  track('travel_search_submitted', { provider, placement, destination: city.value, searchType })
+  const fallback =
+    provider === 'klook'
+      ? appendKlookAffiliateId(url, String(config.KLOOK_AD_ID || ''))
+      : appendTripAffiliateIds(url, String(config.TRIP_ALLIANCE_ID || ''), String(config.TRIP_SID || ''))
+  openTrackedOutbound(async () => {
+    const response = await $fetch<{ outboundUrl?: string }>('/api/affiliate/click', {
+      method: 'POST',
+      body: {
+        provider,
+        baseUrl: url,
+        placementKey: placement,
+        pagePath: '/planner',
+        sessionId,
+        metadata: { destination: city.value, searchType, funnel: 'affiliate_outbound_clicked' }
+      }
+    })
+    return response?.outboundUrl
+  }, fallback)
+}
+
+const searchActivities = () => {
+  const url = `https://www.klook.com/en-SG/search/result/?query=${encodeURIComponent(city.value)}`
+  openPartnerSearch('klook', url, 'activity')
+}
+
+const searchHotels = () => {
+  if (!hotelSearchUrl.value) return
+  openPartnerSearch('trip', hotelSearchUrl.value, 'hotel')
+}
 
 const activityFor = (item: ItineraryItem) => (item.activityId ? props.activities[item.activityId] || null : null)
 
@@ -486,6 +569,23 @@ const partnerPicks = computed(() => {
     })
     .slice(0, 4)
 })
+
+watch(
+  partnerPicks,
+  (picks) => {
+    if (!picks.length) return
+    track(
+      'ai_offer_viewed',
+      {
+        placement: 'trip_planner',
+        provider: picks.map((activity) => (activity.provider || '').toLowerCase()).filter(Boolean).join(','),
+        destination: city.value
+      },
+      true
+    )
+  },
+  { immediate: true }
+)
 
 const formatDay = (date: string) =>
   new Intl.DateTimeFormat('en-SG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(

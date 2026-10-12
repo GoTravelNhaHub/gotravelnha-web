@@ -30,7 +30,7 @@
           </div>
           <div v-if="item.activityId && activities[item.activityId]" class="shrink-0 sm:w-56">
             <div
-              v-if="activities[item.activityId].available"
+              v-if="activities[item.activityId].verified"
               class="rounded-xl border border-line bg-sea-50 p-3 text-sm"
             >
               <div class="font-semibold text-ink">
@@ -52,8 +52,11 @@
                 class="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-ink px-3 py-2 font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
                 @click="openOffer(activities[item.activityId])"
               >
-                Check live price
+                Check on partner
               </button>
+            </div>
+            <div v-else-if="activities[item.activityId].available" class="rounded-xl border border-line bg-sand p-3 text-sm text-ink/70">
+              Suggestion only. A partner has not confirmed this ticket or its price.
             </div>
             <div v-else class="rounded-xl border border-line bg-sand p-3 text-sm text-ink/70">
               No longer available from our partners.
@@ -86,8 +89,8 @@ const slotLabels = { morning: 'Morning', afternoon: 'Afternoon', evening: 'Eveni
 
 const itemKind = (item: Itinerary['days'][number]['items'][number]) => {
   const activity = item.activityId ? props.activities[item.activityId] : null
-  if (activity?.href) return 'Ticket on GoTravelNha'
-  if (activity?.offerId) return 'Partner offer'
+  if (activity?.verified && activity.href) return 'Ticket on GoTravelNha'
+  if (activity?.verified && activity.offerId) return 'Partner offer'
   return 'Suggestion'
 }
 

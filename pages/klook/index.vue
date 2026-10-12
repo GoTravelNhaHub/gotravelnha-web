@@ -26,7 +26,7 @@
 
     <section id="klook-search" class="scroll-mt-28">
       <h2 class="font-display text-2xl text-ink sm:text-3xl">Search Klook</h2>
-      <p class="mt-1 mb-4 text-sm text-ink/70">Results and checkout open on Klook.</p>
+      <p class="mt-1 mb-4 text-sm text-ink/70">The search runs on Klook, which confirms the ticket, the time, and the price. This page does not sell the ticket.</p>
       <ClientOnly>
         <div class="overflow-hidden rounded-2xl border border-line bg-white">
           <div class="klook-search-widget-container">
@@ -55,7 +55,7 @@
     <section class="space-y-4">
       <div>
         <h2 class="font-display text-2xl text-ink sm:text-3xl">Places to explore</h2>
-        <p class="mt-1 text-sm text-ink/70">Opens a Klook search for that city.</p>
+        <p class="mt-1 text-sm text-ink/70">Opens a Klook search for that city. A city card is a starting point, not a confirmed ticket.</p>
       </div>
       <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
         <button
@@ -187,9 +187,11 @@ import { useActivityTracker } from '~/composables/useActivityTracker'
 import { getActiveKlookWidgets, KLOOK_CATEGORIES } from '~/composables/useKlookWidgets'
 import { appendKlookAffiliateId, openTrackedOutbound } from '~/utils/affiliate-links'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
+import { getVisitorSessionId } from '~/utils/visitor-session'
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 
 const { startTracking, trackPageView, trackClick } = useActivityTracker()
+const { track } = useFunnel()
 const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
 const categories = KLOOK_CATEGORIES
@@ -221,13 +223,14 @@ const places = [
 ]
 
 const openKlookCity = (name: string) => {
-  const url = appendKlookAffiliateId(
-    `https://www.klook.com/en-SG/search/result/?query=${encodeURIComponent(name)}`,
-    klookAdId.value
-  )
-  trackClick('klook_destination', { name, destination: url })
-  const sessionId = localStorage.getItem('activity_session_id') || `klook-${Date.now().toString(36)}`
-  if (!localStorage.getItem('activity_session_id')) localStorage.setItem('activity_session_id', sessionId)
+  const url = `https://www.klook.com/en-SG/search/result/?query=${encodeURIComponent(name)}`
+  const sessionId = getVisitorSessionId()
+  track('travel_search_submitted', {
+    provider: 'klook',
+    placement: 'klook_destination',
+    destination: name,
+    searchType: 'activity'
+  })
   openTrackedOutbound(async () => {
     const response = await $fetch<{ outboundUrl?: string }>('/api/affiliate/click', {
       method: 'POST',
@@ -237,11 +240,11 @@ const openKlookCity = (name: string) => {
         placementKey: 'klook_destination',
         pagePath: '/klook',
         sessionId,
-        metadata: { name }
+        metadata: { destination: name, searchType: 'activity', funnel: 'affiliate_outbound_clicked' }
       }
     })
     return response?.outboundUrl
-  }, url)
+  }, appendKlookAffiliateId(url, klookAdId.value))
 }
 
 const klookTitle = 'Klook Activities, Tours & Deals | GoTravelNha'
@@ -277,34 +280,15 @@ const loadKlookWidgetScripts = () => {
 
   nextTick(() => {
     setTimeout(() => {
-      const widgets = document.querySelectorAll('.klk-aff-widget')
-      if (widgets.length === 0) return
-
-      widgets.forEach((widget) => {
-        if (widget.getAttribute('data-klook-bound') === '1') return
-
-        const widgetContainer = widget.closest('.klook-widget-container') ||
-          widget.closest('.klook-search-widget-container') ||
-          widget.parentElement
-        if (!widgetContainer) return
-
-        const existingScript = widgetContainer.querySelector('script[src*="fetch-iframe-init.js"]')
-        if (existingScript) {
-          widget.setAttribute('data-klook-bound', '1')
-          return
-        }
-
-        widget.setAttribute('data-klook-bound', '1')
-        const script = document.createElement('script')
-        script.type = 'text/javascript'
-        script.async = true
-        script.src = 'https://affiliate.klook.com/widget/fetch-iframe-init.js'
-        if (widget.nextSibling) {
-          widget.parentNode?.insertBefore(script, widget.nextSibling)
-        } else {
-          widget.parentNode?.appendChild(script)
-        }
-      })
+      const pending = [...document.querySelectorAll('.klk-aff-widget')].filter(
+        (widget) => widget.getAttribute('data-klook-bound') !== '1'
+      )
+      if (!pending.length) return
+      pending.forEach((widget) => widget.setAttribute('data-klook-bound', '1'))
+      const script = document.createElement('script')
+      script.async = true
+      script.src = 'https://affiliate.klook.com/widget/fetch-iframe-init.js'
+      document.body.appendChild(script)
     }, 200)
   })
 }

@@ -3,7 +3,7 @@
  * Adds affiliate tracking parameters to URLs for commission tracking
  */
 
-import { unwrapKlookAffiliateRedirectUrl } from '~/utils/unwrapKlookAffiliateRedirect'
+import { unwrapKlookAffiliateRedirectUrl } from '../../utils/unwrapKlookAffiliateRedirect'
 
 /**
  * Add Trip.com affiliate tracking to a URL

@@ -78,6 +78,27 @@
         <NuxtLink to="/planner" class="text-sea underline-offset-2 hover:underline">AI Travel Agent</NuxtLink>
       </div>
     </section>
+
+    <section class="rounded-2xl border border-line bg-white px-5 py-5 sm:px-6">
+      <p class="text-xs font-semibold uppercase tracking-wide text-sea">Our products</p>
+      <h2 class="mt-1 font-display text-xl text-ink">FamilyHub</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink/75">
+        For families with kids ages 5–12. Daily routines return each morning, afternoon, and evening. Kids earn stars and request rewards. Parents approve before those stars are spent. Everyone shares one family calendar. It works on phone, tablet, and web, with no ads.
+      </p>
+      <a
+        :href="familyHubUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg bg-ink px-3.5 text-sm font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+        @click="track('familyhub_promo_clicked', { placement: 'explore_home' })"
+      >
+        Open FamilyHub
+        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
+        </svg>
+        <span class="sr-only">opens in a new tab</span>
+      </a>
+    </section>
   </div>
 </template>
 
@@ -87,12 +108,15 @@ import DealHubCard from '~/components/deals/DealHubCard.vue'
 import type { DealPageTemplate } from '~/types/deal-template'
 import { inferOgImageMime, resolveAbsoluteOgImage } from '~/utils/socialPreview'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
+import { FAMILY_HUB_URL } from '~/utils/family-hub'
 
 definePageMeta({
   layout: 'default'
 })
 
 const siteOrigin = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
+const familyHubUrl = FAMILY_HUB_URL
+const { track } = useFunnel()
 
 const allowedBuiltinSlugs = new Set(['flights', 'hotels', 'attractions'])
 

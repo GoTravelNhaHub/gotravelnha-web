@@ -39,6 +39,8 @@ export interface LiveActivity {
   href: string | null
   /** Partner offer, opened through /api/affiliate/click */
   offerId: string | null
+  /** Verified https partner URL used only if click tracking fails. Not a price. */
+  partnerUrl?: string | null
   provider: string | null
   checkedAt: string | null
   /** Available and checked by the supplier recently enough to show price and booking links */

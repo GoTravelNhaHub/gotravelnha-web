@@ -32,13 +32,14 @@
           See tickets
         </NuxtLink>
         <button
-          v-else-if="activity.offerId"
+          v-else-if="activity.verified && activity.offerId"
           type="button"
           class="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-ink px-3 py-2 text-sm font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
           @click="openOffer(activity)"
         >
-          Check live price
+          Check on {{ activity.provider === 'klook' ? 'Klook' : 'the partner' }}
         </button>
+        <p v-else-if="activity.offerId" class="mt-2 text-sm text-ink/70">Not a confirmed booking.</p>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { addKlookAffiliateTracking, addTripAffiliateTracking } from '~/server/utils/affiliate-tracking'
+import { addKlookAffiliateTracking, addTripAffiliateTracking } from '../utils/affiliate-tracking'
 
 export type AffiliateProvider = 'trip' | 'klook' | string
 

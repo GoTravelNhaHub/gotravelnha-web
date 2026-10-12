@@ -146,8 +146,7 @@
 <script setup lang="ts">
 import KlookIcon from '~/components/KlookIcon.vue'
 import type { DealComparisonOption, DealPageTemplate } from '~/types/deal-template'
-import { useActivityTracker } from '~/composables/useActivityTracker'
-import { appendKlookAffiliateId, appendTripAffiliateIds } from '~/utils/affiliate-links'
+import { appendKlookAffiliateId, appendTripAffiliateIds, openTrackedOutbound } from '~/utils/affiliate-links'
 import { unwrapKlookAffiliateRedirectUrl } from '~/utils/unwrapKlookAffiliateRedirect'
 
 const props = defineProps<{
@@ -241,8 +240,6 @@ const showLastUpdatedPill = computed(() => {
   return Boolean(props.template.lastUpdatedLabel?.trim())
 })
 
-const { trackClick } = useActivityTracker()
-
 const getSessionId = () => {
   if (typeof window === 'undefined') return 'anonymous'
   const existing = localStorage.getItem('activity_session_id')
@@ -261,11 +258,6 @@ const onPartnerTap = (ev: MouseEvent, option: DealComparisonOption) => {
   const ctaLabel = partnerCtaLabel(option)
 
   if (isIOSSafari()) {
-    trackClick('deal_template_affiliate_click', {
-      provider: option.provider,
-      placementKey,
-      slug: props.template.slug
-    })
     try {
       const sessionId = getSessionId()
       const payload = {
@@ -300,9 +292,9 @@ const onPartnerTap = (ev: MouseEvent, option: DealComparisonOption) => {
   void openAffiliate(option.provider, option.baseUrl, ctaLabel, placementKey)
 }
 
-const openAffiliate = async (provider: string, baseUrl: string, label: string, placementKey: string) => {
-  try {
-    const sessionId = getSessionId()
+const openAffiliate = (provider: string, baseUrl: string, label: string, placementKey: string) => {
+  const sessionId = getSessionId()
+  void openTrackedOutbound(async () => {
     const response: any = await $fetch('/api/affiliate/click', {
       method: 'POST',
       body: {
@@ -313,30 +305,13 @@ const openAffiliate = async (provider: string, baseUrl: string, label: string, p
         sessionId,
         metadata: {
           templateSlug: props.template.slug,
-          ctaLabel: label
+          ctaLabel: label,
+          funnel: 'affiliate_outbound_clicked'
         }
       }
     })
-
-    trackClick('deal_template_affiliate_click', {
-      provider,
-      placementKey,
-      slug: props.template.slug
-    })
-    const outboundUrl = response?.outboundUrl || baseUrl
-    if (shouldUseSameTabAfterAsyncClick()) {
-      window.location.assign(outboundUrl)
-    } else {
-      window.open(outboundUrl, '_blank', 'noopener,noreferrer')
-    }
-  } catch (error) {
-    console.error('Failed to track template affiliate click:', error)
-    if (shouldUseSameTabAfterAsyncClick()) {
-      window.location.assign(baseUrl)
-    } else {
-      window.open(baseUrl, '_blank', 'noopener,noreferrer')
-    }
-  }
+    return response?.outboundUrl
+  }, baseUrl)
 }
 </script>
 

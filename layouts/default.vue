@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthState } from '~/composables/useAuthState';
 import Logo from '~/components/Logo.vue';
+import { FAMILY_HUB_URL } from '~/utils/family-hub';
 
 const isMenuOpen = ref(false);
 const isProfileDropdownOpen = ref(false);
@@ -47,6 +48,14 @@ const navItems = computed(() => {
 const footerPlaces = [
   { to: '/destinations', label: 'Destinations' }
 ]
+
+const familyHubUrl = FAMILY_HUB_URL
+const { track } = useFunnel()
+
+const trackFamilyHub = (placement) => {
+  track('familyhub_nav_clicked', { placement })
+  isMenuOpen.value = false
+}
 
 const navigate = (path) => {
   router.push(path);
@@ -141,6 +150,21 @@ onBeforeUnmount(() => {
                 {{ item.label }}
                 <span v-if="item.badge" class="rounded-full bg-sea px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide text-white">{{ item.badge }}</span>
               </NuxtLink>
+            </li>
+            <li>
+              <a
+                :href="familyHubUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-lg px-3 text-sm font-semibold text-ink/70 hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                @click="trackFamilyHub('header')"
+              >
+                FamilyHub
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
+                </svg>
+                <span class="sr-only">opens in a new tab</span>
+              </a>
             </li>
           </ul>
         </div>
@@ -286,6 +310,21 @@ onBeforeUnmount(() => {
                     <span v-if="item.badge" class="rounded-full bg-sea px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide text-white">{{ item.badge }}</span>
                   </NuxtLink>
                 </li>
+                <li class="mt-2 border-t border-line pt-2">
+                  <a
+                    :href="familyHubUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex min-h-14 items-center gap-2 rounded-2xl px-4 text-base font-semibold text-ink/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                    @click="trackFamilyHub('menu')"
+                  >
+                    FamilyHub
+                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
+                    </svg>
+                    <span class="sr-only">opens in a new tab</span>
+                  </a>
+                </li>
               </ul>
             </nav>
 
@@ -330,6 +369,22 @@ onBeforeUnmount(() => {
           <NuxtLink v-for="item in navItems" :key="item.to" :to="item.to" class="text-white/90 hover:text-white">{{ item.footerLabel || item.label }}</NuxtLink>
           <NuxtLink v-for="item in footerPlaces" :key="item.to" :to="item.to" class="text-white/90 hover:text-white">{{ item.label }}</NuxtLink>
         </nav>
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-white">Our products</h3>
+          <a
+            :href="familyHubUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-white/90 hover:text-white"
+            @click="trackFamilyHub('footer')"
+          >
+            FamilyHub
+            <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
+            </svg>
+            <span class="sr-only">opens in a new tab</span>
+          </a>
+        </div>
 
         <div class="flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-4 text-center md:flex-row md:text-left">
           <p class="text-xs text-white/60 sm:text-sm">

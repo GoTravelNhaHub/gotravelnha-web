@@ -253,6 +253,7 @@ const PENDING_KEY = 'gotravelnha_pending_trip'
 
 const route = useRoute()
 const router = useRouter()
+const { track } = useFunnel()
 const { isAuthenticated } = useAuthState()
 const tripsTo = computed(() => (isAuthenticated.value ? '/trips' : '/login?redirect=/trips'))
 
@@ -557,6 +558,12 @@ const generate = async () => {
     })
     result.value = response
     localStorage.setItem(PENDING_KEY, response.generationId)
+    track('ai_itinerary_generated', {
+      provider: 'planner',
+      placement: 'trip_planner',
+      destination: response.request.destination,
+      searchType: 'itinerary'
+    })
     const days = response.itinerary.days.length
     pushNote('assistant', `Here is a ${days}-day plan for ${response.request.destination}. Prices stay with the partner that checked them.`)
   } catch (err: any) {

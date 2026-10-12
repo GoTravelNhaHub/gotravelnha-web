@@ -4,6 +4,11 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     modules: ['@nuxtjs/tailwindcss'],
     css: ['@/assets/css/tailwind.css'],
+    typescript: {
+      tsConfig: {
+        exclude: ['../scripts', '../prisma/migrations']
+      }
+    },
     nitro: {
       externals: {
         external: ['playwright']
@@ -49,6 +54,9 @@ export default defineNuxtConfig({
             { name: 'twitter:site', content: '@GoTravelNha' }
           ],
           link: [
+            { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+            { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+            { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,560;8..60,650&display=swap' },
             { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
             { rel: 'icon', type: 'image/png', href: '/favicon.svg' },
             { rel: 'apple-touch-icon', href: '/apple-touch-icon.svg' }
@@ -80,9 +88,11 @@ export default defineNuxtConfig({
         }
     },
     routeRules: {
-      '/': { redirect: { to: '/deals', statusCode: 301 } },
-      '/deals': { swr: 3600 },
-      '/deals/**': { swr: 3600 },
+      '/': { redirect: { to: '/explore', statusCode: 301 } },
+      '/deals': { redirect: { to: '/explore', statusCode: 301 } },
+      '/deals/**': { redirect: { to: '/explore/**', statusCode: 301 } },
+      '/explore': { swr: 3600 },
+      '/explore/**': { swr: 3600 },
       '/attractionsg': { swr: 3600 },
       '/attractionsg/**': { swr: 1800 },
       '/destinations': { swr: 3600 },
@@ -135,7 +145,7 @@ export default defineNuxtConfig({
         TRIP_BASE_URL: process.env.TRIP_BASE_URL || 'https://www.trip.com',
         KLOOK_AD_ID: process.env.KLOOK_AD_ID || '1041352',
         KLOOK_SEARCH_WIDGET_ID: process.env.KLOOK_SEARCH_WIDGET_ID || '89020',
-        /** Full Klook affiliate redirect URLs for hub pages (`/deals/flights`, `/deals/hotels`, `/deals/attractions`) */
+        /** Full Klook affiliate redirect URLs for hub pages (`/explore/flights`, `/explore/hotels`, `/explore/attractions`) */
         KLOOK_AFFILIATE_FLIGHT_REDIRECT_URL: process.env.KLOOK_AFFILIATE_FLIGHT_REDIRECT_URL,
         KLOOK_AFFILIATE_HOTEL_REDIRECT_URL: process.env.KLOOK_AFFILIATE_HOTEL_REDIRECT_URL,
         KLOOK_AFFILIATE_ATTRACTION_REDIRECT_URL: process.env.KLOOK_AFFILIATE_ATTRACTION_REDIRECT_URL,

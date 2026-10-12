@@ -204,7 +204,11 @@ definePageMeta({
 })
 
 const router = useRouter()
+const route = useRoute()
 const { setUser } = useAuthState()
+const { trackReferralClick } = useReferral()
+const rawReferral = route.query.ref
+const referralCode = typeof rawReferral === 'string' ? rawReferral : ''
 
 const registerForm = ref({
   firstName: '',

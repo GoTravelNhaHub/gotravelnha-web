@@ -123,7 +123,7 @@
                     type="checkbox"
                     class="mt-1 h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                     :checked="selectedIds.has(event.id)"
-                    @change="toggleSelect(event.id, ($event.target as HTMLInputElement | null)?.checked)"
+                    @change="toggleSelect(event.id, ($event.target as HTMLInputElement | null)?.checked === true)"
                   />
                   <div>
                     <h2 class="text-xl font-semibold text-gray-900">{{ event.title }}</h2>
@@ -395,7 +395,8 @@ const formatCurrency = (value: number | string | null | undefined) => {
 const getAffiliateLink = (url: string | null | undefined): string => {
   if (!url) return ''
   // Append Klook affiliate ID when displaying to users
-  const affiliateId = runtimeConfig.public?.KLOOK_AD_ID || runtimeConfig.public?.KLOOK_AFFILIATE_ID
+  const rawAffiliateId = runtimeConfig.public?.KLOOK_AD_ID || runtimeConfig.public?.KLOOK_AFFILIATE_ID
+  const affiliateId = typeof rawAffiliateId === 'string' ? rawAffiliateId : undefined
   return appendKlookAffiliateId(url, affiliateId)
 }
 

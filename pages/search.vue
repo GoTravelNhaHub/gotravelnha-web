@@ -227,8 +227,8 @@ function selectDestination(destination: string) {
   syncQuery()
 }
 
-function selectEntity(slug: string | null) {
-  selectedEntitySlug.value = slug
+function selectEntity(slug: string | null | undefined) {
+  selectedEntitySlug.value = slug || null
   syncQuery()
 }
 

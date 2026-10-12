@@ -8,7 +8,19 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Source Sans 3"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Source Serif 4"', 'Georgia', 'ui-serif', 'serif'],
+      },
       colors: {
+        ink: '#0B1F33',
+        sea: {
+          DEFAULT: '#0E7C86',
+          50: '#E6F4F4',
+        },
+        sand: '#F6F3EE',
+        coral: '#E26D5A',
+        line: '#E4E0D8',
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',

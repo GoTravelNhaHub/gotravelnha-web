@@ -11,7 +11,15 @@ export async function launchBrowser(options: Record<string, unknown>) {
 
   const specifier = 'playwright'
   const mod = (await import(/* @vite-ignore */ specifier)) as {
-    chromium: { launch: (opts: Record<string, unknown>) => Promise<{ close: () => Promise<void> }> }
+    chromium: {
+      launch: (opts: Record<string, unknown>) => Promise<{
+        close: () => Promise<void>
+        newContext: (opts?: Record<string, unknown>) => Promise<{
+          newPage: () => Promise<any>
+          close: () => Promise<void>
+        }>
+      }>
+    }
   }
   return mod.chromium.launch(options)
 }

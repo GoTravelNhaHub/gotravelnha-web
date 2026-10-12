@@ -294,7 +294,7 @@ const loadRecentBookings = async () => {
   }
 }
 
-const favoriteDeals = ref([])
+const favoriteDeals = ref<Array<{ id: string; title: string; description: string; price: string }>>([])
 
 const navigateToBookings = () => navigateTo('/bookings')
 

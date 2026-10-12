@@ -52,7 +52,7 @@
           </label>
           <label class="block">
             <span class="text-sm font-medium text-gray-700">Birth date</span>
-            <input v-model="draft.birthDate" type="date" :max="today" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg" />
+            <input v-model="draft.birthDate" type="date" :max="today" class="mt-1 w-full min-w-0 max-w-full h-12 px-3 border border-gray-300 rounded-lg text-base" />
           </label>
         </div>
         <label class="block">

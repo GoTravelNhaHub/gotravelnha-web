@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
+import type SMTPTransport from 'nodemailer/lib/smtp-transport'
+import type { SecureVersion } from 'tls'
 
 let transporter: Transporter | null = null
 
@@ -20,7 +22,7 @@ const getTransporter = (): Transporter | null => {
   const explicitSecure = allowSecure || port === 465
 
   if (!transporter) {
-    transporter = nodemailer.createTransport({
+    const smtpOptions: SMTPTransport.Options = {
       host: config.SMTP_HOST || 'smtp.gmail.com',
       port,
       secure: explicitSecure,
@@ -31,10 +33,13 @@ const getTransporter = (): Transporter | null => {
       },
       tls: {
         rejectUnauthorized: true,
-        minVersion: config.SMTP_TLS_MIN_VERSION || undefined,
-        ciphers: config.SMTP_TLS_CIPHERS || undefined
+        minVersion: typeof config.SMTP_TLS_MIN_VERSION === 'string'
+          ? config.SMTP_TLS_MIN_VERSION as SecureVersion
+          : undefined,
+        ciphers: typeof config.SMTP_TLS_CIPHERS === 'string' ? config.SMTP_TLS_CIPHERS : undefined
       }
-    })
+    }
+    transporter = nodemailer.createTransport(smtpOptions)
   }
 
   return transporter

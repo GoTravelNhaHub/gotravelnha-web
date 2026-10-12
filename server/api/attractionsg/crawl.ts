@@ -40,6 +40,7 @@ interface EventData {
   ageRestriction?: string
   cancellation?: string
   lastUpdated: string
+  isPublished?: boolean
   gallery?: string[]
   options?: TicketOption[]
 }

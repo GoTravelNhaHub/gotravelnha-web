@@ -535,7 +535,7 @@ const pageTitle = computed(() => {
   return 'Admin Portal'
 })
 
-const isActiveRoute = (path) => {
+const isActiveRoute = (path: string) => {
   if (path === '/admin') {
     return route.path === '/admin' || route.path === '/admin/'
   }

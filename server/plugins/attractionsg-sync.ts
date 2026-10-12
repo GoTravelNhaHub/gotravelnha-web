@@ -1,4 +1,3 @@
-import { defineNitroPlugin, useRuntimeConfig } from '#imports'
 import { runAttractionsgCrawl } from '~/server/api/attractionsg/crawl'
 
 export default defineNitroPlugin((nitroApp) => {

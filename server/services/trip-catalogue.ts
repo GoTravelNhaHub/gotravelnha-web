@@ -19,6 +19,8 @@ export interface CatalogueItem {
 
 const MAX_ATTRACTIONS = 80
 const MAX_OFFERS = 60
+// A price or booking link older than this is treated as unchecked
+const VERIFIED_WITHIN_DAYS = 7
 
 const isSingapore = (destination: string) => /singapore|sentosa|\bsg\b/i.test(destination)
 
@@ -124,6 +126,7 @@ export async function resolveActivities(ids: string[]): Promise<Record<string, L
             publicPrice: true,
             priceAmount: true,
             priceText: true,
+            location: true,
             lastSeenAt: true
           }
         })
@@ -138,45 +141,52 @@ export async function resolveActivities(ids: string[]): Promise<Record<string, L
 
   const result: Record<string, LiveActivity> = {}
   const now = new Date()
+  const checkedSince = now.getTime() - VERIFIED_WITHIN_DAYS * 86_400_000
 
   for (const event of attractions) {
     const price = event.publicPrice ?? event.priceAmount
+    const available = event.isActive && event.isPublished
     result[`sg:${event.id}`] = {
       id: `sg:${event.id}`,
       kind: 'attraction',
       title: event.title,
       image: event.image,
       category: event.category,
-      available: event.isActive && event.isPublished,
+      available,
+      verified: available && event.lastSeenAt.getTime() >= checkedSince,
       priceFrom: typeof price === 'number' && price > 0 ? price : null,
       currency: 'SGD',
       priceText: event.priceText,
       href: `/attractionsg/${event.slug || event.id}`,
       offerId: null,
       provider: 'attractionsg',
-      checkedAt: event.lastSeenAt.toISOString()
+      checkedAt: event.lastSeenAt.toISOString(),
+      location: event.location
     }
   }
 
   for (const offer of offers) {
+    const available =
+      offer.isActive &&
+      offer.availabilityStatus === 'available' &&
+      offer.entity.status === 'active' &&
+      (!offer.expiresAt || offer.expiresAt > now)
     result[`offer:${offer.id}`] = {
       id: `offer:${offer.id}`,
       kind: 'offer',
       title: offer.entity.title,
       image: metadataImage(offer.metadata),
       category: offer.entity.category,
-      available:
-        offer.isActive &&
-        offer.availabilityStatus === 'available' &&
-        offer.entity.status === 'active' &&
-        (!offer.expiresAt || offer.expiresAt > now),
+      available,
+      verified: available && !!offer.lastVerifiedAt && offer.lastVerifiedAt.getTime() >= checkedSince,
       priceFrom: typeof offer.priceAmount === 'number' && offer.priceAmount > 0 ? offer.priceAmount : null,
       currency: offer.currency || 'SGD',
       priceText: offer.priceText,
       href: null,
       offerId: offer.id,
       provider: offer.provider,
-      checkedAt: (offer.lastVerifiedAt ?? offer.updatedAt).toISOString()
+      checkedAt: (offer.lastVerifiedAt ?? offer.updatedAt).toISOString(),
+      location: offer.entity.location
     }
   }
 
@@ -189,13 +199,15 @@ export async function resolveActivities(ids: string[]): Promise<Record<string, L
         image: null,
         category: null,
         available: false,
+        verified: false,
         priceFrom: null,
         currency: 'SGD',
         priceText: null,
         href: null,
         offerId: null,
         provider: null,
-        checkedAt: null
+        checkedAt: null,
+        location: null
       }
     }
   }

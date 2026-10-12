@@ -60,7 +60,10 @@ export const useReferral = () => {
   const getMyReferralCode = async (userId: string): Promise<string | null> => {
     try {
       const response = await $fetch(`/api/referrals/my-code?userId=${userId}`)
-      return response.code || null
+      if (response && typeof response === 'object' && 'code' in response && typeof response.code === 'string') {
+        return response.code
+      }
+      return null
     } catch (error) {
       console.error('Error fetching referral code:', error)
       return null

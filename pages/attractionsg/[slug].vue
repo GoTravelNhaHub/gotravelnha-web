@@ -203,6 +203,22 @@
                 </span>
               </div>
 
+              <div v-if="partnerLinks.length" class="rounded-2xl border border-line bg-sand px-4 py-4 sm:px-5">
+                <h2 class="font-display text-xl text-ink">Also available with a partner</h2>
+                <p class="mt-1 text-sm text-ink/70">The partner shows the price and availability. Paying here is unchanged.</p>
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <button
+                    v-for="partner in partnerLinks"
+                    :key="partner.slug + partner.provider"
+                    type="button"
+                    class="inline-flex min-h-11 items-center rounded-xl bg-ink px-4 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                    @click="openPartner(partner)"
+                  >
+                    {{ partner.provider === 'klook' ? 'Book on Klook' : 'Book on Trip.com' }}
+                  </button>
+                </div>
+              </div>
+
               <div class="space-y-2 sm:space-y-3">
                 <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-tight">{{ event.title }}</h1>
                 <p
@@ -667,6 +683,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import type { Ref } from 'vue'
+import { partnersForDirectSlug, type CuratedPartnerAttraction } from '~/utils/curated-partner-attractions'
+import { openTrackedOutbound } from '~/utils/affiliate-links'
 import { useRouter } from 'vue-router'
 import BookingRequestForm from '~/components/BookingRequestForm.vue'
 
@@ -674,6 +692,25 @@ const route = useRoute()
 const router = useRouter()
 const loading = ref<boolean>(true)
 const event = ref<Record<string, any> | null>(null)
+const partnerLinks = computed(() => partnersForDirectSlug(event.value?.slug || event.value?.id))
+
+const openPartner = (partner: CuratedPartnerAttraction) => {
+  const sessionId = localStorage.getItem('activity_session_id') || `attr-${Date.now().toString(36)}`
+  if (!localStorage.getItem('activity_session_id')) localStorage.setItem('activity_session_id', sessionId)
+  openTrackedOutbound(async () => {
+    const response = await $fetch<{ outboundUrl?: string }>('/api/affiliate/click', {
+      method: 'POST',
+      body: {
+        provider: partner.provider,
+        baseUrl: partner.url,
+        placementKey: 'attraction_detail',
+        pagePath: route.path,
+        sessionId
+      }
+    })
+    return response?.outboundUrl
+  }, partner.url)
+}
 const notFound = ref<boolean>(false)
 
 // Smart back navigation based on referrer
@@ -774,7 +811,15 @@ watch(
 const loadCheckoutResult = async (sessionId: string, attempt = 0) => {
   checkoutLookupPending.value = true
   try {
-    checkoutResult.value = await $fetch('/api/checkout/status', { query: { session_id: sessionId } })
+    const fetchCheckout = $fetch as (
+      url: string,
+      opts: { query: { session_id: string } }
+    ) => Promise<{
+      paymentConfirmed: boolean
+      email: string | null
+      booking: { reference: string | null; state: string }
+    }>
+    checkoutResult.value = await fetchCheckout('/api/checkout/status', { query: { session_id: sessionId } })
     if (!checkoutResult.value?.paymentConfirmed && attempt < 3) {
       setTimeout(() => loadCheckoutResult(sessionId, attempt + 1), 3000)
       return
@@ -825,9 +870,11 @@ const shouldDisplayOptionCode = (option: any) => {
 const initialSlugParam = Array.isArray(route.params.slug) ? route.params.slug[0] : route.params.slug
 const currentSlug = ref(initialSlugParam)
 
+const eventUrl = `/api/attractionsg/event/${initialSlugParam}`
+const fetchEvent = $fetch as (url: string) => Promise<{ event?: Record<string, any> }>
 const { data: initialEventData, error: eventError } = await useAsyncData<{ event?: Record<string, any> }>(
   `attractionsg-event-${initialSlugParam}`,
-  () => $fetch(`/api/attractionsg/event/${initialSlugParam}`)
+  () => fetchEvent(eventUrl)
 )
 
 const eventStatus = (eventError.value as { statusCode?: number } | null)?.statusCode

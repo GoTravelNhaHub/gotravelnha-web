@@ -7,6 +7,7 @@ import Logo from '~/components/Logo.vue';
 const isMenuOpen = ref(false);
 const isProfileDropdownOpen = ref(false);
 const route = useRoute();
+const wide = computed(() => route.meta.wide === true);
 const router = useRouter();
 
 // Auth state
@@ -28,8 +29,24 @@ const showBestDealsNav = computed(() => isFeatureEnabled(runtimeConfig.public?.e
 const showCompareNav = computed(() => isFeatureEnabled(runtimeConfig.public?.enableCompareNav));
 
 const isActive = (path) => {
-  return route.path === path ? 'active-link' : '';
-};
+  if (route.path === path || route.path.startsWith(`${path}/`)) return 'active-link'
+  return ''
+}
+
+const navItems = computed(() => {
+  const items = [
+    { to: '/explore', label: 'Explore' },
+    { to: '/trip', label: 'Trip.com' },
+    { to: '/klook', label: 'Klook' },
+    { to: '/planner', label: 'AI Travel Agent', footerLabel: 'Planner', badge: 'New' }
+  ]
+  if (showCompareNav.value) items.push({ to: '/compare', label: 'Compare' })
+  return items
+})
+
+const footerPlaces = [
+  { to: '/destinations', label: 'Destinations' }
+]
 
 const navigate = (path) => {
   router.push(path);
@@ -83,10 +100,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen bg-white-50">
+  <div class="flex min-h-screen flex-col text-ink" :class="wide ? 'bg-[#F6F9FC]' : 'bg-sand'">
     <!-- Sticky Top Nav -->
-    <header class="fixed top-0 left-0 w-full bg-white text-slate-900 z-50 shadow-sm border-b border-slate-200">
-      <nav class="container mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4 min-h-[70px] sm:min-h-[76px]">
+    <header class="fixed top-0 left-0 w-full bg-white text-ink z-50 border-b border-line">
+      <nav
+        class="mx-auto flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8"
+        :class="wide ? 'max-w-none' : 'container'"
+      >
         <!-- Left Side: Logo + Hamburger -->
         <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <!-- Toggle Button for Mobile -->
@@ -104,88 +124,27 @@ onBeforeUnmount(() => {
           <NuxtLink 
             to="/" 
             @click="navigate('/')" 
-            class="flex items-center gap-2 sm:gap-2.5 font-bold text-lg sm:text-xl text-slate-900 hover:text-emerald-600 transition-colors group touch-manipulation"
+            class="flex items-center gap-2 font-semibold text-base sm:text-lg text-ink touch-manipulation min-w-0"
           >
-            <div class="relative">
-              <Logo :size="'32'" class="sm:w-9 sm:h-9" />
-              <div class="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            </div>
-            <span class="hidden xs:inline bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent group-hover:from-emerald-600 group-hover:to-teal-600 transition-all">GoTravelNha</span>
+            <Logo :size="'32'" class="shrink-0" />
+            <span class="truncate">GoTravelNha</span>
           </NuxtLink>
+          <ul class="ml-6 hidden min-w-0 flex-row items-center gap-0.5 lg:flex">
+            <li v-for="item in navItems" :key="item.to">
+              <NuxtLink
+                :to="item.to"
+                @click="navigate(item.to)"
+                :class="['nav-link', isActive(item.to)]"
+                class="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-semibold text-ink/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+              >
+                <KlookIcon v-if="item.to === '/klook'" :size="16" />
+                {{ item.label }}
+                <span v-if="item.badge" class="rounded-full bg-sea px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide text-white">{{ item.badge }}</span>
+              </NuxtLink>
+            </li>
+          </ul>
         </div>
 
-        <!-- Center: Navigation Menu (Desktop Only) -->
-        <ul class="hidden lg:flex flex-row gap-1 items-center">
-          <li>
-            <NuxtLink 
-              to="/deals" 
-              @click="navigate('/deals')" 
-              :class="['nav-link', isActive('/deals')]"
-              class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-50 to-red-50 hover:from-orange-100 hover:to-red-100 transition-all group relative text-sm font-semibold text-orange-700 hover:text-orange-800 border border-orange-200/50"
-            >
-              <div class="inline-flex items-center gap-1.5">
-                <span class="font-bold">Travel Comparison Hub</span>
-              </div>
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink 
-              to="/klook" 
-              @click="navigate('/klook')" 
-              :class="['nav-link', isActive('/klook')]"
-              class="px-4 py-2.5 rounded-xl hover:bg-slate-100 transition-all flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-emerald-600"
-            >
-              <KlookIcon :size="18" />
-              Klook
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink 
-              to="/trip" 
-              @click="navigate('/trip')" 
-              :class="['nav-link', isActive('/trip')]"
-              class="px-4 py-2.5 rounded-xl hover:bg-slate-100 transition-all text-sm font-semibold text-slate-700 hover:text-emerald-600"
-            >
-              <span class="mr-1.5">🏨</span>
-              Trip.com
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink 
-              to="/planner" 
-              @click="navigate('/planner')" 
-              :class="['nav-link', isActive('/planner')]"
-              class="px-4 py-2.5 rounded-xl hover:bg-slate-100 transition-all text-sm font-semibold text-slate-700 hover:text-emerald-600"
-            >
-              <span class="mr-1.5">🧭</span>
-              Trip Planner
-            </NuxtLink>
-          </li>
-          <li v-if="showCompareNav">
-            <NuxtLink 
-              to="/compare" 
-              @click="navigate('/compare')" 
-              :class="['nav-link', isActive('/compare')]"
-              class="px-4 py-2.5 rounded-xl hover:bg-slate-100 transition-all text-sm font-semibold text-slate-700 hover:text-emerald-600"
-            >
-              <span class="mr-1.5">🔍</span>
-              Compare
-            </NuxtLink>
-          </li>
-          <li v-if="false">
-            <NuxtLink 
-              to="/contact" 
-              @click="navigate('/contact')" 
-              :class="['nav-link', isActive('/contact')]"
-              class="px-4 py-2.5 rounded-xl hover:bg-slate-100 transition-all text-sm font-semibold text-slate-700 hover:text-emerald-600"
-            >
-              <span class="mr-1.5">📧</span>
-              Contact
-            </NuxtLink>
-          </li>
-        </ul>
-
-        <!-- Right Side: Login/Avatar (Always Visible) -->
         <ClientOnly>
           <div class="flex items-center gap-3 flex-shrink-0">
             <!-- Login or Profile Dropdown -->
@@ -193,12 +152,9 @@ onBeforeUnmount(() => {
               <NuxtLink 
                 to="/login" 
                 @click="navigate('/login')" 
-                :class="['nav-link', isActive('/login')]"
-                class="px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 active:scale-95 transition-all font-semibold text-sm sm:text-base text-white shadow-md hover:shadow-lg min-h-[44px] flex items-center justify-center touch-manipulation"
+                class="inline-flex h-10 items-center justify-center rounded-lg bg-ink px-3.5 text-sm font-semibold leading-none text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
               >
-                <span class="mr-1.5">🔐</span>
-                <span class="hidden sm:inline">Login</span>
-                <span class="sm:hidden">Login</span>
+                Log in
               </NuxtLink>
             </div>
             
@@ -206,9 +162,9 @@ onBeforeUnmount(() => {
             <div v-else class="relative">
             <button
               @click="toggleProfileDropdown"
-              class="flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2 rounded-xl hover:bg-slate-100 active:bg-slate-200 transition-colors border border-slate-200/50 touch-manipulation min-h-[44px]"
+              class="flex h-10 items-center gap-2 rounded-lg border border-line px-1.5 transition-colors hover:bg-sand active:bg-sand sm:gap-2.5 sm:px-2"
             >
-              <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-sea text-sm font-semibold text-white">
                 {{ user.firstName ? user.firstName.charAt(0) : user.username.charAt(0) }}
               </div>
               <span class="hidden lg:block text-sm font-semibold text-slate-700">{{ user.firstName || user.username }}</span>
@@ -260,7 +216,7 @@ onBeforeUnmount(() => {
           
           <template #fallback>
             <div class="flex items-center gap-3 flex-shrink-0">
-              <div class="w-20 h-10 bg-gray-700 rounded-lg animate-pulse"></div>
+              <div class="h-10 w-16 animate-pulse rounded-lg bg-sand"></div>
             </div>
           </template>
         </ClientOnly>
@@ -299,7 +255,7 @@ onBeforeUnmount(() => {
             class="fixed left-0 top-0 bottom-0 w-[85vw] max-w-sm bg-white z-[70] lg:hidden shadow-2xl flex flex-col overflow-hidden"
           >
             <!-- Drawer Header -->
-            <div class="flex items-center justify-between p-5 border-b border-slate-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+            <div class="flex items-center justify-between border-b border-line bg-sand p-5">
               <div class="flex items-center gap-3">
                 <Logo :size="'32'" />
                 <span class="font-bold text-lg text-slate-900">GoTravelNha</span>
@@ -317,99 +273,17 @@ onBeforeUnmount(() => {
 
             <!-- Navigation Items -->
             <nav class="flex-1 overflow-y-auto py-4 px-4">
-              <ul class="flex flex-col gap-2">
-                <li>
-                  <NuxtLink 
-                    to="/" 
-                    @click="navigate('/')" 
-                    :class="['nav-link', isActive('/')]"
-                    class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-700 font-semibold text-base touch-manipulation min-h-[56px]"
+              <ul class="flex flex-col gap-1">
+                <li v-for="item in navItems" :key="item.to">
+                  <NuxtLink
+                    :to="item.to"
+                    @click="navigate(item.to)"
+                    :class="['nav-link', isActive(item.to)]"
+                    class="flex min-h-14 items-center gap-3 rounded-2xl px-4 text-base font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
                   >
-                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-50">
-                      <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                      </svg>
-                    </div>
-                    <span>Home</span>
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink 
-                    to="/deals" 
-                    @click="navigate('/deals')" 
-                    :class="['nav-link', isActive('/deals')]"
-                    class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-gradient-to-r from-orange-50 to-red-50 hover:from-orange-100 hover:to-red-100 active:from-orange-200 active:to-red-200 transition-all border-2 border-orange-200/60 text-orange-700 font-bold text-base touch-manipulation min-h-[56px]"
-                  >
-                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-orange-100">
-                      <span class="text-sm font-black text-orange-700">Hub</span>
-                    </div>
-                    <span class="flex-1">Travel Comparison Hub</span>
-                    <span class="bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-full">!</span>
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink 
-                    to="/planner" 
-                    @click="navigate('/planner')" 
-                    :class="['nav-link', isActive('/planner')]"
-                    class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-700 font-semibold text-base touch-manipulation min-h-[56px]"
-                  >
-                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-50">
-                      <span class="text-lg">🧭</span>
-                    </div>
-                    <span>Family Trip Planner</span>
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink 
-                    to="/klook" 
-                    @click="navigate('/klook')" 
-                    :class="['nav-link', isActive('/klook')]"
-                    class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-700 font-semibold text-base touch-manipulation min-h-[56px]"
-                  >
-                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-orange-50">
-                      <KlookIcon :size="24" />
-                    </div>
-                    <span>Klook</span>
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink 
-                    to="/trip" 
-                    @click="navigate('/trip')" 
-                    :class="['nav-link', isActive('/trip')]"
-                    class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-700 font-semibold text-base touch-manipulation min-h-[56px]"
-                  >
-                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-50">
-                      <span class="text-2xl">🏨</span>
-                    </div>
-                    <span>Trip.com</span>
-                  </NuxtLink>
-                </li>
-                <li v-if="showCompareNav">
-                  <NuxtLink 
-                    to="/compare" 
-                    @click="navigate('/compare')" 
-                    :class="['nav-link', isActive('/compare')]"
-                    class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-700 font-semibold text-base touch-manipulation min-h-[56px]"
-                  >
-                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-purple-50">
-                      <span class="text-2xl">🔍</span>
-                    </div>
-                    <span>Compare</span>
-                  </NuxtLink>
-                </li>
-                <li v-if="false">
-                  <NuxtLink 
-                    to="/contact" 
-                    @click="navigate('/contact')" 
-                    :class="['nav-link', isActive('/contact')]"
-                    class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-700 font-semibold text-base touch-manipulation min-h-[56px]"
-                  >
-                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-sky-50">
-                      <span class="text-2xl">📧</span>
-                    </div>
-                    <span>Contact</span>
+                    <KlookIcon v-if="item.to === '/klook'" :size="20" />
+                    {{ item.label }}
+                    <span v-if="item.badge" class="rounded-full bg-sea px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide text-white">{{ item.badge }}</span>
                   </NuxtLink>
                 </li>
               </ul>
@@ -433,34 +307,41 @@ onBeforeUnmount(() => {
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 pt-20 sm:pt-24 md:pt-28 container mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <main
+      class="w-full"
+      :class="wide ? 'px-0 pt-16 lg:h-dvh lg:overflow-hidden' : 'container mx-auto flex-1 px-4 pt-[5.5rem] sm:px-6 lg:px-8'"
+    >
       <NuxtPage />
     </main>
 
     <!-- Footer: always sticks to bottom -->
-    <footer class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-8 sm:py-10 w-full border-t border-slate-700/50 mt-12 sm:mt-16">
+    <footer class="w-full bg-ink py-8 text-white" :class="wide ? 'mt-0' : 'mt-12 sm:mt-16 sm:py-10'">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-2xl mb-6 sm:mb-8">
-          <div class="flex items-center gap-2.5 mb-3 sm:mb-4">
+        <div class="mb-6 max-w-2xl">
+          <div class="mb-3 flex items-center gap-2.5">
             <Logo :size="'28'" />
-            <h3 class="font-bold text-lg text-white">GoTravelNha</h3>
+            <h3 class="text-lg font-semibold text-white">GoTravelNha</h3>
           </div>
-          <p class="text-slate-300 text-sm mb-3 leading-relaxed">
-            Your one-stop destination for comparing and booking the best travel deals across multiple platforms.
+          <p class="text-sm leading-relaxed text-white/75">
+            Flight and hotel bookings open on Trip.com or Klook. Singapore attraction tickets that we sell are paid for here.
           </p>
         </div>
+        <nav aria-label="Footer" class="mb-6 flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
+          <NuxtLink v-for="item in navItems" :key="item.to" :to="item.to" class="text-white/90 hover:text-white">{{ item.footerLabel || item.label }}</NuxtLink>
+          <NuxtLink v-for="item in footerPlaces" :key="item.to" :to="item.to" class="text-white/90 hover:text-white">{{ item.label }}</NuxtLink>
+        </nav>
 
-        <div class="border-t border-slate-700/50 pt-4 sm:pt-6 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-center md:text-left">
-          <p class="text-slate-400 text-xs sm:text-sm">
+        <div class="flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-4 text-center md:flex-row md:text-left">
+          <p class="text-xs text-white/60 sm:text-sm">
             © {{ new Date().getFullYear() }} GoTravelNha. All rights reserved.
           </p>
-          <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 sm:gap-x-6 text-xs text-slate-500">
-            <NuxtLink to="/help" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Help</NuxtLink>
-            <NuxtLink to="/bookings" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">My bookings</NuxtLink>
-            <NuxtLink to="/contact" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Contact</NuxtLink>
-            <NuxtLink to="/refund-policy" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Refunds</NuxtLink>
-            <NuxtLink to="/privacy" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Privacy Policy</NuxtLink>
-            <NuxtLink to="/terms" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Terms of Service</NuxtLink>
+          <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-white/70">
+            <NuxtLink to="/help" class="py-1 hover:text-white">Help</NuxtLink>
+            <NuxtLink to="/bookings" class="py-1 hover:text-white">My bookings</NuxtLink>
+            <NuxtLink to="/contact" class="py-1 hover:text-white">Contact</NuxtLink>
+            <NuxtLink to="/refund-policy" class="py-1 hover:text-white">Refunds</NuxtLink>
+            <NuxtLink to="/privacy" class="py-1 hover:text-white">Privacy Policy</NuxtLink>
+            <NuxtLink to="/terms" class="py-1 hover:text-white">Terms of Service</NuxtLink>
           </div>
         </div>
       </div>
@@ -482,12 +363,11 @@ ul {
 }
 
 .nav-link.active-link {
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
-  color: #ffffff;
-  font-weight: bold;
+  background: #e6f4f4;
+  color: #0b1f33;
 }
 
 .nav-link:hover {
-  background-color: rgba(15, 23, 42, 0.05);
+  background-color: #f6f3ee;
 }
 </style>

@@ -49,7 +49,7 @@ export const useSEO = () => {
       script: options.structuredData ? [
         {
           type: 'application/ld+json',
-          children: JSON.stringify(options.structuredData)
+          innerHTML: JSON.stringify(options.structuredData)
         }
       ] : []
     })

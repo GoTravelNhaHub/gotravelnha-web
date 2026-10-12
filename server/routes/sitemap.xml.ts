@@ -2,10 +2,10 @@ import prisma from '~/server/utils/prisma'
 import { destinationSlug } from '~/utils/destination-slug'
 
 const staticPaths = [
-  '/deals',
-  '/deals/flights',
-  '/deals/hotels',
-  '/deals/attractions',
+  '/explore',
+  '/explore/flights',
+  '/explore/hotels',
+  '/explore/attractions',
   '/attractionsg',
   '/destinations',
   '/klook',
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
       if (slug) urls.set(`/attractionsg/${encodeURIComponent(slug)}`, item.updatedAt.toISOString())
     }
     for (const item of templates) {
-      if (item.slug) urls.set(`/deals/${encodeURIComponent(item.slug)}`, item.updatedAt.toISOString())
+      if (item.slug) urls.set(`/explore/${encodeURIComponent(item.slug)}`, item.updatedAt.toISOString())
     }
     for (const item of destinations) {
       if (!item.location) continue

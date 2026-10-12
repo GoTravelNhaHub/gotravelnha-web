@@ -1,6 +1,5 @@
 // server/api/trip/hotels.ts
 import { defineEventHandler, readBody } from 'h3'
-import fetch from 'node-fetch'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)

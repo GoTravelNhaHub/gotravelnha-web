@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
           entityId: offer.entityId,
           offerId: offer.id,
           placementKey: 'deals_grid',
-          pagePath: '/deals',
+          pagePath: '/explore',
           sessionId
         }
       })

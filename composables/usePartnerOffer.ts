@@ -23,7 +23,7 @@ export const usePartnerOffer = (placementKey: string) => {
         }
       })
       return response?.outboundUrl
-    }, '/deals')
+    }, '/explore')
   }
 
   const priceLabel = (activity: LiveActivity) =>

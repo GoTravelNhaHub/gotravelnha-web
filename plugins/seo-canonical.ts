@@ -6,7 +6,7 @@ export default defineNuxtPlugin(() => {
 
   useHead(() => {
     const path = route.path || '/'
-    const canonicalPath = path === '/' ? '/deals' : path
+    const canonicalPath = path === '/' ? '/explore' : path.replace(/^\/deals(?=\/|$)/, '/explore')
     const canonical = `${origin}${canonicalPath}`
     const noindex = privatePrefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))
 

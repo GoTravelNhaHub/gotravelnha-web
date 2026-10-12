@@ -1,233 +1,130 @@
 <template>
-  <div class="space-y-4 sm:space-y-6 lg:space-y-8 pb-8 sm:pb-12 lg:pb-16 bg-white min-h-screen">
-    <!-- Mobile Native Header (Mobile Only) -->
-    <section class="lg:hidden max-w-7xl mx-auto px-3 sm:px-4 pt-3 sm:pt-4">
-      <div class="mb-4">
-        <h1 class="text-2xl font-bold text-slate-900 mb-1">
-          SG Attractions
-        </h1>
-        <p class="text-base font-semibold text-slate-700">
-          Exclusive Tickets & Experiences
-        </p>
-      </div>
-    </section>
-
-    <!-- Desktop Hero Section (Hidden on Mobile) -->
-    <section class="hidden lg:block max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 lg:pt-1">
-      <div class="bg-gradient-to-br from-emerald-600 via-teal-600 to-sky-700 text-white p-10 md:p-16 rounded-[40px] shadow-2xl overflow-hidden relative">
-        <!-- Decorative background elements -->
-        <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48 blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full -ml-48 -mb-48 blur-3xl"></div>
-        
-        <div class="relative z-10">
-          <div class="flex items-center justify-center mb-6">
-            <div class="bg-yellow-400 rounded-full px-10 py-5 shadow-2xl">
-              <div class="flex items-center justify-center gap-1">
-                <span class="text-[#166534] font-black text-4xl md:text-5xl tracking-tight">SG</span>
-                <span class="text-[#1e3a8a] font-black text-4xl md:text-5xl tracking-tight">ATTRACTIONS</span>
-              </div>
-            </div>
-          </div>
-          
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 text-center drop-shadow-2xl">
-            Singapore Attractions & Tickets
-          </h1>
-          <p class="text-lg md:text-xl text-center text-emerald-100 max-w-2xl mx-auto mb-8 font-medium">
-            Exclusive tickets to Singapore's top attractions and experiences
+  <div class="space-y-8 pb-12 sm:space-y-10 sm:pb-16">
+    <section class="overflow-hidden rounded-3xl bg-ink text-white">
+      <div class="relative">
+        <img
+          src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          width="1200"
+          height="640"
+          class="absolute inset-0 h-full w-full object-cover"
+        />
+        <div class="absolute inset-0 bg-ink/75"></div>
+        <div class="relative px-5 py-8 sm:px-8 sm:py-12">
+          <p class="text-sm font-semibold text-white">Attractions and experiences</p>
+          <h1 class="mt-2 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Find a ticket, then choose where to book</h1>
+          <p class="mt-3 max-w-2xl text-base leading-relaxed text-white/90">
+            Singapore tickets sold here are paid on GoTravelNha. A partner link appears only after someone has checked it, and that price is shown on the partner site.
           </p>
-          
-          <!-- Feature highlights -->
-          <div class="flex flex-wrap justify-center gap-3 mb-8">
-            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/30">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span class="text-sm font-semibold">Prices checked with suppliers</span>
-            </div>
-            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/30">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span class="text-sm font-semibold">Instant E-tickets</span>
-            </div>
-            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/30">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span class="text-sm font-semibold">Email support</span>
-            </div>
-          </div>
         </div>
       </div>
     </section>
 
-    <!-- Tickets Grid -->
-    <section id="categories" class="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8">
-      <div class="mb-3 sm:mb-4 lg:mb-6">
-        <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-1 sm:mb-2">
-          <span class="sm:hidden">All Attractions</span>
-          <span class="hidden sm:inline">All Attractions & Tickets</span>
-        </h2>
-        <p class="text-xs sm:text-sm lg:text-base text-slate-600">Browse all available Singapore attractions and experiences</p>
+    <section id="categories" class="space-y-4">
+      <div>
+        <h2 class="font-display text-2xl text-ink sm:text-3xl">Browse</h2>
+        <p class="mt-1 text-sm text-ink/70">Filter by place or type. One card per attraction.</p>
       </div>
       
       <!-- Loading State -->
-      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 sm:gap-4 lg:gap-6">
-        <div v-for="n in 6" :key="n" class="bg-white rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border border-b sm:border-slate-200 border-slate-200 shadow-none sm:shadow-lg overflow-hidden animate-pulse">
-          <div class="h-44 sm:h-48 lg:h-52 bg-slate-300"></div>
-          <div class="p-3 sm:p-4 lg:p-5 space-y-3">
-            <div class="h-4 bg-slate-300 rounded w-3/4"></div>
-            <div class="h-4 bg-slate-300 rounded w-1/2"></div>
-            <div class="h-10 sm:h-12 bg-slate-300 rounded-xl"></div>
+      <div v-if="loading" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div v-for="n in 6" :key="n" class="overflow-hidden rounded-2xl border border-line bg-white">
+          <div class="aspect-[3/2] animate-pulse bg-sand"></div>
+          <div class="space-y-2 p-5">
+            <div class="h-3 w-24 animate-pulse rounded bg-sand"></div>
+            <div class="h-5 w-4/5 animate-pulse rounded bg-sand"></div>
           </div>
         </div>
       </div>
 
-      <!-- Error State -->
-      <div v-else-if="error" class="bg-red-50 border-0 sm:border-2 border-red-200 rounded-none sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 text-center">
-        <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-red-500 mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-        </svg>
-        <h3 class="text-lg sm:text-xl font-bold text-red-800 mb-2">Failed to Load Tickets</h3>
-        <p class="text-sm sm:text-base text-red-600 mb-4 sm:mb-6">{{ error }}</p>
-        <button 
+      <div v-else-if="error" class="rounded-2xl border border-line bg-white px-6 py-10 text-center">
+        <h3 class="font-semibold text-ink">Tickets didn't load</h3>
+        <p class="mt-1 text-sm text-ink/70">{{ error }}</p>
+        <button
+          type="button"
+          class="mt-4 inline-flex min-h-11 items-center rounded-xl bg-ink px-5 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
           @click="loadTickets"
-          class="px-5 sm:px-6 py-3 sm:py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition-all font-semibold touch-manipulation shadow-lg hover:shadow-xl min-h-[44px]"
         >
-          Try Again
+          Try again
         </button>
       </div>
 
-      <!-- Controls -->
-      <div v-if="tickets.length > 0" class="mb-4 sm:mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
-        <div class="flex-1">
-          <label class="sr-only" for="search">Search attractions</label>
-          <div class="relative">
-            <input
-              id="search"
-              v-model="searchTerm"
-              type="search"
-              placeholder="Search by attraction name or location..."
-              class="w-full px-4 py-3 sm:py-3.5 pl-10 sm:pl-11 border-0 sm:border border-b-2 sm:border-b border-slate-200 sm:rounded-xl sm:rounded-2xl bg-transparent sm:bg-white focus:ring-0 sm:focus:ring-2 focus:border-b-emerald-500 sm:focus:border-emerald-500 sm:focus:ring-emerald-500 transition-all text-base sm:text-sm sm:text-base shadow-none sm:shadow-sm sm:hover:shadow-md touch-manipulation"
-            />
-            <svg class="w-5 h-5 text-slate-400 absolute left-3 sm:left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 117.5-7.5 7.5 7.5 0 01-7.5 7.5z"></path>
-            </svg>
-          </div>
+      <div v-if="!loading && !error && hasCatalogue" class="space-y-4">
+        <label class="sr-only" for="search">Search attractions</label>
+        <input
+          id="search"
+          v-model="searchTerm"
+          type="search"
+          placeholder="Search by name or place"
+          class="w-full rounded-xl border border-line bg-white px-4 py-3 text-base text-ink focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea"
+        />
+        <div v-if="destinations.length > 1" class="flex flex-wrap gap-2" role="group" aria-label="Destination">
+          <button
+            v-for="place in destinationChoices"
+            :key="place"
+            type="button"
+            class="min-h-10 rounded-full border px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+            :class="destinationFilter === place ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'"
+            @click="destinationFilter = place"
+          >
+            {{ place === 'all' ? 'All places' : place }}
+          </button>
         </div>
-        <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-          <div class="flex items-center gap-2">
-            <label for="sort" class="text-xs sm:text-sm font-semibold text-slate-700 whitespace-nowrap hidden sm:block">Sort by</label>
-            <select
-              id="sort"
-              v-model="sortOption"
-              class="w-full sm:w-auto px-3 sm:px-4 py-2.5 sm:py-2.5 border-0 sm:border border-b-2 sm:border-b border-slate-200 sm:rounded-xl bg-transparent sm:bg-white focus:ring-0 sm:focus:ring-2 focus:border-b-emerald-500 sm:focus:border-emerald-500 sm:focus:ring-emerald-500 text-base sm:text-sm sm:text-base font-medium shadow-none sm:shadow-sm sm:hover:shadow-md transition-all touch-manipulation"
-              @change="loadTickets"
-            >
-              <option value="alpha">Name: A → Z</option>
-              <option value="latest">Latest updates</option>
-              <option value="priceAsc">Price: Low to High</option>
-              <option value="priceDesc">Price: High to Low</option>
-            </select>
-          </div>
+        <div v-if="categories.length > 1" class="flex flex-wrap gap-2" role="group" aria-label="Category">
+          <button
+            v-for="kind in categoryChoices"
+            :key="kind"
+            type="button"
+            class="min-h-10 rounded-full border px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+            :class="categoryFilter === kind ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'"
+            @click="categoryFilter = kind"
+          >
+            {{ kind === 'all' ? 'All types' : kind }}
+          </button>
         </div>
+        <label class="block max-w-xs text-sm font-semibold text-ink" for="sort">
+          Sort
+          <select id="sort" v-model="sortOption" class="mt-1 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-base font-normal text-ink" @change="loadTickets">
+            <option value="alpha">Name: A to Z</option>
+            <option value="latest">Latest updates</option>
+            <option value="priceAsc">Price: low to high</option>
+            <option value="priceDesc">Price: high to low</option>
+          </select>
+        </label>
       </div>
 
-      <!-- Tickets Grid -->
-      <div v-if="filteredTickets.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 sm:gap-4 lg:gap-6" style="grid-auto-rows: 1fr;">
-        <template v-for="(ticket, index) in displayedTickets" :key="ticket.id || ticket.title">
-          <div class="flex flex-col h-full">
-            <div 
-              class="bg-white rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border sm:border-slate-200 shadow-none sm:shadow-xl lg:hover:shadow-2xl transition-all duration-300 overflow-hidden group active:bg-slate-50 sm:active:bg-white transform sm:hover:-translate-y-1 active:scale-[0.99] sm:active:scale-[0.98] flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 touch-manipulation h-full"
-              role="button"
-              tabindex="0"
-              @click="handleCardClick(ticket)"
-              @keydown.enter.prevent="handleCardClick(ticket)"
-              @keydown.space.prevent="handleCardClick(ticket)"
-            >
-            <div class="relative overflow-hidden flex-shrink-0">
-            <img 
-              v-if="ticket.image"
-              :src="ticket.image" 
-              :alt="ticket.title"
-              width="640"
-              height="360"
-              loading="lazy"
-              decoding="async"
-              class="w-full h-44 sm:h-48 lg:h-52 object-cover transition-transform duration-300 group-active:scale-105 sm:group-hover:scale-110"
-              @error="handleImageError"
-            />
-            <div v-else class="w-full h-44 sm:h-48 lg:h-52 bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center relative">
-              <div class="absolute inset-0 bg-gradient-to-br from-yellow-400 to-yellow-500 opacity-20"></div>
-              <div class="bg-yellow-400 rounded-full px-4 sm:px-6 py-2 sm:py-3 shadow-xl relative z-10">
-                <div class="flex items-center justify-center gap-1">
-                  <span class="text-[#166534] font-black text-lg sm:text-xl tracking-tight">SG</span>
-                  <span class="text-[#1e3a8a] font-black text-lg sm:text-xl tracking-tight">ATTRACTIONS</span>
-                </div>
-              </div>
-            </div>
-            <div v-if="ticket.originalPrice" class="absolute top-2 left-2 sm:top-3 sm:left-3">
-              <span class="px-2 sm:px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold shadow-sm">
-                Deal
-              </span>
-            </div>
-            <div v-if="ticket.isSelfBookable" class="absolute top-2 right-2 sm:top-3 sm:right-3">
-              <span class="px-2 sm:px-2.5 py-1 bg-emerald-500 text-white rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold shadow-sm">
-                Book Now
-              </span>
-            </div>
-          </div>
-          
-          <div class="p-3 sm:p-4 lg:p-5 flex flex-col flex-1 min-h-0">
-            <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-1.5 sm:mb-2 line-clamp-2 group-active:text-emerald-600 sm:group-hover:text-emerald-600 transition-colors leading-tight min-h-[2.5rem] sm:min-h-[3rem]">
-              {{ ticket.title }}
-            </h3>
-            
-            <p v-if="ticket.description" class="text-slate-600 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-3 flex-shrink-0">
-              {{ ticket.description }}
-            </p>
-
-            <div v-if="ticket.location" class="flex items-center gap-1.5 mb-2 sm:mb-3 text-[10px] sm:text-xs text-slate-500">
-              <span class="text-[10px]">📍</span>
-              <span class="truncate max-w-[200px] sm:max-w-none">{{ ticket.location }}</span>
-            </div>
-
-            <div class="flex items-baseline gap-2 mb-2 sm:mb-3">
-              <span v-if="ticket.price" class="text-lg sm:text-xl lg:text-2xl font-bold text-emerald-600">{{ ticket.price }}</span>
-              <span v-if="ticket.originalPrice" class="text-xs sm:text-sm text-slate-400 line-through">{{ ticket.originalPrice }}</span>
-            </div>
-            
-            <div v-if="ticket.isSelfBookable" class="mb-2 sm:mb-3 inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] sm:text-xs font-semibold w-fit">
-              <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Instant checkout</span>
-            </div>
-            
-            <div v-if="ticket.lastUpdatedDate" class="text-[10px] sm:text-xs text-slate-500 mb-2 sm:mb-3 flex-shrink-0">
-              Updated {{ formatRelativeTime(ticket.lastUpdatedDate) }}
-            </div>
-            
-            <NuxtLink
-              :to="`/attractionsg/${ticket.slug || ticket.id}`"
-              class="inline-flex items-center justify-center w-full gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2.5 sm:py-3 rounded-xl hover:from-emerald-700 hover:to-teal-700 active:from-emerald-800 active:to-teal-800 transition-all duration-300 transform active:scale-95 sm:hover:scale-105 font-semibold shadow-md sm:shadow-lg sm:hover:shadow-xl mt-auto touch-manipulation min-h-[44px] sm:min-h-[48px] flex-shrink-0"
-              @click.stop="rememberScrollPosition"
-            >
-              View Details
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-              </svg>
-            </NuxtLink>
-          </div>
-          </div>
-          <!-- Separator line - visible on mobile only -->
-          <div v-if="index < displayedTickets.length - 1" class="h-px bg-slate-300 sm:hidden mt-4 mb-4"></div>
-          </div>
+      <div v-if="listingItems.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <template v-for="item in displayedItems" :key="item.key">
+          <AttractionCard
+            v-if="item.kind === 'direct'"
+            kind="direct"
+            :href="`/attractionsg/${item.ticket.slug || item.ticket.id}`"
+            :title="item.ticket.title"
+            :image="item.ticket.image"
+            :destination="item.ticket.location || undefined"
+            :category="item.ticket.category || undefined"
+            :price="item.ticket.price || undefined"
+            :original-price="item.ticket.originalPrice || undefined"
+            :bookable="!!item.ticket.isSelfBookable"
+            action="View ticket"
+            @navigate="rememberScrollPosition"
+          />
+          <AttractionCard
+            v-else
+            kind="partner"
+            :title="item.partner.title"
+            :image="item.partner.image"
+            :destination="item.partner.destination"
+            :category="item.partner.category"
+            :provider-label="item.partner.provider === 'klook' ? 'Book on Klook. The price is shown there.' : 'Book on Trip.com. The price is shown there.'"
+            action="Open partner"
+            @open="openPartner(item.partner)"
+          />
         </template>
       </div>
 
       <div
-        v-if="hasMoreTickets"
+        v-if="hasMoreItems"
         ref="loadMoreTrigger"
         class="flex items-center justify-center py-6 sm:py-8 text-sm text-slate-500"
       >
@@ -240,28 +137,21 @@
         </div>
       </div>
 
-      <!-- No Matches -->
-      <div v-if="tickets.length > 0 && filteredTickets.length === 0 && searchTerm" class="bg-white border-0 sm:border-2 border-slate-200 rounded-none sm:rounded-2xl lg:rounded-3xl p-6 sm:p-12 text-center space-y-3 sm:space-y-4">
-        <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-        <h3 class="text-lg sm:text-xl font-bold text-slate-900">No attractions match your filters</h3>
-        <p class="text-sm sm:text-base text-slate-600">Try adjusting your search keywords or filter selections.</p>
+      <div v-if="!loading && !error && hasCatalogue && listingItems.length === 0" class="rounded-2xl border border-line bg-white px-6 py-10 text-center">
+        <h3 class="font-semibold text-ink">Nothing matches</h3>
+        <p class="mt-1 text-sm text-ink/70">Try another place, type, or search.</p>
         <button
+          type="button"
+          class="mt-4 inline-flex min-h-11 items-center rounded-xl bg-ink px-5 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
           @click="resetFilters"
-          class="px-5 sm:px-6 py-3 sm:py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 active:bg-emerald-800 transition-all font-semibold touch-manipulation shadow-lg hover:shadow-xl min-h-[44px]"
         >
-          Reset filters
+          Clear filters
         </button>
       </div>
 
-      <!-- Empty State -->
-      <div v-if="tickets.length === 0 && !loading" class="bg-gradient-to-br from-emerald-50 to-teal-50 border-0 sm:border-2 border-dashed border-emerald-300 rounded-none sm:rounded-2xl lg:rounded-3xl p-6 sm:p-12 text-center">
-        <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-emerald-600 mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-        </svg>
-        <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">No Events Available Yet</h3>
-        <p class="text-sm sm:text-base text-slate-600">Published attractions will show up here.</p>
+      <div v-if="!loading && !error && !hasCatalogue" class="rounded-2xl border border-dashed border-line bg-white px-6 py-10 text-center">
+        <h3 class="font-semibold text-ink">No attractions published yet</h3>
+        <p class="mt-1 text-sm text-ink/70">Singapore tickets show up here when they are published. Partner links are added only after a URL is checked.</p>
       </div>
     </section>
   </div>
@@ -269,7 +159,11 @@
   
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, onUnmounted, nextTick, computed, watch, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 import { useActivityTracker } from '~/composables/useActivityTracker'
+import AttractionCard from '~/components/attractions/AttractionCard.vue'
+import { CURATED_PARTNER_ATTRACTIONS, type CuratedPartnerAttraction } from '~/utils/curated-partner-attractions'
+import { openTrackedOutbound } from '~/utils/affiliate-links'
 
 const { startTracking, trackPageView } = useActivityTracker()
 
@@ -285,7 +179,6 @@ interface AttractionEvent {
   originalPrice?: string
   image?: string
   lastUpdated?: string
-  priceAmount?: number | null
   originalPriceAmount?: number | null
   isPublished?: boolean
   [key: string]: any
@@ -322,6 +215,9 @@ const visibleCount = ref(ITEMS_PER_BATCH)
 
 const sortOption = ref('alpha')
 const searchTerm = ref('')
+const destinationFilter = ref('all')
+const categoryFilter = ref('all')
+const route = useRoute()
 
 const requestURL = useRequestURL()
 const baseUrl = computed(() => `${requestURL.protocol}//${requestURL.host}`)
@@ -396,21 +292,6 @@ const loadTickets = async () => {
   }
 }
 
-const handleCardClick = (ticket: AttractionEvent | null) => {
-  if (!ticket) return
-  const slug = ticket.slug || ticket.id
-  if (!slug) return
-  rememberScrollPosition()
-  navigateTo(`/attractionsg/${slug}`)
-}
-
-const handleImageError = (evt: Event) => {
-  const target = evt.target as HTMLImageElement | null
-  if (target) {
-    target.style.display = 'none'
-  }
-}
-
 const filterPublished = (items: AttractionEvent[]) => {
   return (items || []).filter((item) => item && item.isPublished === true)
 }
@@ -449,39 +330,115 @@ const sortedTickets = computed<NormalizedAttraction[]>(() => {
   }
 })
 
+const matchesQuery = (title: string, place?: string | null) => {
+  if (!searchTerm.value) return true
+  const query = searchTerm.value.toLowerCase()
+  return title.toLowerCase().includes(query) || (place || '').toLowerCase().includes(query)
+}
+
 const filteredTickets = computed<NormalizedAttraction[]>(() => {
   return sortedTickets.value.filter((ticket) => {
-    const matchSearch = !searchTerm.value ||
-      ticket.title.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      (ticket.location && ticket.location.toLowerCase().includes(searchTerm.value.toLowerCase()))
-    return matchSearch
+    if (!matchesQuery(ticket.title, ticket.location)) return false
+    if (destinationFilter.value !== 'all' && (ticket.location || '') !== destinationFilter.value) return false
+    if (categoryFilter.value !== 'all' && (ticket.category || '') !== categoryFilter.value) return false
+    return true
   })
 })
 
-const displayedTickets = computed<NormalizedAttraction[]>(() => {
-  return filteredTickets.value.slice(0, visibleCount.value)
+const directKeys = computed(() => {
+  const keys = new Set<string>()
+  for (const ticket of tickets.value) {
+    if (ticket.slug) keys.add(ticket.slug.toLowerCase())
+    if (ticket.id) keys.add(String(ticket.id).toLowerCase())
+  }
+  return keys
 })
 
-const hasMoreTickets = computed(() => visibleCount.value < filteredTickets.value.length)
+const standalonePartners = computed(() => {
+  return CURATED_PARTNER_ATTRACTIONS.filter((item) => {
+    const keys = [item.slug, item.directSlug].filter(Boolean).map((value) => String(value).toLowerCase())
+    return !keys.some((key) => directKeys.value.has(key))
+  })
+})
 
-const formatRelativeTime = (date: Date | null) => {
-  if (!date) return ''
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const minutes = Math.floor(diff / (1000 * 60))
-  if (minutes < 1) return 'Just now'
-  if (minutes < 60) return `${minutes} min ago`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours} hr${hours > 1 ? 's' : ''} ago`
-  const days = Math.floor(hours / 24)
-  if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`
-  return date.toLocaleDateString()
-}
+const filteredPartners = computed(() => {
+  return standalonePartners.value.filter((item) => {
+    if (!matchesQuery(item.title, item.destination)) return false
+    if (destinationFilter.value !== 'all' && item.destination !== destinationFilter.value) return false
+    if (categoryFilter.value !== 'all' && item.category !== categoryFilter.value) return false
+    return true
+  })
+})
+
+const destinations = computed(() => {
+  const names = new Set<string>()
+  for (const ticket of tickets.value) if (ticket.location) names.add(ticket.location)
+  for (const item of standalonePartners.value) names.add(item.destination)
+  return [...names].sort((a, b) => a.localeCompare(b))
+})
+
+const categories = computed(() => {
+  const names = new Set<string>()
+  for (const ticket of tickets.value) if (ticket.category) names.add(ticket.category)
+  for (const item of standalonePartners.value) names.add(item.category)
+  return [...names].sort((a, b) => a.localeCompare(b))
+})
+
+const destinationChoices = computed(() => ['all', ...destinations.value])
+const categoryChoices = computed(() => ['all', ...categories.value])
+const hasCatalogue = computed(() => tickets.value.length > 0 || standalonePartners.value.length > 0)
+
+type ListingItem =
+  | { kind: 'direct'; key: string; ticket: NormalizedAttraction }
+  | { kind: 'partner'; key: string; partner: CuratedPartnerAttraction }
+
+const listingItems = computed<ListingItem[]>(() => {
+  const directs: ListingItem[] = filteredTickets.value.map((ticket) => ({
+    kind: 'direct',
+    key: `direct-${ticket.id || ticket.slug || ticket.title}`,
+    ticket
+  }))
+  const partners: ListingItem[] = filteredPartners.value
+    .slice()
+    .sort((a, b) => a.title.localeCompare(b.title))
+    .map((partner) => ({ kind: 'partner', key: `partner-${partner.slug}`, partner }))
+  if (sortOption.value === 'alpha') {
+    return [...directs, ...partners].sort((a, b) => {
+      const left = a.kind === 'direct' ? a.ticket.title : a.partner.title
+      const right = b.kind === 'direct' ? b.ticket.title : b.partner.title
+      return left.localeCompare(right)
+    })
+  }
+  return [...directs, ...partners]
+})
+
+const displayedItems = computed(() => listingItems.value.slice(0, visibleCount.value))
+const hasMoreItems = computed(() => visibleCount.value < listingItems.value.length)
 
 const resetFilters = () => {
   searchTerm.value = ''
+  destinationFilter.value = 'all'
+  categoryFilter.value = 'all'
   sortOption.value = 'alpha'
   loadTickets()
+}
+
+const openPartner = (partner: CuratedPartnerAttraction) => {
+  const sessionId = localStorage.getItem('activity_session_id') || `attr-${Date.now().toString(36)}`
+  if (!localStorage.getItem('activity_session_id')) localStorage.setItem('activity_session_id', sessionId)
+  openTrackedOutbound(async () => {
+    const response = await $fetch<{ outboundUrl?: string }>('/api/affiliate/click', {
+      method: 'POST',
+      body: {
+        provider: partner.provider,
+        baseUrl: partner.url,
+        placementKey: 'attraction_card',
+        pagePath: route.path,
+        sessionId
+      }
+    })
+    return response?.outboundUrl
+  }, partner.url)
 }
 
 const rememberScrollPosition = () => {
@@ -492,8 +449,8 @@ const rememberScrollPosition = () => {
 }
 
 const loadMoreTickets = () => {
-  if (!hasMoreTickets.value) return
-  visibleCount.value = Math.min(visibleCount.value + ITEMS_PER_BATCH, filteredTickets.value.length)
+  if (!hasMoreItems.value) return
+  visibleCount.value = Math.min(visibleCount.value + ITEMS_PER_BATCH, listingItems.value.length)
 }
 
 await loadTickets()
@@ -506,7 +463,7 @@ onMounted(() => {
     pendingScrollRestore.value = true
     targetScrollPosition.value = scrollState.value.position
     visibleCount.value = Math.max(
-      Math.min(scrollState.value.visibleCount || ITEMS_PER_BATCH, filteredTickets.value.length || ITEMS_PER_BATCH),
+      Math.min(scrollState.value.visibleCount || ITEMS_PER_BATCH, listingItems.value.length || ITEMS_PER_BATCH),
       ITEMS_PER_BATCH
     )
   } else {
@@ -540,7 +497,7 @@ onUnmounted(() => {
 })
 
 watch(
-  filteredTickets,
+  listingItems,
   (items) => {
     if (!items) return
     if (!pendingScrollRestore.value) {
@@ -572,7 +529,7 @@ watch(
 watchEffect(() => {
   if (!observer.value) return
   observer.value.disconnect()
-  if (loadMoreTrigger.value && hasMoreTickets.value) {
+  if (loadMoreTrigger.value && hasMoreItems.value) {
     observer.value.observe(loadMoreTrigger.value)
   }
 })

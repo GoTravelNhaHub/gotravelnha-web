@@ -1,4 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
+import { Prisma } from '@prisma/client'
 import prisma from '~/server/utils/prisma'
 import { createError } from 'h3'
 
@@ -81,7 +82,7 @@ export default defineEventHandler(async (event) => {
               isActive: isActive !== false,
               scrapeCount: previous.scrapeCount || 0,
               lastScrapedAt: previous.lastScrapedAt || null,
-              metadata: previous.metadata || null
+              metadata: previous.metadata ?? Prisma.JsonNull
             },
             update: {
               platform,

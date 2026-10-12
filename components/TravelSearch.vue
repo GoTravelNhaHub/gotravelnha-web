@@ -10,7 +10,7 @@
         @click="mode = tab.id"
         :class="[
           'px-4 py-2 rounded-xl text-sm font-semibold transition-colors min-h-[44px] sm:w-auto',
-          mode === tab.id ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          mode === tab.id ? 'bg-ink text-white' : 'bg-sand text-ink hover:bg-line'
         ]"
       >
         {{ tab.icon }} {{ tab.label }}
@@ -18,7 +18,7 @@
     </div>
 
     <form v-if="mode === 'flight'" @submit.prevent="searchFlights" class="space-y-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">
         <label class="block min-w-0">
           <span class="field-label">From</span>
           <select v-model="flight.from" required class="field-control">
@@ -46,11 +46,11 @@
           <input v-model.number="flight.adults" type="number" min="1" max="9" required class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Children <span class="font-normal text-slate-400">2–11</span></span>
+          <span class="field-label">Children <span class="font-normal text-ink/70">2–11</span></span>
           <input v-model.number="flight.children" type="number" min="0" max="8" class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Infants <span class="font-normal text-slate-400">&lt;2</span></span>
+          <span class="field-label">Infants <span class="font-normal text-ink/70">&lt;2</span></span>
           <input v-model.number="flight.infants" type="number" min="0" max="4" class="field-control" />
         </label>
         <label class="block min-w-0">
@@ -63,14 +63,14 @@
         </label>
       </div>
       <div class="flex">
-        <button type="submit" class="w-full sm:w-auto sm:ml-auto px-6 py-3 min-h-[48px] rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
+        <button type="submit" class="w-full sm:ml-auto sm:w-auto min-h-12 rounded-xl bg-ink px-6 py-3 font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea">
           Search flights
         </button>
       </div>
     </form>
 
     <form v-else @submit.prevent="searchHotels" class="space-y-4">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <label class="block min-w-0">
           <span class="field-label">City</span>
           <select v-model.number="hotel.cityId" required class="field-control">
@@ -86,7 +86,7 @@
           <input v-model="hotel.checkOut" type="date" required :min="hotel.checkIn || today" class="field-control" />
         </label>
       </div>
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <label class="block min-w-0">
           <span class="field-label">Adults</span>
           <input v-model.number="hotel.adults" type="number" min="1" max="20" required class="field-control" />
@@ -101,14 +101,14 @@
         </label>
       </div>
       <div class="flex">
-        <button type="submit" class="w-full sm:w-auto sm:ml-auto px-6 py-3 min-h-[48px] rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
+        <button type="submit" class="w-full sm:ml-auto sm:w-auto min-h-12 rounded-xl bg-ink px-6 py-3 font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea">
           Search hotels
         </button>
       </div>
     </form>
 
     <p v-if="error" class="mt-3 text-sm text-red-600">{{ error }}</p>
-    <p class="mt-3 text-xs text-slate-500">
+    <p class="mt-3 text-sm leading-relaxed text-ink/70">
       Opens Trip.com in a new tab with your search filled in. Prices, taxes and availability are set by Trip.com and shown there before you pay.
     </p>
   </div>
@@ -202,6 +202,11 @@ const searchFlights = () => {
   open('trip', tripFlightUrl(search), search)
 }
 
+const selectHotelCity = (cityId: number) => {
+  mode.value = 'hotel'
+  hotel.cityId = cityId
+}
+
 const searchHotels = () => {
   error.value = null
   if (hotel.checkOut <= hotel.checkIn) {
@@ -219,6 +224,8 @@ const searchHotels = () => {
   }
   open('trip', tripHotelUrl(search), search)
 }
+
+defineExpose({ selectHotelCity })
 </script>
 
 <style scoped>
@@ -236,14 +243,24 @@ const searchHotels = () => {
   min-width: 0;
   max-width: 100%;
   padding: 0.625rem 0.75rem;
-  border: 1px solid rgb(203 213 225);
+  border: 1px solid #e4e0d8;
   border-radius: 0.5rem;
   font-size: 1rem;
   line-height: 1.5rem;
   background: white;
+  color: #0b1f33;
+}
+
+.field-control:focus {
+  outline: none;
+  border-color: #0e7c86;
+  box-shadow: 0 0 0 2px #0e7c86;
 }
 
 input[type='date'].field-control {
-  min-width: 0;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 0.75rem;
+  line-height: normal;
 }
 </style>

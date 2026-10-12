@@ -41,6 +41,10 @@ export interface LiveActivity {
   offerId: string | null
   provider: string | null
   checkedAt: string | null
+  /** Available and checked by the supplier recently enough to show price and booking links */
+  verified: boolean
+  /** Place name from the supplier record, when one is stored. Not a map coordinate. */
+  location: string | null
 }
 
 /** A catalogue activity ranked for a family, with live supplier data */

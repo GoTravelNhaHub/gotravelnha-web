@@ -38,7 +38,7 @@
     <div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl p-10 text-center">
       <h1 class="text-3xl font-bold text-slate-900 mb-3">Deal Page Not Found</h1>
       <p class="text-slate-600 mb-6">This slug does not match a configured template or existing deal.</p>
-      <NuxtLink to="/deals" class="inline-flex px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
+      <NuxtLink to="/explore" class="inline-flex px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
         Back to deals
       </NuxtLink>
     </div>
@@ -122,7 +122,7 @@ const openLegacyDeal = async () => {
         provider: deal.platform,
         baseUrl: deal.affiliateLink,
         placementKey: 'legacy_deal_detail',
-        pagePath: `/deals/${slug.value}`,
+        pagePath: `/explore/${slug.value}`,
         sessionId,
         metadata: { dealId: deal.id }
       }
@@ -142,7 +142,7 @@ useHead(() => {
   const description = page
     ? page.description
     : legacy?.description || 'This deal page is unavailable. Browse all latest travel deals on GoTravelNha.'
-  const canonical = `${baseUrl.value}/deals/${slug.value}`
+  const canonical = `${baseUrl.value}/explore/${slug.value}`
 
   const rawImage = page?.heroImage || legacy?.image || null
   const ogImage = resolveAbsoluteOgImage(rawImage, baseUrl.value)

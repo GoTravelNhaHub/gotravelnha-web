@@ -169,7 +169,7 @@ const partnerNavHref = (option: DealComparisonOption) => {
   if (p === 'klook') {
     url = appendKlookAffiliateId(url, String(pub.KLOOK_AD_ID || ''))
   }
-  if (p === 'trip' || p === 'trip.com') {
+  if (p === 'trip') {
     url = appendTripAffiliateIds(
       url,
       String(pub.TRIP_ALLIANCE_ID || ''),
@@ -199,7 +199,7 @@ const bookStripSub = computed(() => {
 })
 
 const partnerPostCtaHint = (option: DealComparisonOption) => {
-  if (option.provider === 'trip' || option.provider === 'trip.com') {
+  if (option.provider === 'trip') {
     return 'Live prices, seats, and checkout are on Trip.com after you tap.'
   }
   return 'Live prices, tickets, and checkout are on Klook after you tap.'
@@ -221,7 +221,7 @@ const partnerCtaButtonClass = (provider: string) => {
 
 const partnerCtaLabel = (option: DealComparisonOption) => {
   const cat = props.template.category
-  if (option.provider === 'trip' || option.provider === 'trip.com') {
+  if (option.provider === 'trip') {
     if (cat === 'flight') return 'Search flights on Trip.com'
     if (cat === 'hotel') return 'Browse hotels on Trip.com'
     return 'Browse things to do on Trip.com'
@@ -272,7 +272,7 @@ const onPartnerTap = (ev: MouseEvent, option: DealComparisonOption) => {
         provider: option.provider,
         baseUrl: option.baseUrl,
         placementKey,
-        pagePath: `/deals/${props.template.slug}`,
+        pagePath: `/explore/${props.template.slug}`,
         sessionId,
         metadata: {
           templateSlug: props.template.slug,
@@ -309,7 +309,7 @@ const openAffiliate = async (provider: string, baseUrl: string, label: string, p
         provider,
         baseUrl,
         placementKey,
-        pagePath: `/deals/${props.template.slug}`,
+        pagePath: `/explore/${props.template.slug}`,
         sessionId,
         metadata: {
           templateSlug: props.template.slug,

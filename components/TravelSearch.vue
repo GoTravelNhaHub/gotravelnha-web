@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-    <div class="flex gap-2 mb-4" role="tablist">
+    <div class="grid grid-cols-2 gap-2 mb-4 sm:flex" role="tablist">
       <button
         v-for="tab in tabs"
         :key="tab.id"
@@ -9,7 +9,7 @@
         :aria-selected="mode === tab.id"
         @click="mode = tab.id"
         :class="[
-          'px-4 py-2 rounded-xl text-sm font-semibold transition-colors min-h-[44px]',
+          'px-4 py-2 rounded-xl text-sm font-semibold transition-colors min-h-[44px] sm:w-auto',
           mode === tab.id ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
         ]"
       >
@@ -19,49 +19,51 @@
 
     <form v-if="mode === 'flight'" @submit.prevent="searchFlights" class="space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">From</span>
-          <select v-model="flight.from" required class="mt-1 w-full px-3 py-2.5 border border-slate-300 rounded-lg">
+        <label class="block min-w-0">
+          <span class="field-label">From</span>
+          <select v-model="flight.from" required class="field-control">
             <option v-for="city in cities" :key="city.airport" :value="city.airport">{{ city.name }} ({{ city.airport }})</option>
           </select>
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">To</span>
-          <select v-model="flight.to" required class="mt-1 w-full px-3 py-2.5 border border-slate-300 rounded-lg">
+        <label class="block min-w-0">
+          <span class="field-label">To</span>
+          <select v-model="flight.to" required class="field-control">
             <option v-for="city in cities" :key="city.airport" :value="city.airport">{{ city.name }} ({{ city.airport }})</option>
           </select>
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Depart</span>
-          <input v-model="flight.departDate" type="date" required :min="today" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
+        <label class="block min-w-0">
+          <span class="field-label">Depart</span>
+          <input v-model="flight.departDate" type="date" required :min="today" class="field-control" />
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Return (optional)</span>
-          <input v-model="flight.returnDate" type="date" :min="flight.departDate || today" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
+        <label class="block min-w-0">
+          <span class="field-label">Return (optional)</span>
+          <input v-model="flight.returnDate" type="date" :min="flight.departDate || today" class="field-control" />
         </label>
       </div>
-      <div class="flex flex-wrap items-end gap-3">
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Adults</span>
-          <input v-model.number="flight.adults" type="number" min="1" max="9" required class="mt-1 w-20 px-3 py-2 border border-slate-300 rounded-lg" />
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <label class="block min-w-0">
+          <span class="field-label">Adults</span>
+          <input v-model.number="flight.adults" type="number" min="1" max="9" required class="field-control" />
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Children 2–11</span>
-          <input v-model.number="flight.children" type="number" min="0" max="8" class="mt-1 w-20 px-3 py-2 border border-slate-300 rounded-lg" />
+        <label class="block min-w-0">
+          <span class="field-label">Children <span class="font-normal text-slate-400">2–11</span></span>
+          <input v-model.number="flight.children" type="number" min="0" max="8" class="field-control" />
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Infants &lt;2</span>
-          <input v-model.number="flight.infants" type="number" min="0" max="4" class="mt-1 w-20 px-3 py-2 border border-slate-300 rounded-lg" />
+        <label class="block min-w-0">
+          <span class="field-label">Infants <span class="font-normal text-slate-400">&lt;2</span></span>
+          <input v-model.number="flight.infants" type="number" min="0" max="4" class="field-control" />
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Cabin</span>
-          <select v-model="flight.cabin" class="mt-1 px-3 py-2.5 border border-slate-300 rounded-lg">
+        <label class="block min-w-0">
+          <span class="field-label">Cabin</span>
+          <select v-model="flight.cabin" class="field-control">
             <option value="y">Economy</option>
             <option value="c">Business</option>
             <option value="f">First</option>
           </select>
         </label>
-        <button type="submit" class="ml-auto px-6 py-2.5 min-h-[44px] rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
+      </div>
+      <div class="flex">
+        <button type="submit" class="w-full sm:w-auto sm:ml-auto px-6 py-3 min-h-[48px] rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
           Search flights
         </button>
       </div>
@@ -69,35 +71,37 @@
 
     <form v-else @submit.prevent="searchHotels" class="space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">City</span>
-          <select v-model.number="hotel.cityId" required class="mt-1 w-full px-3 py-2.5 border border-slate-300 rounded-lg">
+        <label class="block min-w-0">
+          <span class="field-label">City</span>
+          <select v-model.number="hotel.cityId" required class="field-control">
             <option v-for="city in cities" :key="city.hotelCityId" :value="city.hotelCityId">{{ city.name }}</option>
           </select>
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Check-in</span>
-          <input v-model="hotel.checkIn" type="date" required :min="today" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
+        <label class="block min-w-0">
+          <span class="field-label">Check-in</span>
+          <input v-model="hotel.checkIn" type="date" required :min="today" class="field-control" />
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Check-out</span>
-          <input v-model="hotel.checkOut" type="date" required :min="hotel.checkIn || today" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
+        <label class="block min-w-0">
+          <span class="field-label">Check-out</span>
+          <input v-model="hotel.checkOut" type="date" required :min="hotel.checkIn || today" class="field-control" />
         </label>
       </div>
-      <div class="flex flex-wrap items-end gap-3">
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Adults</span>
-          <input v-model.number="hotel.adults" type="number" min="1" max="20" required class="mt-1 w-20 px-3 py-2 border border-slate-300 rounded-lg" />
+      <div class="grid grid-cols-3 gap-3">
+        <label class="block min-w-0">
+          <span class="field-label">Adults</span>
+          <input v-model.number="hotel.adults" type="number" min="1" max="20" required class="field-control" />
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Children</span>
-          <input v-model.number="hotel.children" type="number" min="0" max="10" class="mt-1 w-20 px-3 py-2 border border-slate-300 rounded-lg" />
+        <label class="block min-w-0">
+          <span class="field-label">Children</span>
+          <input v-model.number="hotel.children" type="number" min="0" max="10" class="field-control" />
         </label>
-        <label class="block">
-          <span class="text-xs font-semibold text-slate-600">Rooms</span>
-          <input v-model.number="hotel.rooms" type="number" min="1" max="10" required class="mt-1 w-20 px-3 py-2 border border-slate-300 rounded-lg" />
+        <label class="block min-w-0">
+          <span class="field-label">Rooms</span>
+          <input v-model.number="hotel.rooms" type="number" min="1" max="10" required class="field-control" />
         </label>
-        <button type="submit" class="ml-auto px-6 py-2.5 min-h-[44px] rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
+      </div>
+      <div class="flex">
+        <button type="submit" class="w-full sm:w-auto sm:ml-auto px-6 py-3 min-h-[48px] rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
           Search hotels
         </button>
       </div>
@@ -216,3 +220,30 @@ const searchHotels = () => {
   open('trip', tripHotelUrl(search), search)
 }
 </script>
+
+<style scoped>
+.field-label {
+  display: block;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  color: rgb(71 85 105);
+}
+
+.field-control {
+  margin-top: 0.25rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid rgb(203 213 225);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  background: white;
+}
+
+input[type='date'].field-control {
+  min-width: 0;
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
-    <div class="bg-white rounded-2xl border border-slate-200 p-6">
-      <h2 class="text-2xl font-bold text-slate-900">{{ itinerary.title }}</h2>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-900">{{ itinerary.title }}</h2>
       <p class="mt-2 text-slate-600">{{ itinerary.summary }}</p>
       <p class="mt-3 text-xs text-slate-500">
         Plan suggested by AI. Prices and availability below come from our partners and are checked each time you open this plan.
@@ -9,14 +9,16 @@
     </div>
 
     <div v-for="day in itinerary.days" :key="day.date" class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+      <div class="px-4 py-3 sm:px-6 sm:py-4 bg-slate-50 border-b border-slate-200">
         <div class="text-sm font-semibold text-emerald-700">{{ formatDay(day.date) }}</div>
-        <div class="text-lg font-bold text-slate-900">{{ day.theme }}</div>
+        <div class="text-base sm:text-lg font-bold text-slate-900">{{ day.theme }}</div>
       </div>
       <ul class="divide-y divide-slate-100">
-        <li v-for="(item, index) in day.items" :key="index" class="px-6 py-4 flex flex-col sm:flex-row gap-4">
-          <div class="sm:w-28 shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            {{ slotLabels[item.slot] }}
+        <li v-for="(item, index) in day.items" :key="index" class="px-4 py-4 sm:px-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div class="sm:w-28 shrink-0">
+            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              {{ slotLabels[item.slot] }}
+            </span>
           </div>
           <div class="flex-1 min-w-0">
             <div class="font-semibold text-slate-900">{{ item.title }}</div>
@@ -57,7 +59,7 @@
       </ul>
     </div>
 
-    <div v-if="itinerary.tips.length" class="bg-white rounded-2xl border border-slate-200 p-6">
+    <div v-if="itinerary.tips.length" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
       <h3 class="text-lg font-bold text-slate-900 mb-3">Tips for the family</h3>
       <ul class="list-disc pl-5 space-y-1 text-slate-700">
         <li v-for="(tip, index) in itinerary.tips" :key="index">{{ tip }}</li>

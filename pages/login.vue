@@ -158,22 +158,21 @@ const handleGoogleSignIn = async () => {
 const checkOAuthResult = () => {
   const urlParams = new URLSearchParams(window.location.search)
   const success = urlParams.get('success')
-  const userId = urlParams.get('userId')
   const errorParam = urlParams.get('error')
 
   if (errorParam) {
     error.value = decodeURIComponent(errorParam)
     // Clean up URL
     window.history.replaceState({}, '', '/login')
-  } else if (success === 'true' && userId) {
+  } else if (success === 'true') {
     // Fetch user data and log them in
-    loadUserAndRedirect(userId)
+    loadUserAndRedirect()
   }
 }
 
-const loadUserAndRedirect = async (userId: string) => {
+const loadUserAndRedirect = async () => {
   try {
-    const response: any = await $fetch(`/api/users/${userId}`)
+    const response: any = await $fetch('/api/auth/me')
     if (response && response.user) {
       setUser(response.user)
       

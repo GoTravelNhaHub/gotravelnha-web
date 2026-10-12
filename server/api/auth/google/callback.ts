@@ -2,6 +2,7 @@ import { defineEventHandler, getQuery } from 'h3'
 import { OAuth2Client } from 'google-auth-library'
 import * as bcrypt from 'bcrypt'
 import prisma from '~/server/utils/prisma'
+import { setAuthSession } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
@@ -114,23 +115,17 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Remove password from response
-    const { password, ...userWithoutPassword } = user
+    if (!user.isActive) {
+      return sendRedirect(event, '/login?error=account_disabled')
+    }
 
-    // Set session/cookie (you may want to use a proper session library)
-    setCookie(event, 'auth_token', user.id, {
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
-    })
+    await setAuthSession(event, user.id)
 
     // Redirect based on state (which page they came from)
     const redirectTo = state === '/admin' ? '/admin' : '/user'
     
-    // For now, just redirect to login success page with user data
-    // In production, you'd set a proper session and redirect
-    return sendRedirect(event, `/login?success=true&userId=${user.id}`)
+    // The login page reads the signed-in user from /api/auth/me
+    return sendRedirect(event, '/login?success=true')
     
   } catch (err: any) {
     console.error('Google OAuth error:', err)

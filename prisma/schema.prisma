@@ -332,6 +332,9 @@ model AttractionsgBooking {
   supplierStatus        String?
   supplierPayload       Json?
   cart                  Json?
+  paidAt                DateTime?
+  refundedAmount        Float?
+  refundedAt            DateTime?
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
 
@@ -339,6 +342,7 @@ model AttractionsgBooking {
 
   @@index([eventId])
   @@index([status])
+  @@index([supplierStatus])
   @@map("attractionsg_bookings")
 }
 
@@ -347,6 +351,7 @@ enum BookingStatus {
   PAID
   FAILED
   CANCELLED
+  REFUNDED
 }
 
 model PriceAlert {

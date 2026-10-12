@@ -15,11 +15,14 @@
         </div>
         <div class="rounded-lg bg-slate-100 px-3 py-2">
           <div class="text-slate-500">Price</div>
-          <div class="font-semibold text-slate-800">{{ legacyDeal.priceText }}</div>
+          <div class="font-semibold text-slate-800">
+            {{ legacyDeal.discountedPrice ? `${legacyDeal.currency} ${Number(legacyDeal.discountedPrice).toFixed(2)}` : 'See partner' }}
+          </div>
+          <div v-if="legacyDeal.createdAt" class="text-xs text-slate-500">Seen {{ formatSeenDate(legacyDeal.createdAt) }}</div>
         </div>
         <div class="rounded-lg bg-slate-100 px-3 py-2">
           <div class="text-slate-500">Discount</div>
-          <div class="font-semibold text-slate-800">{{ legacyDeal.discountText }}</div>
+          <div class="font-semibold text-slate-800">{{ legacyDeal.discountPercent ? `${legacyDeal.discountPercent}% off` : '—' }}</div>
         </div>
       </div>
       <button
@@ -47,6 +50,7 @@ import { useRoute } from 'vue-router'
 import HighConvertingDealTemplate from '~/components/deals/HighConvertingDealTemplate.vue'
 import type { DealPageTemplate } from '~/types/deal-template'
 import { inferOgImageMime, resolveAbsoluteOgImage } from '~/utils/socialPreview'
+import { openTrackedOutbound } from '~/utils/affiliate-links'
 
 definePageMeta({
   layout: 'default'
@@ -71,6 +75,9 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
 
+const formatSeenDate = (value: string) =>
+  new Intl.DateTimeFormat('en-SG', { dateStyle: 'medium' }).format(new Date(value))
+
 const extractShortId = (value: string): string => {
   const match = value.match(/-([a-f0-9]{12})$/i)
   return match?.[1] || ''
@@ -87,7 +94,7 @@ const legacyDeal = computed(() => {
   const titleSlug = slugify(slug.value.replace(/-[a-f0-9]{12}$/i, ''))
 
   return (
-    list.find((item: any) => String(item.id || '').replace(/[^a-f0-9]/gi, '').includes(shortId)) ||
+    list.find((item: any) => shortId && String(item.id || '').replace(/[^a-f0-9]/gi, '').includes(shortId)) ||
     list.find((item: any) => slugify(item.title) === titleSlug) ||
     null
   )
@@ -103,7 +110,7 @@ const openLegacyDeal = async () => {
     localStorage.setItem('activity_session_id', sessionId)
   }
 
-  try {
+  await openTrackedOutbound(async () => {
     const response: any = await $fetch('/api/affiliate/click', {
       method: 'POST',
       body: {
@@ -115,10 +122,8 @@ const openLegacyDeal = async () => {
         metadata: { dealId: deal.id }
       }
     })
-    window.open(response?.outboundUrl || deal.affiliateLink, '_blank', 'noopener,noreferrer')
-  } catch {
-    window.open(deal.affiliateLink, '_blank', 'noopener,noreferrer')
-  }
+    return response?.outboundUrl
+  }, deal.affiliateLink)
 }
 
 useHead(() => {

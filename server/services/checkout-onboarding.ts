@@ -3,8 +3,6 @@ import * as crypto from 'crypto'
 import prisma from '~/server/utils/prisma'
 import { sendEmail } from '~/server/utils/email'
 
-const DEFAULT_PASSWORD = 'P@ssw0rd123'
-
 interface EnsureUserParams {
   email: string
   name?: string | null
@@ -113,7 +111,8 @@ export const ensureUserFromCheckout = async ({ email, name, bookingId }: EnsureU
 
   const emailUsername = sanitizeUsername(email.split('@')[0])
   const username = await generateUniqueUsername(emailUsername)
-  const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, 10)
+  // Unguessable placeholder; the customer sets a real password via the reset email
+  const hashedPassword = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10)
   const { firstName, lastName } = splitName(name)
 
   const user = await prisma.user.create({

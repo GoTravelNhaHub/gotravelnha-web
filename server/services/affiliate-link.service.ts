@@ -39,7 +39,9 @@ export function generateSubId(context: AffiliateLinkContext = {}): string {
 function appendCommonTracking(url: string, context: AffiliateLinkContext = {}) {
   const parsed = new URL(url)
   const campaign = sanitizeToken(context.campaign || context.placementKey || 'affiliate')
-  const subId = generateSubId(context)
+  // A link that is already tracked keeps its subid, so the click row matches what
+  // the partner reports back for commission attribution
+  const subId = parsed.searchParams.get('subid') || generateSubId(context)
 
   if (!parsed.searchParams.has('utm_source')) parsed.searchParams.set('utm_source', 'gotravelnha')
   if (!parsed.searchParams.has('utm_medium')) parsed.searchParams.set('utm_medium', 'affiliate')

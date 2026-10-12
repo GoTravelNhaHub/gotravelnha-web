@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt'
 import { defineEventHandler, readBody } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { setAuthSession } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -87,6 +88,8 @@ export default defineEventHandler(async (event) => {
         // Don't fail registration if referral processing fails
       }
     }
+
+    await setAuthSession(event, user.id)
 
     // Return user data (without password)
     const { password, ...userWithoutPassword } = user

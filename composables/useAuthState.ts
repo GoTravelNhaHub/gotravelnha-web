@@ -30,6 +30,8 @@ export const useAuthState = () => {
     // Remove from localStorage
     if (process.client) {
       localStorage.removeItem('gotravelnha_user')
+      // End the server session too; ignore failures so logout always works locally
+      $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
     }
   }
 

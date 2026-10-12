@@ -84,6 +84,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { openTrackedOutbound } from '~/utils/affiliate-links'
 
 interface ShortcutItem {
   id: string
@@ -233,15 +234,15 @@ function selectEntity(slug: string | null) {
 
 async function openShortcut(item: ShortcutItem) {
   if (!item.link) return
-  try {
-    const sessionId = typeof window !== 'undefined'
-      ? (localStorage.getItem('activity_session_id') || `hub-${Date.now().toString(36)}`)
-      : 'anonymous'
+  const sessionId = typeof window !== 'undefined'
+    ? (localStorage.getItem('activity_session_id') || `hub-${Date.now().toString(36)}`)
+    : 'anonymous'
 
-    if (typeof window !== 'undefined' && !localStorage.getItem('activity_session_id')) {
-      localStorage.setItem('activity_session_id', sessionId)
-    }
+  if (typeof window !== 'undefined' && !localStorage.getItem('activity_session_id')) {
+    localStorage.setItem('activity_session_id', sessionId)
+  }
 
+  await openTrackedOutbound(async () => {
     const response: any = await $fetch('/api/affiliate/click', {
       method: 'POST',
       body: {
@@ -258,13 +259,8 @@ async function openShortcut(item: ShortcutItem) {
         }
       }
     })
-
-    const outbound = response?.outboundUrl || item.link
-    window.open(outbound, '_blank', 'noopener,noreferrer')
-  } catch (error) {
-    console.error('Affiliate click tracking failed:', error)
-    window.open(item.link, '_blank', 'noopener,noreferrer')
-  }
+    return response?.outboundUrl
+  }, item.link)
 }
 
 onMounted(() => {

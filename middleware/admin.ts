@@ -1,5 +1,7 @@
 // Admin route middleware - Protect admin pages
-export default defineNuxtRouteMiddleware((to, from) => {
+let adminSessionVerified = false
+
+export default defineNuxtRouteMiddleware(async (to, from) => {
   // Only run on client side
   if (process.server) return
 
@@ -14,6 +16,22 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // If user is not admin, redirect to user portal
   if (!isAdmin.value) {
     return navigateTo('/user')
+  }
+
+  // Confirm the server session once per visit. Users who signed in before
+  // server sessions existed only have localStorage state and must sign in again.
+  if (!adminSessionVerified) {
+    try {
+      const response = await $fetch<{ role: string }>('/api/auth/me')
+      if (response.role !== 'ADMIN') {
+        return navigateTo('/user')
+      }
+      adminSessionVerified = true
+    } catch {
+      const { clearUser } = useAuthState()
+      clearUser()
+      return navigateTo('/login')
+    }
   }
 })
 

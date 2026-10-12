@@ -4,7 +4,11 @@ import prisma from '~/server/utils/prisma'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { PrismaClient } from '@prisma/client'
 import { sendEmail } from '~/server/utils/email'
-import { placeSupplierOrder } from '~/server/services/attractionsg-supplier'
+import {
+  fulfillBookingWithSupplier,
+  isSupplierAutomationEnabled,
+  queueBookingForManualFulfillment
+} from '~/server/services/attractionsg-fulfillment'
 import { ensureUserFromCheckout } from '~/server/services/checkout-onboarding'
 
 const db = prisma as PrismaClient
@@ -66,6 +70,27 @@ export default defineEventHandler(async (event) => {
         await handleCheckoutCompleted(session, config)
         break
       }
+      case 'checkout.session.async_payment_succeeded': {
+        const session = stripeEvent.data.object as Stripe.Checkout.Session
+        console.info('[stripe] checkout.session.async_payment_succeeded', session.id, 'ref:', clientRef)
+        await handleCheckoutCompleted(session, config)
+        break
+      }
+      case 'checkout.session.async_payment_failed': {
+        const session = stripeEvent.data.object as Stripe.Checkout.Session
+        console.warn('[stripe] checkout.session.async_payment_failed', session.id, 'ref:', clientRef)
+        await bookings.updateMany({
+          where: { stripeSessionId: session.id, status: 'PENDING' },
+          data: { status: 'FAILED' }
+        })
+        break
+      }
+      case 'charge.refunded': {
+        const charge = stripeEvent.data.object as Stripe.Charge
+        console.info('[stripe] charge.refunded', charge.id, 'amount_refunded:', charge.amount_refunded)
+        await handleChargeRefunded(charge)
+        break
+      }
       case 'checkout.session.expired': {
         const session = stripeEvent.data.object as Stripe.Checkout.Session
         console.info('[stripe] checkout.session.expired', session.id, 'ref:', clientRef)
@@ -111,84 +136,63 @@ export default defineEventHandler(async (event) => {
 })
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session, config: RuntimeConfig) {
-  const existingBooking = await bookings.findUnique({
-    where: { stripeSessionId: session.id },
-    include: {
-      event: true
-    }
-  })
-
-  let targetBooking = existingBooking
-
-  if (!targetBooking && session.client_reference_id) {
-    targetBooking = await bookings.findFirst({
-      where: {
-        eventId: session.client_reference_id,
-        status: 'PENDING'
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: {
-        event: true
-      }
-    })
-  }
-
-  if (!targetBooking) {
-    console.warn('Checkout completed but booking not found:', session.id, 'ref:', session.client_reference_id)
+  // Async methods (e.g. PayNow) complete the session before funds settle;
+  // checkout.session.async_payment_succeeded calls back in here once paid.
+  if (session.payment_status !== 'paid' && session.payment_status !== 'no_payment_required') {
+    console.info('Checkout completed but payment not settled yet:', session.id, session.payment_status)
     return
   }
 
-  if (targetBooking.status === 'PAID') {
-    console.info('Booking already marked as PAID:', targetBooking.id)
+  // Match on the session id only. Matching by event id could attach this payment
+  // to another customer's pending booking for the same attraction.
+  const targetBooking = await bookings.findUnique({
+    where: { stripeSessionId: session.id }
+  })
+
+  if (!targetBooking) {
+    console.error('Checkout completed but booking not found:', session.id, 'ref:', session.client_reference_id)
     return
   }
 
   const customerDetails = session.customer_details
+  const paymentIntentId =
+    typeof session.payment_intent === 'string'
+      ? session.payment_intent
+      : session.payment_intent?.id ?? targetBooking.stripePaymentIntentId
+  const amountPaid =
+    typeof session.amount_total === 'number' ? session.amount_total / 100 : targetBooking.amount
+  const actualStripeFee = paymentIntentId ? await fetchActualStripeFee(paymentIntentId, config) : null
+  const stripeFee = actualStripeFee ?? targetBooking.stripeFeeAmount
 
-  console.info('Updating booking as paid:', targetBooking.id)
-
-  let updatedBooking = await bookings.update({
-    where: { id: targetBooking.id },
+  // Atomic claim: Stripe sends both checkout.session.completed and
+  // payment_intent.succeeded, and retries. Only one caller moves the booking to
+  // PAID and goes on to order from the supplier and send emails.
+  const claim = await bookings.updateMany({
+    where: { id: targetBooking.id, status: { in: ['PENDING', 'FAILED', 'CANCELLED'] } },
     data: {
       status: 'PAID',
-      amount:
-        typeof session.amount_total === 'number'
-          ? session.amount_total / 100
-          : targetBooking.amount,
-      customerEmail:
-        customerDetails?.email ??
-        targetBooking.customerEmail ??
-        undefined,
-      customerName:
-        customerDetails?.name ??
-        targetBooking.customerName ??
-        undefined,
-      customerPhone:
-        customerDetails?.phone ??
-        targetBooking.customerPhone ??
-        undefined,
-      stripePaymentIntentId:
-        typeof session.payment_intent === 'string'
-          ? session.payment_intent
-          : session.payment_intent?.id ?? targetBooking.stripePaymentIntentId
-    },
-    include: {
-      event: true
+      paidAt: new Date(),
+      amount: amountPaid,
+      stripeFeeAmount: stripeFee,
+      netRevenue: typeof stripeFee === 'number' ? Number((amountPaid - stripeFee).toFixed(2)) : undefined,
+      customerEmail: customerDetails?.email ?? targetBooking.customerEmail ?? undefined,
+      customerName: customerDetails?.name ?? targetBooking.customerName ?? undefined,
+      customerPhone: customerDetails?.phone ?? targetBooking.customerPhone ?? undefined,
+      stripePaymentIntentId: paymentIntentId
     }
   })
 
-  const supplierWebhook = config.ATTRACTIONSG_SUPPLIER_WEBHOOK || process.env.ATTRACTIONSG_SUPPLIER_WEBHOOK
-  const supplierSecret =
-    config.ATTRACTIONSG_SUPPLIER_WEBHOOK_SECRET || process.env.ATTRACTIONSG_SUPPLIER_WEBHOOK_SECRET
-  const supplierAutomationEnabled =
-    (config.ATTRACTIONSG_SUPPLIER_AUTOMATION_ENABLED ??
-      process.env.ATTRACTIONSG_SUPPLIER_AUTOMATION_ENABLED ??
-      'false')
-      .toString()
-      .trim()
-      .toLowerCase() === 'true'
+  if (claim.count === 0) {
+    console.info('Booking already processed:', targetBooking.id, targetBooking.status)
+    return
+  }
+
+  console.info('Booking marked as paid:', targetBooking.id)
+
+  let updatedBooking = await bookings.findUniqueOrThrow({
+    where: { id: targetBooking.id },
+    include: { event: true }
+  })
 
   if (updatedBooking.customerEmail) {
     try {
@@ -202,79 +206,31 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, config:
     }
   }
 
+  const supplierAutomationEnabled = isSupplierAutomationEnabled(config)
+
   if (updatedBooking.event?.isSelfBookable && supplierAutomationEnabled) {
     try {
-      const supplierResult = await placeSupplierOrder(
-        {
-          bookingId: updatedBooking.id,
-          eventId: updatedBooking.eventId,
-          eventTitle: updatedBooking.eventTitle,
-          optionCode: updatedBooking.optionCode,
-          optionName: updatedBooking.optionName,
-          quantity: updatedBooking.quantity,
-          adultCount: updatedBooking.adultCount ?? undefined,
-          childCount: updatedBooking.childCount ?? undefined,
-          unitPrice: updatedBooking.unitPrice ?? undefined,
-          totalAmount: updatedBooking.amount ?? undefined,
-          resellerUnitCost:
-            updatedBooking.resellerCost && updatedBooking.quantity
-              ? updatedBooking.resellerCost / updatedBooking.quantity
-              : null,
-          totalResellerCost: updatedBooking.resellerCost ?? null,
-          customerName: updatedBooking.customerName,
-          customerEmail: updatedBooking.customerEmail,
-          customerPhone: updatedBooking.customerPhone,
-          notes: updatedBooking.notes,
-          cart: updatedBooking.cart ?? undefined
-        },
-        {
-          webhookUrl: supplierWebhook,
-          webhookSecret: supplierSecret
-        }
-      )
-
-      updatedBooking = await bookings.update({
-        where: { id: updatedBooking.id },
-        data: {
-          supplierOrderId: supplierResult.orderId ?? updatedBooking.supplierOrderId,
-          supplierStatus: supplierResult.status,
-          supplierPayload: supplierResult.rawResponse ?? supplierResult.message ?? null
-        },
-        include: {
-          event: true
-        }
-      })
+      await fulfillBookingWithSupplier(updatedBooking.id, config)
     } catch (supplierError) {
       console.error('[supplier] Unexpected error while placing order:', supplierError)
-      updatedBooking = await bookings.update({
-        where: { id: updatedBooking.id },
+      await bookings.updateMany({
+        where: { id: updatedBooking.id, supplierStatus: 'PLACING' },
         data: {
           supplierStatus: 'FAILED',
           supplierPayload: {
-            error: supplierError instanceof Error ? supplierError.message : supplierError
+            error: supplierError instanceof Error ? supplierError.message : String(supplierError)
           }
-        },
-        include: {
-          event: true
         }
       })
     }
-  } else if (!updatedBooking.supplierStatus) {
-    updatedBooking = await bookings.update({
-      where: { id: updatedBooking.id },
-      data: {
-        supplierStatus: 'QUEUED',
-        supplierPayload: supplierAutomationEnabled
-          ? updatedBooking.supplierPayload
-          : {
-              message: 'Supplier automation disabled. Manual processing required.'
-            }
-      },
-      include: {
-        event: true
-      }
-    })
+  } else {
+    await queueBookingForManualFulfillment(updatedBooking.id, supplierAutomationEnabled)
   }
+
+  updatedBooking = await bookings.findUniqueOrThrow({
+    where: { id: updatedBooking.id },
+    include: { event: true }
+  })
 
   const notifyEmail = config.SELF_BOOKING_NOTIFY_EMAIL || config.SMTP_USER
 
@@ -406,19 +362,64 @@ async function handlePaymentIntentSuccess(paymentIntent: Stripe.PaymentIntent, c
       where: { id: paymentIntent.metadata.bookingId }
     })
 
-    if (bookingRecord && bookingRecord.status !== 'PAID') {
-      console.info('Marking booking paid via payment_intent.succeeded fallback:', bookingRecord.id)
-      await bookings.update({
-        where: { id: bookingRecord.id },
+    if (bookingRecord) {
+      const claim = await bookings.updateMany({
+        where: { id: bookingRecord.id, status: { in: ['PENDING', 'FAILED', 'CANCELLED'] } },
         data: {
           status: 'PAID',
+          paidAt: new Date(),
           stripePaymentIntentId: paymentIntent.id
         }
       })
+      if (claim.count > 0) {
+        console.info('Marked booking paid via payment_intent.succeeded fallback:', bookingRecord.id)
+      }
     }
   } else {
     console.warn('payment_intent.succeeded received with no metadata. PaymentIntent ID:', paymentIntent.id)
   }
+}
+
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  const paymentIntentId =
+    typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.payment_intent?.id
+  if (!paymentIntentId) {
+    console.warn('charge.refunded without payment intent:', charge.id)
+    return
+  }
+
+  const result = await bookings.updateMany({
+    where: { stripePaymentIntentId: paymentIntentId },
+    data: {
+      refundedAmount: charge.amount_refunded / 100,
+      refundedAt: new Date(),
+      // Partial refunds keep the booking PAID; the refunded amount is recorded
+      ...(charge.refunded ? { status: 'REFUNDED' } : {})
+    }
+  })
+
+  if (result.count === 0) {
+    console.warn('charge.refunded but no booking for payment intent:', paymentIntentId)
+  }
+}
+
+/** Real Stripe fee from the balance transaction, in major units. Null if not available yet. */
+async function fetchActualStripeFee(paymentIntentId: string, config: RuntimeConfig) {
+  try {
+    const stripe = getStripeClient(config.STRIPE_SECRET_KEY)
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+      expand: ['latest_charge.balance_transaction']
+    })
+    const charge = paymentIntent.latest_charge
+    const balanceTransaction =
+      charge && typeof charge === 'object' ? charge.balance_transaction : null
+    if (balanceTransaction && typeof balanceTransaction === 'object') {
+      return balanceTransaction.fee / 100
+    }
+  } catch (err) {
+    console.error('Failed to fetch Stripe fee for payment intent:', paymentIntentId, err)
+  }
+  return null
 }
 
 async function notifyCustomer(updatedBooking: Awaited<ReturnType<typeof bookings.update>>, config: RuntimeConfig) {

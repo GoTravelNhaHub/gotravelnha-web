@@ -91,3 +91,29 @@ export function generateAffiliateLink(url: string, platform: string): string {
       return url
   }
 }
+
+/**
+ * Opens the partner tab synchronously inside the click handler so popup blockers allow it,
+ * then points it at the tracked URL once the click is recorded. Uses fallbackUrl if tracking fails.
+ * Client-side only.
+ */
+export async function openTrackedOutbound(
+  resolveUrl: () => Promise<string | null | undefined>,
+  fallbackUrl: string
+): Promise<void> {
+  const tab = window.open('', '_blank')
+  if (tab) tab.opener = null
+
+  let url = fallbackUrl
+  try {
+    url = (await resolveUrl()) || fallbackUrl
+  } catch (error) {
+    console.error('Affiliate click tracking failed:', error)
+  }
+
+  if (tab) {
+    tab.location.href = url
+  } else {
+    window.location.assign(url)
+  }
+}

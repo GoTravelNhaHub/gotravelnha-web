@@ -88,6 +88,8 @@ export default defineNuxtConfig({
              ATTRACTIONSG_SUPPLIER_AUTOMATION_ENABLED: process.env.ATTRACTIONSG_SUPPLIER_AUTOMATION_ENABLED,
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
       STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+      /** Seals the login session cookie. At least 32 random characters. */
+      SESSION_PASSWORD: process.env.SESSION_PASSWORD,
       SELF_BOOKING_NOTIFY_EMAIL: process.env.SELF_BOOKING_NOTIFY_EMAIL || process.env.SMTP_USER,
       public: {
         exchangeApiKey: process.env.EXCHANGE_API_KEY,

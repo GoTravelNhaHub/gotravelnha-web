@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt'
 import { defineEventHandler, readBody } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { setAuthSession } from '~/server/utils/session'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -41,6 +42,8 @@ export default defineEventHandler(async (event) => {
         message: 'Invalid username or password'
       })
     }
+
+    await setAuthSession(event, user.id)
 
     // Return user data (without password)
     const { password, ...userWithoutPassword } = user

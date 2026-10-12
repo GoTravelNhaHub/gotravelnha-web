@@ -48,6 +48,8 @@ export async function placeSupplierOrder(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        // Lets the supplier worker drop repeat submissions of the same booking
+        'Idempotency-Key': `attractionsg-booking-${payload.bookingId}`,
         ...(webhookSecret ? { Authorization: `Bearer ${webhookSecret}` } : {})
       },
       body: payload

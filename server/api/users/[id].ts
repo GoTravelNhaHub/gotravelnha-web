@@ -1,11 +1,19 @@
 import { defineEventHandler, readBody, getRouterParam } from 'h3'
 import * as bcrypt from 'bcrypt'
 import prisma from '~/server/utils/prisma'
+import { requireUser } from '~/server/utils/session'
 
 // GET user by ID
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   const method = event.node.req.method
+
+  // Admins can manage anyone; other users only their own record
+  const sessionUser = await requireUser(event)
+  const isAdmin = sessionUser.role === 'ADMIN'
+  if (!isAdmin && sessionUser.id !== id) {
+    throw createError({ statusCode: 403, message: 'Not allowed.' })
+  }
 
   // GET - Read user
   if (method === 'GET') {
@@ -50,8 +58,9 @@ export default defineEventHandler(async (event) => {
         email: body.email,
         firstName: body.firstName,
         lastName: body.lastName,
-        role: body.role,
-        isActive: body.isActive,
+        // Only admins may change role or active status
+        role: isAdmin ? body.role : undefined,
+        isActive: isAdmin ? body.isActive : undefined,
         ...(body.password && { password: body.password })
       },
       select: {
@@ -72,6 +81,9 @@ export default defineEventHandler(async (event) => {
 
   // DELETE - Delete user
   if (method === 'DELETE') {
+    if (!isAdmin) {
+      throw createError({ statusCode: 403, message: 'Admin access required.' })
+    }
     await prisma.user.delete({
       where: { id }
     })

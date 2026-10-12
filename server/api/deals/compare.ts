@@ -2,6 +2,8 @@ import { defineEventHandler, getQuery } from 'h3'
 import prisma from '~/server/utils/prisma'
 import { createError } from 'h3'
 
+const MAX_PRICE_AGE_DAYS = 7
+
 /**
  * GET /api/deals/compare
  * Compare deals across platforms by location, category, or keywords
@@ -19,11 +21,12 @@ export default defineEventHandler(async (event) => {
     const location = query.location as string | undefined
     const category = query.category as string | undefined
     const keyword = query.keyword as string | undefined
-    const limit = query.limit ? parseInt(query.limit as string) : 20
+    const limit = Math.min(Math.max(Number.parseInt(String(query.limit ?? ''), 10) || 20, 1), 50)
 
-    // Build where clause
+    // Only prices scraped recently; older rows are not shown as current prices
     const where: any = {
-      isValid: true
+      isValid: true,
+      updatedAt: { gte: new Date(Date.now() - MAX_PRICE_AGE_DAYS * 24 * 60 * 60 * 1000) }
     }
 
     if (category) {
@@ -49,7 +52,7 @@ export default defineEventHandler(async (event) => {
       where,
       take: limit * 3, // Get more to allow for grouping
       orderBy: {
-        createdAt: 'desc'
+        updatedAt: 'desc'
       },
       include: {
         job: {
@@ -61,7 +64,7 @@ export default defineEventHandler(async (event) => {
     })
 
     // Group deals by similarity and platform
-    const groupedDeals = groupSimilarDeals(deals)
+    const groupedDeals = groupSimilarDeals(deals.map(toComparable).filter((deal) => deal.price !== null))
 
     // Calculate savings for each group
     const comparisons = groupedDeals.map(group => ({
@@ -69,19 +72,19 @@ export default defineEventHandler(async (event) => {
       title: group.title,
       category: group.category,
       location: group.location,
-      platformCount: group.deals.length,
+      platformCount: new Set(group.deals.map((deal: ComparableDeal) => deal.platform)).size,
       lowestPrice: group.lowestPrice,
       highestPrice: group.highestPrice,
       savings: group.savings,
       currency: group.currency,
-      deals: group.deals.map(deal => ({
+      deals: group.deals.map((deal: ComparableDeal) => ({
         platform: deal.platform,
         price: deal.price,
         originalPrice: deal.originalPrice,
         discount: deal.discount,
         image: deal.image,
         affiliateLink: deal.affiliateLink,
-        metadata: deal.metadata
+        checkedAt: deal.checkedAt
       }))
     }))
 
@@ -99,32 +102,70 @@ export default defineEventHandler(async (event) => {
   }
 })
 
+interface ComparableDeal {
+  id: string
+  title: string
+  category: string | null
+  location: string | null
+  platform: string
+  price: number | null
+  originalPrice: number | null
+  currency: string
+  discount: string | null
+  image: string | null
+  affiliateLink: string | null
+  checkedAt: string
+}
+
+const toNumber = (value: unknown) => {
+  if (value === null || value === undefined) return null
+  const num = Number(value)
+  return Number.isFinite(num) && num > 0 ? num : null
+}
+
+function toComparable(row: any): ComparableDeal {
+  const price = toNumber(row.discountedPrice) ?? toNumber(row.originalPrice)
+  const original = toNumber(row.originalPrice)
+  return {
+    id: row.id,
+    title: row.title,
+    category: row.category,
+    location: row.location,
+    platform: row.job?.platform || 'partner',
+    price,
+    originalPrice: original && price !== null && original > price ? original : null,
+    currency: (row.currency || 'SGD').toUpperCase(),
+    discount: row.discount,
+    image: row.image,
+    affiliateLink: row.affiliateLink,
+    checkedAt: row.updatedAt.toISOString()
+  }
+}
+
 /**
- * Group similar deals together for comparison
+ * Group similar deals together for comparison. Savings are only claimed when two or
+ * more platforms list the item in the same currency.
  */
-function groupSimilarDeals(deals: any[]): any[] {
+function groupSimilarDeals(deals: ComparableDeal[]): any[] {
   const groups: any[] = []
   const processed = new Set<string>()
 
   for (const deal of deals) {
     if (processed.has(deal.id)) continue
 
-    // Find similar deals
-    const similar = deals.filter(other => 
-      !processed.has(other.id) &&
-      isSimilarDeal(deal, other)
+    const similar = deals.filter(
+      (other) => !processed.has(other.id) && other.currency === deal.currency && isSimilarDeal(deal, other)
     )
 
-    // Add all similar deals to group
     for (const similarDeal of similar) {
       processed.add(similarDeal.id)
     }
 
-    // Calculate group stats
-    const allPrices = similar.map(d => parseFloat(d.discountedPrice || d.originalPrice || '999999'))
-    const minPrice = Math.min(...allPrices)
-    const maxPrice = Math.max(...allPrices)
-    const savings = maxPrice > 0 ? ((maxPrice - minPrice) / maxPrice * 100).toFixed(1) : '0'
+    const prices = similar.map((d) => d.price as number)
+    const minPrice = Math.min(...prices)
+    const maxPrice = Math.max(...prices)
+    const platforms = new Set(similar.map((d) => d.platform))
+    const savings = platforms.size > 1 && maxPrice > minPrice ? Number(((maxPrice - minPrice) / maxPrice * 100).toFixed(1)) : 0
 
     groups.push({
       id: `group-${deal.id}`,
@@ -133,9 +174,9 @@ function groupSimilarDeals(deals: any[]): any[] {
       location: deal.location,
       lowestPrice: minPrice,
       highestPrice: maxPrice,
-      savings: parseFloat(savings),
-      currency: deal.currency || 'SGD',
-      deals: similar
+      savings,
+      currency: deal.currency,
+      deals: similar.sort((a, b) => (a.price as number) - (b.price as number))
     })
   }
 
@@ -145,7 +186,7 @@ function groupSimilarDeals(deals: any[]): any[] {
 /**
  * Determine if two deals are similar enough to compare
  */
-function isSimilarDeal(deal1: any, deal2: any): boolean {
+function isSimilarDeal(deal1: ComparableDeal, deal2: ComparableDeal): boolean {
   // Must be same category
   if (deal1.category !== deal2.category) return false
 

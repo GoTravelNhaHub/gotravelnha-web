@@ -9,6 +9,8 @@
         </p>
       </div>
 
+      <TravelSearch placement="deals_hub" />
+
       <div v-if="false" class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <button

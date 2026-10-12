@@ -8,6 +8,9 @@
         </div>
         <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Get in Touch</h2>
         <p class="text-sm sm:text-base text-slate-600 px-2">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+        <p v-if="supportEmail" class="mt-2 text-sm text-slate-600">
+          Or email <a :href="`mailto:${supportEmail}`" class="font-semibold text-emerald-700 hover:underline">{{ supportEmail }}</a>
+        </p>
       </div>
   
       <div class="px-4 sm:px-0">
@@ -44,6 +47,20 @@
         />
       </div>
   
+      <div class="px-4 sm:px-0">
+        <label for="reference" class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:mb-2">
+          Booking reference (if this is about a booking)
+        </label>
+        <input
+          v-model="form.reference"
+          id="reference"
+          type="text"
+          maxlength="20"
+          placeholder="GTN-XXXXXXXX"
+          class="mt-2 block w-full rounded-none sm:rounded-xl border-0 sm:border border-b border-slate-200 sm:border-slate-200 bg-transparent sm:bg-white px-0 sm:px-4 py-3.5 sm:py-3 text-base sm:text-sm font-mono font-medium uppercase text-slate-900 placeholder:text-slate-400 transition-all focus:border-b-emerald-500 sm:focus:border-emerald-500 sm:focus:ring-2 sm:focus:ring-emerald-500/40 focus:outline-none touch-manipulation focus:ring-0"
+        />
+      </div>
+
       <div class="px-4 sm:px-0">
         <label for="message" class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:mb-2">
           <svg class="h-4 w-4 text-slate-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,10 +108,15 @@
   
 <script setup>
   import { ref } from 'vue'
-  
+  import { useRoute } from 'vue-router'
+
+  const route = useRoute()
+  const supportEmail = useRuntimeConfig().public.supportEmail
+
   const form = ref({
     name: '',
     email: '',
+    reference: typeof route.query.ref === 'string' ? route.query.ref.slice(0, 20) : '',
     message: ''
   })
   
@@ -110,9 +132,9 @@
         body: form.value
       })
       status.value = '✅ Your message has been sent! We\'ll get back to you soon.'
-      form.value = { name: '', email: '', message: '' }
+      form.value = { name: '', email: '', reference: '', message: '' }
     } catch (e) {
-      status.value = '❌ Failed to send message. Please try again later.'
+      status.value = `❌ ${e?.data?.message || 'Failed to send message. Please try again later.'}`
     } finally {
       submitting.value = false
     }

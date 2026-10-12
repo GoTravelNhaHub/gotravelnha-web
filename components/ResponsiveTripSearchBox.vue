@@ -1,7 +1,7 @@
 <template>
   <client-only>
-    <div class="bg-gray-50 p-6 rounded-xl shadow border text-center space-y-6">
-      <h2 class="text-2xl font-bold text-gray-800">Find Your Trip - Choose flights or hotels</h2>
+    <div class="bg-gray-50 p-2 sm:p-6 rounded-xl shadow border text-center space-y-4 sm:space-y-6">
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Trip.com search widget</h2>
       
       <div class="flex justify-center gap-4">
         <button

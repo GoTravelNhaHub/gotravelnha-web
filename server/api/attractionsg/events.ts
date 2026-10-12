@@ -2,7 +2,8 @@ import { defineEventHandler, readBody } from 'h3'
 import { createError } from 'h3'
 import { getEventsCache, getCacheTimestamp } from './crawl'
 import prisma from '~/server/utils/prisma'
-import type { Prisma, AttractionsgEvent as AttractionsgEventModel } from '@prisma/client'
+import type { Prisma } from '@prisma/client'
+import { feeConfig, toPublicAttraction } from '~/server/utils/attraction-pricing'
 
 interface EventsRequest {
   search?: string
@@ -56,7 +57,8 @@ export default defineEventHandler(async (event) => {
     ])
 
     let total = totalCount
-    let data = records.map(mapRecordToEvent)
+    const fees = feeConfig()
+    let data = records.map((record) => toPublicAttraction(record, fees))
     let cached = false
     let timestamp = maxUpdated._max.updatedAt
       ? maxUpdated._max.updatedAt.toISOString()
@@ -67,7 +69,7 @@ export default defineEventHandler(async (event) => {
       if (cache.length > 0) {
         cached = true
         total = cache.length
-        data = cache.slice(offset, offset + limit)
+        data = cache.slice(offset, offset + limit).map((entry) => toPublicAttraction(entry as any, fees))
         timestamp = new Date(getCacheTimestamp()).toISOString()
       }
     }
@@ -124,40 +126,4 @@ function buildOrderBy(params: EventsRequest, sortOrder: 'asc' | 'desc'): Prisma.
   }
 
   return order
-}
-
-function mapRecordToEvent(record: AttractionsgEventModel) {
-  const raw = record.raw as Record<string, any> | null
-
-  return {
-    id: record.id,
-    sourceKey: (raw?.sourceKey as string | undefined) ?? record.link ?? record.slug ?? record.id,
-    slug: record.slug ?? raw?.slug,
-    title: record.title,
-    description: record.description ?? raw?.description ?? '',
-    price: record.priceText ?? raw?.price ?? '',
-          priceAmount: record.priceAmount ?? raw?.priceAmount,
-          resellerPriceAmount: record.resellerPriceAmount ?? raw?.resellerPriceAmount ?? record.priceAmount ?? raw?.priceAmount,
-    originalPrice: record.originalPriceText ?? raw?.originalPrice ?? '',
-    originalPriceAmount: record.originalPriceAmount ?? raw?.originalPriceAmount,
-    image: record.image ?? raw?.image,
-    category: record.category ?? raw?.category,
-    location: record.location ?? raw?.location,
-    rating: record.rating ?? (typeof raw?.rating === 'number' ? raw.rating : undefined),
-    link: record.link ?? raw?.link,
-    duration: record.duration ?? raw?.duration,
-    ageRestriction: record.ageRestriction ?? raw?.ageRestriction,
-    cancellation: record.cancellation ?? raw?.cancellation,
-    validFrom: record.validFrom ?? raw?.validFrom,
-    validTo: record.validTo ?? raw?.validTo,
-    gallery: raw?.gallery ?? [],
-    options: raw?.options ?? [],
-    isPublished: record.isPublished,
-    publishedAt: record.publishedAt,
-    isSelfBookable: record.isSelfBookable,
-    stripePriceId: record.stripePriceId ?? undefined,
-    checkoutNotes: record.checkoutNotes ?? undefined,
-    raw,
-    lastUpdated: record.updatedAt.toISOString()
-  }
 }

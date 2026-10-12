@@ -163,18 +163,18 @@
                 :key="index"
                 :class="[
                   'border-2 rounded-lg p-4 transition-all',
-                  deal.price === comparison.lowestPrice
+                  isBest(deal, comparison)
                     ? 'border-green-500 bg-green-50'
                     : 'border-gray-200 hover:border-blue-300'
                 ]"
               >
                 <!-- Best Price Badge -->
                 <div
-                  v-if="deal.price === comparison.lowestPrice"
+                  v-if="isBest(deal, comparison)"
                   class="mb-3"
                 >
                   <span class="inline-block px-3 py-1 bg-green-500 text-white rounded-full text-xs font-bold">
-                    🏆 Best Price
+                    🏆 Lowest of {{ comparison.platformCount }}
                   </span>
                 </div>
 
@@ -213,21 +213,22 @@
                   +{{ getCurrencySymbol(comparison.currency) }}{{ formatPrice(deal.price - comparison.lowestPrice) }} more
                 </div>
 
+                <div class="mb-3 text-xs text-gray-500">Price checked {{ formatChecked(deal.checkedAt) }}</div>
+
                 <!-- CTA -->
-                <a
-                  :href="generateAffiliateLink(deal.affiliateLink)"
-                  @click="trackClick('comparison_click', { platform: deal.platform, comparison: comparison.id })"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  v-if="deal.affiliateLink"
+                  type="button"
+                  @click="openDeal(deal, comparison)"
                   :class="[
                     'block w-full text-center px-4 py-3 rounded-lg font-semibold transition-all transform hover:scale-105',
-                    deal.price === comparison.lowestPrice
+                    isBest(deal, comparison)
                       ? 'bg-green-600 hover:bg-green-700 text-white'
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
                   ]"
                 >
-                  {{ deal.price === comparison.lowestPrice ? '🚀 Book Now (Best Price)' : 'View Deal →' }}
-                </a>
+                  {{ isBest(deal, comparison) ? 'View lowest price →' : 'View deal →' }}
+                </button>
               </div>
             </div>
           </div>
@@ -239,15 +240,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useTripDeeplink } from '~/composables/useTripDeeplink'
+import { useRoute } from 'vue-router'
+import { openTrackedOutbound } from '~/utils/affiliate-links'
 import { useActivityTracker } from '~/composables/useActivityTracker'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
-const { generateDeeplink } = useTripDeeplink()
+const route = useRoute()
 const { trackClick } = useActivityTracker()
 
 // State
@@ -339,26 +340,33 @@ function getPlatformIcon(platform: string): string {
   return icons[platform] || '🌐'
 }
 
-function generateAffiliateLink(tripUrl?: string): string {
-  if (!tripUrl) {
-    return generateDeeplink({ type: 'generic', params: {} })
-  }
+// Only call one price the lowest when more than one platform lists the item
+function isBest(deal: any, comparison: any): boolean {
+  return comparison.platformCount > 1 && deal.price === comparison.lowestPrice
+}
 
-  try {
-    const url = new URL(tripUrl)
-    const config = useRuntimeConfig()
-    
-    if (!url.searchParams.has('Allianceid') && config.public.tripAllianceId) {
-      url.searchParams.set('Allianceid', config.public.tripAllianceId)
-    }
-    if (!url.searchParams.has('SID') && config.public.tripSID) {
-      url.searchParams.set('SID', config.public.tripSID)
-    }
-    
-    return url.toString()
-  } catch {
-    return tripUrl
-  }
+function formatChecked(value: string): string {
+  return new Intl.DateTimeFormat('en-SG', { dateStyle: 'medium' }).format(new Date(value))
+}
+
+function openDeal(deal: any, comparison: any) {
+  trackClick('comparison_click', { platform: deal.platform, comparison: comparison.id })
+  const sessionId = localStorage.getItem('activity_session_id') || `compare-${Date.now().toString(36)}`
+  if (!localStorage.getItem('activity_session_id')) localStorage.setItem('activity_session_id', sessionId)
+
+  openTrackedOutbound(async () => {
+    const response: any = await $fetch('/api/affiliate/click', {
+      method: 'POST',
+      body: {
+        provider: deal.platform,
+        baseUrl: deal.affiliateLink,
+        placementKey: 'compare_page',
+        pagePath: route.path,
+        sessionId
+      }
+    })
+    return response?.outboundUrl
+  }, deal.affiliateLink)
 }
 </script>
 

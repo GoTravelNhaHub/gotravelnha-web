@@ -1,6 +1,25 @@
 import { createError, defineEventHandler, readBody } from 'h3'
+import type { Prisma } from '@prisma/client'
 import prisma from '~/server/utils/prisma'
 import { buildAffiliateLink } from '~/server/services/affiliate-link.service'
+import { getSessionUser } from '~/server/utils/session'
+import { readAttribution, readVisitorSession } from '~/server/utils/attribution'
+
+// A raw baseUrl (no offerId) may only point at these partners, so this endpoint
+// can't be used to send visitors to an arbitrary site. Subdomains are allowed.
+const PARTNER_HOSTS = ['trip.com', 'klook.com', 'agoda.com', 'booking.com']
+
+const isPartnerUrl = (value: string) => {
+  try {
+    const url = new URL(value)
+    const host = url.hostname.toLowerCase()
+    return (
+      url.protocol === 'https:' && PARTNER_HOSTS.some((partner) => host === partner || host.endsWith(`.${partner}`))
+    )
+  } catch {
+    return false
+  }
+}
 
 interface AffiliateClickBody {
   offerId?: string
@@ -11,7 +30,6 @@ interface AffiliateClickBody {
   pagePath?: string
   sessionId?: string
   referrer?: string
-  userId?: string
   metadata?: Record<string, any>
 }
 
@@ -62,6 +80,19 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    if (!offer && !isPartnerUrl(baseUrl)) {
+      throw createError({ statusCode: 400, message: 'Unsupported partner link' })
+    }
+
+    const sessionUser = await getSessionUser(event).catch(() => null)
+    const clientMetadata =
+      body.metadata && typeof body.metadata === 'object' && JSON.stringify(body.metadata).length <= 2000
+        ? body.metadata
+        : null
+    const attribution = readAttribution(event)
+    const metadata = clientMetadata || attribution ? { ...clientMetadata, ...(attribution ? { attribution } : {}) } : null
+    const sessionId = body.sessionId || readVisitorSession(event) || 'anonymous'
+
     const { url: outboundUrl, subId } = buildAffiliateLink({
       provider,
       baseUrl,
@@ -70,7 +101,7 @@ export default defineEventHandler(async (event) => {
         offerId: offer?.id,
         placementKey: body.placementKey,
         pagePath: body.pagePath,
-        sessionId: body.sessionId
+        sessionId
       }
     })
 
@@ -83,8 +114,8 @@ export default defineEventHandler(async (event) => {
 
     const click = await prisma.affiliateClickEvent.create({
       data: {
-        sessionId: body.sessionId || 'anonymous',
-        userId: body.userId || null,
+        sessionId,
+        userId: sessionUser?.id ?? null,
         entityId,
         offerId: offer?.id || null,
         provider,
@@ -95,7 +126,7 @@ export default defineEventHandler(async (event) => {
         deviceType: detectDeviceType(userAgent),
         subId,
         outboundUrl,
-        metadata: body.metadata || null
+        metadata: (metadata ?? undefined) as Prisma.InputJsonValue | undefined
       }
     })
 

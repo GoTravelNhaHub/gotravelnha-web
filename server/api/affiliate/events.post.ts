@@ -1,5 +1,6 @@
 import { createError, defineEventHandler, readBody } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { enforceActivityRateLimit, clipText, boundedJson, cleanSessionId } from '~/server/utils/activity-limits'
 
 interface AffiliateEventBody {
   eventName: 'affiliate_offer_impression' | 'affiliate_offer_fallback_used' | 'affiliate_offer_unavailable'
@@ -13,6 +14,7 @@ interface AffiliateEventBody {
 }
 
 export default defineEventHandler(async (event) => {
+  enforceActivityRateLimit(event)
   try {
     const body = (await readBody(event)) as AffiliateEventBody
     if (!body?.eventName) {
@@ -31,16 +33,17 @@ export default defineEventHandler(async (event) => {
 
     await prisma.userActivity.create({
       data: {
-        sessionId: body.sessionId || 'anonymous',
+        sessionId: cleanSessionId(body.sessionId) || 'anonymous',
         timestamp: new Date(),
-        page: body.pagePath || 'unknown',
+        page: clipText(body.pagePath, 300) || 'unknown',
         action: body.eventName,
+        // Caller metadata is nested and size-capped so it can't overwrite these fields
         data: {
-          provider: body.provider || null,
-          entityId: body.entityId || null,
-          offerId: body.offerId || null,
-          placementKey: body.placementKey || null,
-          ...body.metadata
+          provider: clipText(body.provider, 40),
+          entityId: clipText(body.entityId, 80),
+          offerId: clipText(body.offerId, 80),
+          placementKey: clipText(body.placementKey, 80),
+          metadata: (boundedJson(body.metadata, 2000) as any) ?? null
         }
       }
     })

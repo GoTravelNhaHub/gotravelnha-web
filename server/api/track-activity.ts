@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { enforceActivityRateLimit, clipText, boundedJson, cleanSessionId } from '~/server/utils/activity-limits'
 
 interface ActivityData {
   sessionId: string
@@ -15,6 +16,7 @@ interface ActivityData {
 }
 
 export default defineEventHandler(async (event) => {
+  enforceActivityRateLimit(event)
   try {
     const activity = await readBody(event) as ActivityData
     const userAgentHeader = event.node.req.headers['user-agent']
@@ -22,9 +24,9 @@ export default defineEventHandler(async (event) => {
     const ipHeader = event.node.req.headers['x-forwarded-for'] ?? event.node.req.socket.remoteAddress
     const fallbackSession = Array.isArray(ipHeader) ? ipHeader[0] : typeof ipHeader === 'string' ? ipHeader : null
 
-    const sessionId = (activity?.sessionId && String(activity.sessionId).trim()) || fallbackSession || 'anonymous'
-    const page = activity?.page?.trim() || event.node.req.url || 'unknown'
-    const action = activity?.action?.trim() || 'view'
+    const sessionId = cleanSessionId(activity?.sessionId) || fallbackSession || 'anonymous'
+    const page = clipText(activity?.page, 300) || 'unknown'
+    const action = clipText(activity?.action, 60) || 'view'
 
     const parsedTimestamp = activity.timestamp ? new Date(activity.timestamp) : new Date()
     const timestamp = Number.isNaN(parsedTimestamp.getTime()) ? new Date() : parsedTimestamp
@@ -39,8 +41,8 @@ export default defineEventHandler(async (event) => {
         timestamp,
         page,
         action,
-        data: activity.data ?? null,
-        userAgent: activity.userAgent ?? (Array.isArray(userAgentHeader) ? userAgentHeader.join(' ') : userAgentHeader) ?? null,
+        data: (boundedJson(activity.data) as any) ?? undefined,
+        userAgent: clipText(activity.userAgent ?? (Array.isArray(userAgentHeader) ? userAgentHeader.join(' ') : userAgentHeader), 400),
         viewportWidth,
         viewportHeight
       }

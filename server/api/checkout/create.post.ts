@@ -1,7 +1,12 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import Stripe from 'stripe'
+import type { Prisma } from '@prisma/client'
 import prisma from '~/server/utils/prisma'
 import { estimateStripeFee } from '~/utils/pricing'
+import { feeConfig, formatSgd, supplierOptions, ticketPrice } from '~/server/utils/attraction-pricing'
+import { generateBookingReference } from '~/server/utils/booking-reference'
+import { readAttribution, readVisitorSession } from '~/server/utils/attribution'
+import { getSessionUser } from '~/server/utils/session'
 
 let stripeClient: Stripe | null = null
 
@@ -56,7 +61,17 @@ export default defineEventHandler(async (event) => {
       message: 'Please specify at least one ticket before proceeding to checkout.'
     })
   }
-  const customerEmail = typeof body?.customerEmail === 'string' ? body.customerEmail : undefined
+  if (totalQuantity > 20) {
+    throw createError({
+      statusCode: 400,
+      message: 'You can book up to 20 tickets per order. Please contact us for group bookings.'
+    })
+  }
+  const rawEmail = typeof body?.customerEmail === 'string' ? body.customerEmail.trim() : ''
+  if (rawEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+    throw createError({ statusCode: 400, message: 'Please enter a valid email address.' })
+  }
+  let customerEmail: string | undefined = rawEmail || undefined
   const customerName = typeof body?.customerName === 'string' ? body.customerName : undefined
   const customerPhone = typeof body?.customerPhone === 'string' ? body.customerPhone : undefined
 
@@ -78,7 +93,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const rawOptions = ((attraction as any)?.raw?.options as Record<string, any>[] | undefined) ?? []
+  const rawOptions = supplierOptions(attraction)
 
   const normalize = (value: unknown) =>
     typeof value === 'string' ? value.trim().toLowerCase() : undefined
@@ -86,33 +101,43 @@ export default defineEventHandler(async (event) => {
   const requestedCode = normalize(cart.optionCode) ?? normalize(selectedOption?.code)
   const requestedName = normalize(cart.optionName) ?? normalize(selectedOption?.name)
 
-  const matchedOption =
-    rawOptions.find((option) => normalize(option?.code) === requestedCode) ||
-    rawOptions.find((option) => normalize(option?.name) === requestedName) ||
-    (rawOptions.length === 1 ? rawOptions[0] : undefined)
+  // Price comes only from the DB. An option we can't match is rejected rather than
+  // priced from the request body.
+  const matchedOption = rawOptions.length
+    ? (requestedCode && rawOptions.find((option) => normalize(option?.code) === requestedCode)) ||
+      (requestedName && rawOptions.find((option) => normalize(option?.name) === requestedName)) ||
+      (rawOptions.length === 1 ? rawOptions[0] : undefined)
+    : undefined
 
-  const resolveNumber = (value: any) => {
-    const num = typeof value === 'number' ? value : parseFloat(String(value ?? ''))
-    return Number.isFinite(num) ? num : null
+  if (rawOptions.length && !matchedOption) {
+    throw createError({
+      statusCode: 409,
+      message: 'This ticket option is no longer available. Please refresh the page and choose again.'
+    })
   }
 
-  const priceCandidates = [
-    resolveNumber(matchedOption?.priceAmount),
-    resolveNumber(matchedOption?.price),
-    resolveNumber(selectedOption?.priceAmount),
-    resolveNumber(selectedOption?.price),
-    resolveNumber(cart.unitPrice),
-    resolveNumber(attraction.publicPrice),
-    resolveNumber(attraction.priceAmount),
-    resolveNumber(attraction.originalPriceAmount)
-  ]
+  const fees = feeConfig()
+  const priced = ticketPrice(attraction, matchedOption ?? null, fees)
 
-  const unitPublicPrice = priceCandidates.find((price) => price !== null && price > 0) ?? null
-
-  if (!unitPublicPrice || unitPublicPrice <= 0) {
+  if (!priced || priced.price <= 0) {
     throw createError({
       statusCode: 400,
       message: 'Unable to determine a valid ticket price for checkout.'
+    })
+  }
+  if (priced.cost === null) {
+    console.warn(`[checkout] No supplier cost for ${attraction.id}; margin will be unknown`)
+  }
+
+  const unitPublicPrice = priced.price
+  const resellerUnitCost = priced.cost
+
+  // The customer saw a price on the page; don't charge a different one silently
+  const shownPrice = Number.parseFloat(String(cart.unitPrice ?? ''))
+  if (Number.isFinite(shownPrice) && Math.abs(shownPrice - unitPublicPrice) >= 0.01) {
+    throw createError({
+      statusCode: 409,
+      message: `The price for this ticket is now ${formatSgd(unitPublicPrice)}. Please refresh the page to review it before paying.`
     })
   }
 
@@ -120,24 +145,15 @@ export default defineEventHandler(async (event) => {
   const unitAmount = Math.round(unitPublicPrice * 100)
 
   const stripe = getStripeClient(secretKey)
-  const stripePercent = Number(config.public?.stripeFeePercent ?? 0.034)
-  const stripeFixed = Number(config.public?.stripeFeeFixed ?? 0.5)
-  const resellerUnitCost =
-    [
-      resolveNumber(matchedOption?.priceAmount),
-      resolveNumber(attraction.resellerPriceAmount),
-      resolveNumber(attraction.priceAmount),
-      resolveNumber(attraction.originalPriceAmount)
-    ].find((price) => price !== null && price > 0) ?? null
   const totalAmount = Number((unitPublicPrice * totalQuantity).toFixed(2))
-  const totalStripeFeeEstimate = Number(estimateStripeFee(totalAmount, stripePercent, stripeFixed).toFixed(2))
+  const totalStripeFeeEstimate = Number(estimateStripeFee(totalAmount, fees.stripePercent, fees.stripeFixed).toFixed(2))
   const totalResellerCost =
     resellerUnitCost !== null ? Number((resellerUnitCost * totalQuantity).toFixed(2)) : null
   const totalNetAfterFees = Number((totalAmount - totalStripeFeeEstimate).toFixed(2))
 
   const normalizedCart = {
-    optionCode: matchedOption?.code ?? cart.optionCode ?? selectedOption?.code ?? null,
-    optionName: matchedOption?.name ?? cart.optionName ?? selectedOption?.name ?? null,
+    optionCode: matchedOption?.code ?? null,
+    optionName: matchedOption?.name ?? null,
     unitPrice: unitPublicPrice,
     unitCurrency: currency.toUpperCase(),
     quantity: totalQuantity,
@@ -149,7 +165,13 @@ export default defineEventHandler(async (event) => {
     unitResellerPrice: resellerUnitCost
   }
 
+  const sessionUser = await getSessionUser(event).catch(() => null)
+  // Signed-in customers book under their account email unless they typed another
+  customerEmail = customerEmail || sessionUser?.email || undefined
+  const reference = generateBookingReference()
+
   const metadata: Record<string, string> = {
+    bookingReference: reference,
     eventId: attraction.id,
     eventTitle: attraction.title,
     eventSlug: attraction.slug || '',
@@ -163,9 +185,8 @@ export default defineEventHandler(async (event) => {
     childCount: String(childCount)
   }
 
-  if (selectedOption?.code) metadata.optionCode = String(selectedOption.code)
-  if (selectedOption?.name) metadata.optionName = String(selectedOption.name)
-  if (selectedOption?.priceText) metadata.optionPriceText = String(selectedOption.priceText)
+  if (matchedOption?.code) metadata.optionCode = String(matchedOption.code)
+  if (matchedOption?.name) metadata.optionName = String(matchedOption.name)
   if (customerName) metadata.customerName = customerName
   if (customerEmail) metadata.customerEmail = customerEmail
 
@@ -192,7 +213,8 @@ export default defineEventHandler(async (event) => {
   const successUrlBase =
     config.public?.siteUrl || 'https://gotravelnha.com'
 
-  const successUrl = `${successUrlBase}/attractionsg/${attraction.slug || attraction.id}?checkout=success`
+  // {CHECKOUT_SESSION_ID} lets the page look the booking up instead of trusting the URL
+  const successUrl = `${successUrlBase}/attractionsg/${attraction.slug || attraction.id}?checkout=success&session_id={CHECKOUT_SESSION_ID}`
   const cancelUrl = `${successUrlBase}/attractionsg/${attraction.slug || attraction.id}?checkout=cancel`
 
   let session: Stripe.Checkout.Session
@@ -206,7 +228,9 @@ export default defineEventHandler(async (event) => {
       client_reference_id: attraction.id,
       metadata,
       payment_intent_data: {
-        metadata
+        metadata,
+        // Stripe's own receipt, sent when the payment succeeds
+        ...(customerEmail ? { receipt_email: customerEmail } : {})
       },
       allow_promotion_codes: true,
       automatic_tax: { enabled: false }
@@ -221,6 +245,10 @@ export default defineEventHandler(async (event) => {
 
   const booking = await prisma.attractionsgBooking.create({
     data: {
+      reference,
+      userId: sessionUser?.id ?? null,
+      sessionId: readVisitorSession(event),
+      attribution: (readAttribution(event) ?? undefined) as Prisma.InputJsonValue | undefined,
       eventId: attraction.id,
       eventTitle: attraction.title,
       eventSlug: attraction.slug,

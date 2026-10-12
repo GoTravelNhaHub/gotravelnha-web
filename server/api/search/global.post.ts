@@ -17,6 +17,7 @@ interface SearchResult {
   title: string
   description?: string
   price?: string | number
+  priceCheckedAt?: string
   priceAmount?: number
   originalPrice?: string | number
   originalPriceAmount?: number
@@ -71,7 +72,9 @@ export default defineEventHandler(async (event) => {
     const where: any = {
       isActive: true,
       provider: { in: [...new Set([...normalizedPlatforms, 'trip.com'])] },
-      availabilityStatus: { in: ['available', 'stale'] },
+      // Stale offers have unconfirmed prices, so they aren't returned as results
+      availabilityStatus: 'available',
+      AND: [{ OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] }],
       entity: {
         status: 'active'
       }
@@ -159,6 +162,7 @@ export default defineEventHandler(async (event) => {
         originalPrice: metadata.originalPrice ?? undefined,
         originalPriceAmount: Number(metadata.originalPrice) || undefined,
         currency: offer.currency || 'SGD',
+        priceCheckedAt: offer.lastVerifiedAt?.toISOString(),
         image: (metadata.image as string) || undefined,
         link: offer.baseUrl || offer.affiliateUrl || undefined,
         category: offer.entity?.category || undefined,

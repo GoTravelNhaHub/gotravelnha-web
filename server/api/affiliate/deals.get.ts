@@ -10,8 +10,11 @@ export default defineEventHandler(async (event) => {
     const category = query.category ? String(query.category).toLowerCase() : 'all'
     const sessionId = query.sessionId ? String(query.sessionId) : 'anonymous'
 
+    // Only offers a partner currently sells
     const where: any = {
-      isActive: true
+      isActive: true,
+      availabilityStatus: 'available',
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
     }
 
     if (platform !== 'all') where.provider = platform
@@ -45,9 +48,10 @@ export default defineEventHandler(async (event) => {
 
       const price = offer.priceAmount || 0
       const originalPrice = Number((offer.metadata as any)?.originalPrice || 0)
+      // Only claim a discount we can show both prices for
       const discountPercent = originalPrice > 0 && price > 0 && originalPrice > price
         ? Math.round(((originalPrice - price) / originalPrice) * 100)
-        : Number((offer.metadata as any)?.discountPercent || 0)
+        : 0
 
       return {
         id: offer.id,
@@ -58,11 +62,13 @@ export default defineEventHandler(async (event) => {
         location: offer.entity?.location || null,
         image: (offer.metadata as any)?.image || null,
         discountedPrice: price || null,
-        originalPrice: originalPrice || null,
+        originalPrice: originalPrice > price ? originalPrice : null,
         currency: offer.currency || 'SGD',
         discountPercent: discountPercent || null,
         affiliateLink: url,
         createdAt: offer.updatedAt,
+        // When the partner price was last confirmed; null means never verified
+        priceCheckedAt: offer.lastVerifiedAt,
         validUntil: offer.expiresAt,
         availabilityStatus: offer.availabilityStatus
       }

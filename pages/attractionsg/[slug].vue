@@ -134,9 +134,21 @@
                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <div>
-                  <p class="font-semibold">Payment received!</p>
-                  <p>Our team will confirm your booking shortly and email the voucher details.</p>
+                <div v-if="checkoutResult?.paymentConfirmed">
+                  <p class="font-semibold">Payment received – booking {{ checkoutResult.booking.reference }}</p>
+                  <p>
+                    We've emailed a confirmation{{ checkoutResult.email ? ` to ${checkoutResult.email}` : '' }}. Your booking isn't confirmed yet:
+                    we're ordering your tickets from our supplier and will email them as soon as they're confirmed.
+                  </p>
+                  <NuxtLink :to="`/bookings?ref=${checkoutResult.booking.reference}`" class="font-semibold underline">Track this booking</NuxtLink>
+                </div>
+                <div v-else-if="checkoutResult">
+                  <p class="font-semibold">Waiting for payment confirmation – booking {{ checkoutResult.booking.reference }}</p>
+                  <p>Some payment methods take a few minutes. We'll email you as soon as the payment is confirmed.</p>
+                </div>
+                <div v-else>
+                  <p class="font-semibold">{{ checkoutLookupPending ? 'Checking your payment…' : 'Back from checkout' }}</p>
+                  <p v-if="!checkoutLookupPending">If your payment went through, you'll get an email with your booking reference shortly.</p>
                 </div>
               </div>
               <div v-else-if="checkoutStatus === 'cancel'" class="flex items-start gap-3 rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
@@ -430,7 +442,7 @@
 
               <template v-if="canSelfBook">
                 <p class="mb-4 text-xs sm:text-sm text-slate-500">
-                  Instant checkout with secure payment powered by Stripe. You'll receive a confirmation email after payment.
+                  Secure payment by Stripe. You'll get a payment confirmation by email, then your tickets as soon as our supplier confirms them.
                 </p>
 
                 <div class="mb-4 sm:mb-6 space-y-3 sm:space-y-4 rounded-none sm:rounded-2xl border-0 sm:border border-b sm:border-emerald-100/80 border-slate-200 bg-transparent sm:bg-white/90 p-0 sm:p-5">
@@ -518,6 +530,12 @@
                   After payment, our team will place the order using our reseller credentials and email you the e-ticket.
                 </p>
                 <p v-if="checkoutError" class="text-xs sm:text-sm font-medium text-red-600 mt-2">{{ checkoutError }}</p>
+                <p class="text-xs text-slate-500 mt-3">
+                  Questions before you book?
+                  <NuxtLink to="/help" class="text-emerald-700 hover:underline">Help</NuxtLink> ·
+                  <NuxtLink to="/refund-policy" class="text-emerald-700 hover:underline">Refund policy</NuxtLink> ·
+                  <NuxtLink to="/contact" class="text-emerald-700 hover:underline">Contact us</NuxtLink>
+                </p>
               </template>
               <template v-else>
                 <div class="space-y-5">
@@ -719,13 +737,44 @@ let copyTimeout: ReturnType<typeof setTimeout> | null = null
 const checkoutLoading = ref<boolean>(false)
 const checkoutError = ref<string>('')
 const checkoutStatus = ref<string>('')
+const checkoutResult = ref<{
+  paymentConfirmed: boolean
+  email: string | null
+  booking: { reference: string | null; state: string }
+} | null>(null)
+const checkoutLookupPending = ref(false)
+
+// Funnel: detail view → checkout started → paid (bookings carry the same session id)
+const { trackPageView, trackClick } = useActivityTracker()
+watch(
+  () => event.value?.id,
+  (id) => {
+    if (process.client && id) {
+      trackPageView(`/attractionsg/${event.value?.slug || id}`, { eventId: id, isSelfBookable: !!event.value?.isSelfBookable })
+    }
+  },
+  { immediate: true }
+)
+
+// Look the booking up from the Stripe session instead of trusting ?checkout=success.
+// The webhook can lag the redirect, so retry a few times while payment is unconfirmed.
+const loadCheckoutResult = async (sessionId: string, attempt = 0) => {
+  checkoutLookupPending.value = true
+  try {
+    checkoutResult.value = await $fetch('/api/checkout/status', { query: { session_id: sessionId } })
+    if (!checkoutResult.value?.paymentConfirmed && attempt < 3) {
+      setTimeout(() => loadCheckoutResult(sessionId, attempt + 1), 3000)
+      return
+    }
+  } catch (err) {
+    console.error('Could not load checkout status:', err)
+  }
+  checkoutLookupPending.value = false
+}
 const quantityAdults = ref<number>(1)
 const quantityChildren = ref<number>(0)
 const cartError = ref<string>('')
 const cartConfirmed = ref<boolean>(false)
-const runtimeConfig = useRuntimeConfig()
-const stripePercent = Number(runtimeConfig.public?.stripeFeePercent ?? 0.034)
-const stripeFixed = Number(runtimeConfig.public?.stripeFeeFixed ?? 0.5)
 
 const requestURL = useRequestURL()
 const baseUrl = computed(() => `${requestURL.protocol}//${requestURL.host}`)
@@ -774,10 +823,8 @@ if (initialEventData.value?.event) {
 }
 
 const ticketOptions = computed<Record<string, any>[]>(() => {
-  const sourceOptions =
-    (event.value?.options as Record<string, any>[] | undefined) ??
-    (event.value?.raw?.options as Record<string, any>[] | undefined) ??
-    []
+  // Options from the API already carry our sell price, not the supplier cost
+  const sourceOptions = (event.value?.options as Record<string, any>[] | undefined) ?? []
 
   if (Array.isArray(sourceOptions) && sourceOptions.length > 0) {
     return sourceOptions.map((option) => {
@@ -793,17 +840,13 @@ const ticketOptions = computed<Record<string, any>[]>(() => {
 
   if (!event.value) return []
 
-  const fallbackPrice =
-    toNumber(event.value.publicPrice) ??
-    toNumber(event.value.priceAmount) ??
-    toNumber(event.value.originalPriceAmount) ??
-    null
+  const fallbackPrice = toNumber(event.value.publicPrice)
 
   return [
     {
       code: event.value.id,
       name: event.value.title || 'General Admission',
-      priceText: fallbackPrice ? formatCurrency(fallbackPrice) : event.value.priceText || null,
+      priceText: fallbackPrice ? formatCurrency(fallbackPrice) : null,
       priceAmount: fallbackPrice,
       description: event.value.description || null
     }
@@ -824,26 +867,10 @@ const lightboxOpen = ref(false)
 const lightboxIndex = ref(0)
 const optionsSectionRef: Ref<HTMLElement | null> = ref(null)
 
-const estimateStripeFeeLocal = (amount: number) => {
-  if (!amount || Number.isNaN(amount) || amount <= 0) return 0
-  return amount * stripePercent + stripeFixed
-}
-
 const unitPublicPrice = computed<number>(() => {
+  const optionPrice = toNumber(selectedOption.value?.priceAmount)
   const eventPublic = toNumber(event.value?.publicPrice)
-  const optionPublic = toNumber(selectedOption.value?.publicPrice)
-  const optionPrice = toNumber(selectedOption.value?.priceAmount ?? selectedOption.value?.price)
-  const eventPrice = toNumber(event.value?.priceAmount)
-  const eventOriginal = toNumber(event.value?.originalPriceAmount)
-  return optionPublic ?? optionPrice ?? eventPublic ?? eventPrice ?? eventOriginal ?? 0
-})
-
-const unitResellerPrice = computed<number>(() => {
-  const optionPrice = toNumber(selectedOption.value?.priceAmount ?? selectedOption.value?.price)
-  const eventReseller = toNumber(event.value?.resellerPriceAmount)
-  const eventPrice = toNumber(event.value?.priceAmount)
-  const eventOriginal = toNumber(event.value?.originalPriceAmount)
-  return optionPrice ?? eventReseller ?? eventPrice ?? eventOriginal ?? 0
+  return optionPrice ?? eventPublic ?? 0
 })
 
 const totalQuantity = computed<number>(() => {
@@ -884,16 +911,6 @@ const selectedOptionForForm = computed<Record<string, any> | null>(() => {
 const formattedTotalDue = computed<string>(() =>
   totalDue.value > 0 ? formatCurrency(totalDue.value) : event.value?.price || ''
 )
-
-const stripeFeeTotal = computed<number>(() => {
-  if (totalDue.value <= 0) return 0
-  return Number(estimateStripeFeeLocal(totalDue.value).toFixed(2))
-})
-
-const totalResellerCost = computed<number | null>(() => {
-  if (!unitResellerPrice.value || totalQuantity.value <= 0) return null
-  return Number((unitResellerPrice.value * totalQuantity.value).toFixed(2))
-})
 
 const openLightbox = (index = activeImageIndex.value) => {
   const images = galleryImages.value
@@ -999,17 +1016,20 @@ const handleCheckoutQuery = () => {
   const statusParam = Array.isArray(route.query.checkout)
     ? route.query.checkout[0]
     : route.query.checkout
-  if (!statusParam) {
-    checkoutStatus.value = ''
-    checkoutError.value = ''
-    return
-  }
+  // Removing ?checkout= below re-triggers this through the route watcher; keep the
+  // banner instead of clearing it. Switching events clears it in the event watcher.
+  if (!statusParam) return
   checkoutError.value = ''
   checkoutStatus.value = String(statusParam)
+  const sessionId = Array.isArray(route.query.session_id) ? route.query.session_id[0] : route.query.session_id
+  if (checkoutStatus.value === 'success' && typeof sessionId === 'string' && sessionId) {
+    loadCheckoutResult(sessionId)
+  }
   router.replace({
     query: {
       ...route.query,
-      checkout: undefined
+      checkout: undefined,
+      session_id: undefined
     }
   })
 }
@@ -1052,13 +1072,16 @@ const startCheckout = async () => {
         quantity: Math.max(totalQuantity.value, 1),
         adultCount: adults,
         childCount: children,
-        totalPrice: Number(totalDue.value.toFixed(2)),
-        stripeFeeEstimate: stripeFeeTotal.value,
-        resellerCost: totalResellerCost.value,
-        unitResellerPrice: unitResellerPrice.value ?? null
+        totalPrice: Number(totalDue.value.toFixed(2))
       }
     }
 
+    trackClick('checkout_started', {
+      eventId: event.value.id,
+      optionCode: selected?.code ?? null,
+      quantity: Math.max(totalQuantity.value, 1),
+      totalPrice: Number(totalDue.value.toFixed(2))
+    })
     const response = await $fetch<{ success: boolean; url?: string; message?: string }>('/api/checkout/create', {
       method: 'POST',
       body: payload

@@ -50,14 +50,15 @@
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between mb-4">
               <h2 class="text-xl font-bold text-gray-900">🎫 My Bookings</h2>
-              <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+              <NuxtLink to="/bookings" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
                 View All →
-              </button>
+              </NuxtLink>
             </div>
             <div class="space-y-4">
-              <div
+              <NuxtLink
                 v-for="booking in recentBookings"
                 :key="booking.id"
+                to="/bookings"
                 class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 <span class="text-3xl">{{ booking.icon }}</span>
@@ -72,7 +73,7 @@
                 ]">
                   {{ booking.status }}
                 </span>
-              </div>
+              </NuxtLink>
               <div v-if="recentBookings.length === 0" class="text-center py-8 text-gray-500">
                 No bookings yet. Start exploring! 🚀
               </div>
@@ -223,6 +224,7 @@
 </template>
 
 <script setup lang="ts">
+import type { CustomerBooking } from '~/types/booking'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthState } from '~/composables/useAuthState'
@@ -276,13 +278,46 @@ const userStats = ref({
   rewardsEarned: 0
 })
 
-const recentBookings = ref([])
+interface RecentBooking {
+  id: string
+  icon: string
+  title: string
+  description: string
+  date: string
+  status: string
+}
+
+const recentBookings = ref<RecentBooking[]>([])
+
+const STATE_LABEL: Record<CustomerBooking['state'], string> = {
+  awaiting_payment: 'Awaiting payment',
+  processing: 'Confirming tickets',
+  confirmed: 'Confirmed',
+  refunded: 'Refunded',
+  cancelled: 'Cancelled',
+  failed: 'Payment failed'
+}
+
+const loadRecentBookings = async () => {
+  try {
+    const response = await $fetch<{ data: CustomerBooking[] }>('/api/bookings')
+    userStats.value.totalBookings = response.data.filter((booking) => ['processing', 'confirmed'].includes(booking.state)).length
+    recentBookings.value = response.data.slice(0, 3).map((booking) => ({
+      id: booking.reference || booking.createdAt,
+      icon: '🎟️',
+      title: booking.eventTitle,
+      description: `${booking.reference} · ${booking.currency} ${booking.amount.toFixed(2)}`,
+      date: new Intl.DateTimeFormat('en-SG', { dateStyle: 'medium' }).format(new Date(booking.paidAt || booking.createdAt)),
+      status: STATE_LABEL[booking.state]
+    }))
+  } catch (error) {
+    console.error('Failed to load bookings:', error)
+  }
+}
 
 const favoriteDeals = ref([])
 
-const navigateToBookings = () => {
-  alert('Bookings page coming soon!')
-}
+const navigateToBookings = () => navigateTo('/bookings')
 
 const navigateToPoints = () => {
   alert('Loyalty points page coming soon!')
@@ -297,7 +332,7 @@ const viewSettings = () => {
 }
 
 onMounted(() => {
-  console.log('👤 User portal loaded')
+  loadRecentBookings()
 })
 </script>
 

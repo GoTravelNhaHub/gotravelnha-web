@@ -66,6 +66,20 @@
           </div>
         </div>
 
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+          <h3 class="text-lg font-bold text-gray-900 mb-4">Booking funnel (unique visitors)</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div v-for="step in funnelSteps" :key="step.label">
+              <div class="text-2xl font-bold text-gray-900">{{ step.value.toLocaleString() }}</div>
+              <div class="text-xs text-gray-600">{{ step.label }}</div>
+              <div v-if="step.rate !== null" class="text-xs text-gray-400">{{ step.rate }}% of previous</div>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-3">
+            Attraction detail views and checkout clicks are counted by visitor session. Sessions recorded before this release used a new id per page, so older windows undercount.
+          </p>
+        </div>
+
         <div
           v-if="data.orders.ordersMissingSupplierCost > 0"
           class="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-sm"
@@ -85,6 +99,10 @@
                 <dt class="font-semibold text-gray-900">Contribution</dt>
                 <dd class="font-bold">{{ money(data.orders.contribution) }}</dd>
               </div>
+              <div v-if="data.orders.discounts" class="flex justify-between text-xs text-amber-700">
+                <dt>Promo discounts given (already out of gross)</dt>
+                <dd>{{ money(data.orders.discounts) }}</dd>
+              </div>
             </dl>
             <p class="text-xs text-gray-500 mt-3">
               Stripe fees are actual for orders paid after this change, estimated before. Excludes marketing and staff time.
@@ -101,6 +119,7 @@
                   <th class="py-2">Clicks</th>
                   <th class="py-2">Conversions</th>
                   <th class="py-2">Commission</th>
+                  <th class="py-2">Per click</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100">
@@ -109,12 +128,60 @@
                   <td class="py-2 text-gray-700">{{ row.clicks.toLocaleString() }}</td>
                   <td class="py-2 text-gray-700">{{ row.conversions }}</td>
                   <td class="py-2 text-gray-700">{{ row.commission || '—' }}</td>
+                  <td class="py-2 text-gray-700">{{ row.perClick || '—' }}</td>
                 </tr>
               </tbody>
             </table>
             <p class="text-xs text-gray-500 mt-3">
-              Commissions come from affiliate_conversion_events. Nothing in the app writes that table yet, so this stays empty until partner reports are imported.
+              Commissions come from partner postbacks (/api/affiliate/postback) or the CSV import below. Rejected conversions are excluded.
             </p>
+            <form @submit.prevent="importConversions" class="mt-4 space-y-2 border-t border-gray-100 pt-4">
+              <label class="block text-sm font-semibold text-gray-800">Import partner commission report (CSV)</label>
+              <p class="text-xs text-gray-500">Columns: provider, sub_id, order_id, sale_amount, commission, currency, status, date. Re-importing the same order updates it.</p>
+              <input type="file" accept=".csv,text/csv" @change="readCsvFile" class="block text-sm" />
+              <textarea v-model="csvText" rows="3" placeholder="or paste CSV here" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-mono"></textarea>
+              <div class="flex items-center gap-3">
+                <button type="submit" :disabled="importing || !csvText.trim()" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 disabled:opacity-60">
+                  {{ importing ? 'Importing…' : 'Import' }}
+                </button>
+                <span v-if="importResult" class="text-xs text-gray-700">{{ importResult }}</span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+          <h3 class="text-lg font-bold text-gray-900 mb-1">By acquisition channel</h3>
+          <p class="text-xs text-gray-500 mb-4">
+            First touch from UTM tags, ad click ids or referrer. Add your ad spend per channel to get cost per order.
+            <span v-if="data.channelClicksSampled">Clicks are counted from the latest 20,000 only.</span>
+          </p>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Channel</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Orders</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Contribution</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Partner clicks</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Commission</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="row in data.byChannel" :key="row.channel" class="hover:bg-gray-50">
+                  <td class="px-4 py-3 font-medium text-gray-900">{{ row.channel }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ row.orders }}</td>
+                  <td :class="['px-4 py-3 font-medium', row.contribution >= 0 ? 'text-emerald-700' : 'text-red-700']">{{ money(row.contribution) }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ row.clicks.toLocaleString() }}</td>
+                  <td class="px-4 py-3 text-gray-700">
+                    {{ Object.entries(row.commission).map(([currency, value]) => `${currency} ${value.toFixed(2)}`).join(', ') || '—' }}
+                  </td>
+                </tr>
+                <tr v-if="data.byChannel.length === 0">
+                  <td colspan="5" class="px-4 py-6 text-center text-gray-500">No orders or clicks in this window.</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -162,6 +229,22 @@ definePageMeta({
 interface UnitEconomicsResponse {
   days: number
   currency: string
+  funnel: {
+    detailViewSessions: number
+    checkoutStartedSessions: number
+    checkoutSessionsCreated: number
+    paidOrders: number
+    viewToPaidRate: number
+  }
+  byChannel: Array<{
+    channel: string
+    orders: number
+    gross: number
+    contribution: number
+    clicks: number
+    commission: Record<string, number>
+  }>
+  channelClicksSampled: boolean
   checkout: { started: number; paid: number; conversionRate: number; refunded: number; awaitingSupplier: number }
   orders: {
     gross: number
@@ -169,6 +252,7 @@ interface UnitEconomicsResponse {
     stripeFees: number
     supplierCost: number
     contribution: number
+    discounts: number
     contributionMargin: number
     averageOrderValue: number
     contributionPerOrder: number
@@ -177,7 +261,15 @@ interface UnitEconomicsResponse {
   byAttraction: Array<{ eventTitle: string; orders: number; gross: number; contribution: number }>
   affiliate: {
     clicksByProvider: Array<{ provider: string; clicks: number }>
-    conversions: Array<{ provider: string; currency: string; conversions: number; commission: number }>
+    conversions: Array<{
+      provider: string
+      currency: string
+      conversions: number
+      sales: number
+      commission: number
+      commissionPerClick: number
+      conversionRate: number
+    }>
   }
 }
 
@@ -196,10 +288,55 @@ const affiliateRows = computed(() => {
       provider: row.provider,
       clicks: row.clicks,
       conversions: conversions.reduce((sum, c) => sum + c.conversions, 0),
-      commission: conversions.map((c) => `${c.currency} ${c.commission.toFixed(2)}`).join(', ')
+      commission: conversions.map((c) => `${c.currency} ${c.commission.toFixed(2)}`).join(', '),
+      perClick: conversions.map((c) => `${c.currency} ${c.commissionPerClick.toFixed(3)}`).join(', ')
     }
   })
 })
+
+const funnelSteps = computed(() => {
+  if (!data.value) return []
+  const f = data.value.funnel
+  const steps = [
+    { label: 'Viewed an attraction', value: f.detailViewSessions },
+    { label: 'Clicked checkout', value: f.checkoutStartedSessions },
+    { label: 'Reached Stripe', value: f.checkoutSessionsCreated },
+    { label: 'Paid', value: f.paidOrders }
+  ]
+  return steps.map((step, index) => ({
+    ...step,
+    rate: index === 0 || !steps[index - 1].value ? null : Math.round((step.value / steps[index - 1].value) * 1000) / 10
+  }))
+})
+
+const csvText = ref('')
+const importing = ref(false)
+const importResult = ref<string | null>(null)
+
+const readCsvFile = async (changeEvent: Event) => {
+  const file = (changeEvent.target as HTMLInputElement).files?.[0]
+  if (file) csvText.value = await file.text()
+}
+
+const importConversions = async () => {
+  try {
+    importing.value = true
+    importResult.value = null
+    const response = await $fetch<{ created: number; updated: number; skipped: number; errors: string[] }>(
+      '/api/admin/affiliate/conversions/import',
+      { method: 'POST', body: { csv: csvText.value } }
+    )
+    importResult.value = `${response.created} added, ${response.updated} updated, ${response.skipped} skipped${
+      response.errors.length ? ` (${response.errors.join('; ')})` : ''
+    }`
+    csvText.value = ''
+    await fetchEconomics()
+  } catch (err: any) {
+    importResult.value = err?.data?.message || 'Import failed.'
+  } finally {
+    importing.value = false
+  }
+}
 
 const fetchEconomics = async () => {
   try {

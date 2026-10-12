@@ -39,6 +39,7 @@ model User {
   referredBy    Referral?       @relation("Referee")
   travellers    Traveller[]
   trips         Trip[]
+  attractionBookings AttractionsgBooking[]
   
   @@unique([provider, providerId], name: "provider_unique")
   @@map("users")
@@ -293,14 +294,20 @@ model AffiliateClickEvent {
 }
 
 model AffiliateConversionEvent {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   provider   String
   subId      String
+  // Partner order id; with provider, makes imports and postbacks idempotent
+  orderId    String?
+  saleAmount Float?
   commission Float?
-  currency   String?  @default("USD")
+  currency   String?   @default("USD")
+  status     String?   // pending, approved, rejected
+  occurredAt DateTime?
   rawPayload Json?
-  createdAt  DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
+  @@unique([provider, orderId])
   @@index([provider, subId])
   @@index([createdAt])
   @@map("affiliate_conversion_events")
@@ -337,14 +344,33 @@ model AttractionsgBooking {
   paidAt                DateTime?
   refundedAmount        Float?
   refundedAt            DateTime?
+  // Customer-facing reference, e.g. GTN-7K3QX9MA
+  reference             String?        @unique
+  // Set when the customer was signed in at checkout, or we created their account
+  userId                String?
+  // Ticket delivery
+  voucherUrl            String?
+  voucherNote           String?
+  // Idempotency for post-payment steps, so webhook retries resume where they stopped
+  opsNotifiedAt         DateTime?
+  confirmationSentAt    DateTime?
+  ticketSentAt          DateTime?
+  // Stripe promotion code discount, in major units
+  discountAmount        Float?
+  // Funnel and acquisition
+  sessionId             String?
+  attribution           Json?
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
 
   event AttractionsgEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([eventId])
   @@index([status])
   @@index([supplierStatus])
+  @@index([userId])
+  @@index([sessionId])
   @@map("attractionsg_bookings")
 }
 
@@ -640,3 +666,21 @@ model ItineraryGeneration {
   @@map("itinerary_generations")
 }
 
+
+// Messages from the contact form. Stored so a failed email doesn't lose them.
+model ContactMessage {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  message   String
+  // Booking reference the customer quoted, if any
+  reference String?
+  userId    String?
+  emailedAt DateTime?
+  handledAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([createdAt])
+  @@index([handledAt])
+  @@map("contact_messages")
+}

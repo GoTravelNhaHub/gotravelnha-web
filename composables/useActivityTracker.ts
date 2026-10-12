@@ -1,4 +1,5 @@
 import { ref, onMounted, onUnmounted } from 'vue'
+import { getVisitorSessionId } from '~/utils/visitor-session'
 
 export interface UserActivity {
   sessionId: string
@@ -14,15 +15,11 @@ export interface UserActivity {
 }
 
 export const useActivityTracker = () => {
-  const sessionId = ref<string>(generateSessionId())
+  // Persistent per visitor, so page views can be joined to clicks and bookings
+  const sessionId = ref<string>(getVisitorSessionId())
   const isTracking = ref(false)
   const activityQueue = ref<UserActivity[]>([])
   const startTime = ref<number>(Date.now())
-
-  // Generate unique session ID
-  function generateSessionId(): string {
-    return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
-  }
 
   // Track page view
   const trackPageView = (page: string, additionalData?: any) => {

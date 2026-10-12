@@ -49,6 +49,7 @@ export const sendEmail = async (options: {
   html?: string
   text?: string
   from?: string
+  replyTo?: string
 }): Promise<void> => {
   const transporter = getTransporter()
   
@@ -63,6 +64,7 @@ export const sendEmail = async (options: {
     await transporter.sendMail({
       from: options.from || defaultFrom,
       to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
+      replyTo: options.replyTo,
       subject: options.subject,
       html: options.html,
       text: options.text || options.html?.replace(/<[^>]*>/g, '') // Strip HTML for text version
@@ -73,3 +75,12 @@ export const sendEmail = async (options: {
   }
 }
 
+
+/** Escape user-supplied text before putting it in an HTML email. */
+export const escapeHtml = (value: unknown) =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')

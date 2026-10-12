@@ -1,22 +1,14 @@
-import { defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { requireUser } from '~/server/utils/session'
 
 /**
- * GET /api/price-alerts/my-alerts?userId=xxx
- * Get user's price alerts
+ * GET /api/price-alerts/my-alerts
+ * Price alerts for the signed-in user
  */
 export default defineEventHandler(async (event) => {
+  const { id: userId } = await requireUser(event)
   try {
-    const query = getQuery(event)
-    const userId = query.userId as string
-
-    if (!userId) {
-      return {
-        success: false,
-        error: 'User ID is required'
-      }
-    }
-
     const alerts = await prisma.priceAlert.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' }

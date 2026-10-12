@@ -1,18 +1,29 @@
 import { defineEventHandler, getQuery } from 'h3'
 import prisma from '~/server/utils/prisma'
 
-// Self-checkout bookings. view=attention (default) lists paid bookings the supplier
-// has not confirmed yet: QUEUED, PLACING, FAILED, or never submitted.
+// Self-checkout bookings. view=attention (default) lists bookings someone needs to act on.
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const view = query.view === 'all' ? 'all' : 'attention'
   const limit = Math.min(Math.max(Number.parseInt(String(query.limit ?? '100'), 10) || 100, 1), 500)
 
+  // Needs attention: paid but tickets not confirmed or customer not emailed, or
+  // refunded with a supplier order still to cancel
   const where =
     view === 'attention'
       ? {
-          status: 'PAID' as const,
-          OR: [{ supplierStatus: null }, { supplierStatus: { not: 'CONFIRMED' } }]
+          OR: [
+            {
+              status: 'PAID' as const,
+              OR: [
+                { supplierStatus: null },
+                { supplierStatus: { not: 'CONFIRMED' } },
+                { confirmationSentAt: null },
+                { ticketSentAt: null }
+              ]
+            },
+            { supplierStatus: 'CANCEL_NEEDED' }
+          ]
         }
       : undefined
 
@@ -22,6 +33,7 @@ export default defineEventHandler(async (event) => {
     take: limit,
     select: {
       id: true,
+      reference: true,
       eventTitle: true,
       optionName: true,
       quantity: true,
@@ -36,6 +48,12 @@ export default defineEventHandler(async (event) => {
       customerName: true,
       customerEmail: true,
       stripePaymentIntentId: true,
+      voucherUrl: true,
+      voucherNote: true,
+      discountAmount: true,
+      opsNotifiedAt: true,
+      confirmationSentAt: true,
+      ticketSentAt: true,
       createdAt: true,
       updatedAt: true
     }

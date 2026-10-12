@@ -18,7 +18,8 @@
           <div class="font-semibold text-slate-800">
             {{ legacyDeal.discountedPrice ? `${legacyDeal.currency} ${Number(legacyDeal.discountedPrice).toFixed(2)}` : 'See partner' }}
           </div>
-          <div v-if="legacyDeal.createdAt" class="text-xs text-slate-500">Seen {{ formatSeenDate(legacyDeal.createdAt) }}</div>
+          <div v-if="legacyDeal.priceCheckedAt" class="text-xs text-slate-500">Price checked {{ formatSeenDate(legacyDeal.priceCheckedAt) }}</div>
+          <div v-else-if="legacyDeal.discountedPrice" class="text-xs text-slate-500">Confirm the price with the partner</div>
         </div>
         <div class="rounded-lg bg-slate-100 px-3 py-2">
           <div class="text-slate-500">Discount</div>
@@ -148,20 +149,14 @@ useHead(() => {
   const jsonLd = page
     ? {
         '@context': 'https://schema.org',
-        '@type': 'Product',
+        // No prices or stock are known here, so no Offer markup that would claim them
+        '@type': 'Service',
         name: page.title,
         description: page.description,
         image: ogImage,
-        brand: { '@type': 'Brand', name: 'GoTravelNha' },
+        provider: { '@type': 'Organization', name: 'GoTravelNha' },
         category: page.category,
-        areaServed: page.destination,
-        offers: page.comparison.map((option) => ({
-          '@type': 'Offer',
-          seller: { '@type': 'Organization', name: option.label },
-          url: option.baseUrl,
-          priceCurrency: 'USD',
-          availability: 'https://schema.org/InStock'
-        }))
+        areaServed: page.destination
       }
     : null
 

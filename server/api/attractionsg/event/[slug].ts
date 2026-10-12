@@ -1,5 +1,6 @@
 import { defineEventHandler, createError } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { feeConfig, toPublicAttraction } from '~/server/utils/attraction-pricing'
 
 export default defineEventHandler(async (event) => {
   const slug = event.context.params?.slug
@@ -28,12 +29,8 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: true,
-      event: {
-        ...record,
-        priceAmount: record.priceAmount ?? undefined,
-        originalPriceAmount: record.originalPriceAmount ?? undefined,
-        resellerPriceAmount: record.resellerPriceAmount ?? undefined
-      }
+      // Sell prices only; supplier cost, raw crawl data and admin notes stay server-side
+      event: toPublicAttraction(record, feeConfig())
     }
   } catch (error) {
     console.error('Failed to load attractionsg event:', error)

@@ -96,9 +96,9 @@
             />
             <label class="ml-2 text-sm text-gray-700">
               I agree to the
-              <a href="#" class="text-blue-600 hover:text-blue-800">Terms of Service</a>
+              <NuxtLink to="/terms" target="_blank" class="text-blue-600 hover:text-blue-800">Terms of Service</NuxtLink>
               and
-              <a href="#" class="text-blue-600 hover:text-blue-800">Privacy Policy</a>
+              <NuxtLink to="/privacy" target="_blank" class="text-blue-600 hover:text-blue-800">Privacy Policy</NuxtLink>
             </label>
           </div>
 

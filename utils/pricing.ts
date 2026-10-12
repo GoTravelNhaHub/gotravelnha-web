@@ -35,3 +35,24 @@ export function estimateStripeFee(amount: number, stripePercent = DEFAULT_STRIPE
   const fee = amount * stripePercent + stripeFixed
   return Math.round(fee * 100) / 100
 }
+
+export interface FeeConfig {
+  stripePercent?: number
+  stripeFixed?: number
+}
+
+/**
+ * Net margin per ticket the admin chose by setting the event's public price against
+ * its base supplier cost. Never negative, so prices derived from it at least cover
+ * the supplier cost and the Stripe fee.
+ */
+export function eventNetMargin(publicPrice: number | null, baseCost: number | null, fees: FeeConfig = {}): number {
+  if (publicPrice === null || baseCost === null || publicPrice <= 0) return 0
+  const margin = publicPrice - estimateStripeFee(publicPrice, fees.stripePercent, fees.stripeFixed) - baseCost
+  return Math.max(0, Math.round(margin * 100) / 100)
+}
+
+/** Customer price for a supplier cost that keeps the given net margin after the Stripe fee. */
+export function sellPriceForCost(cost: number, margin: number, fees: FeeConfig = {}): number {
+  return computeEndUserPrice({ resellerPrice: cost, margin, ...fees }).endUserPrice
+}

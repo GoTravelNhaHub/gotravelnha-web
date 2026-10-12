@@ -18,19 +18,19 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
-          <span class="text-sm font-medium">Best Price Guarantee</span>
+          <span class="text-sm font-medium">Compare partner options</span>
         </div>
         <div class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
-          <span class="text-sm font-medium">24/7 Support</span>
+          <span class="text-sm font-medium">Email support</span>
         </div>
         <div class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
-          <span class="text-sm font-medium">Instant Confirmation</span>
+          <span class="text-sm font-medium">Booking handled by our partner</span>
         </div>
       </div>
     </div>

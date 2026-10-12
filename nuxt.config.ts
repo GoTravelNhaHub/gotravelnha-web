@@ -98,6 +98,8 @@ export default defineNuxtConfig({
       /** Seals the login session cookie. At least 32 random characters. */
       SESSION_PASSWORD: process.env.SESSION_PASSWORD,
       SELF_BOOKING_NOTIFY_EMAIL: process.env.SELF_BOOKING_NOTIFY_EMAIL || process.env.SMTP_USER,
+      /** Shared secret partners put in the conversion postback URL. Postbacks are off when unset. */
+      AFFILIATE_POSTBACK_SECRET: process.env.AFFILIATE_POSTBACK_SECRET,
       public: {
         exchangeApiKey: process.env.EXCHANGE_API_KEY,
         apiBase: process.env.NUXT_PUBLIC_API_BASE,
@@ -115,6 +117,8 @@ export default defineNuxtConfig({
         KLOOK_AFFILIATE_ATTRACTION_REDIRECT_URL: process.env.KLOOK_AFFILIATE_ATTRACTION_REDIRECT_URL,
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
              siteUrl: process.env.NUXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://gotravelnha.com',
+             /** Customer support address shown on contact, help and booking pages. Hidden when unset. */
+             supportEmail: process.env.NUXT_PUBLIC_SUPPORT_EMAIL || '',
              enableBestDealsNav: process.env.NUXT_PUBLIC_ENABLE_BEST_DEALS_NAV ?? 'true',
              enableCompareNav: process.env.NUXT_PUBLIC_ENABLE_COMPARE_NAV ?? 'true',
              stripeFeePercent: process.env.NUXT_PUBLIC_STRIPE_FEE_PERCENT || '0.034',

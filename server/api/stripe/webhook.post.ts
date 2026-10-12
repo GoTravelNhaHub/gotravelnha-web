@@ -3,13 +3,9 @@ import { defineEventHandler, createError, readRawBody } from 'h3'
 import prisma from '~/server/utils/prisma'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { PrismaClient } from '@prisma/client'
-import { sendEmail } from '~/server/utils/email'
-import {
-  fulfillBookingWithSupplier,
-  isSupplierAutomationEnabled,
-  queueBookingForManualFulfillment
-} from '~/server/services/attractionsg-fulfillment'
-import { ensureUserFromCheckout } from '~/server/services/checkout-onboarding'
+import { sendEmail, escapeHtml } from '~/server/utils/email'
+import { runPostPaymentSteps } from '~/server/services/booking-post-payment'
+import { sendRefundNotice, supportEmail } from '~/server/services/booking-emails'
 
 const db = prisma as PrismaClient
 const bookings = (db as unknown as Record<string, any>)['attractionsgBooking']
@@ -161,18 +157,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, config:
       : session.payment_intent?.id ?? targetBooking.stripePaymentIntentId
   const amountPaid =
     typeof session.amount_total === 'number' ? session.amount_total / 100 : targetBooking.amount
+  const discount =
+    typeof session.total_details?.amount_discount === 'number' ? session.total_details.amount_discount / 100 : 0
   const actualStripeFee = paymentIntentId ? await fetchActualStripeFee(paymentIntentId, config) : null
   const stripeFee = actualStripeFee ?? targetBooking.stripeFeeAmount
 
   // Atomic claim: Stripe sends both checkout.session.completed and
-  // payment_intent.succeeded, and retries. Only one caller moves the booking to
-  // PAID and goes on to order from the supplier and send emails.
+  // payment_intent.succeeded, and retries. Only one caller moves the booking to PAID.
   const claim = await bookings.updateMany({
     where: { id: targetBooking.id, status: { in: ['PENDING', 'FAILED', 'CANCELLED'] } },
     data: {
       status: 'PAID',
       paidAt: new Date(),
       amount: amountPaid,
+      discountAmount: discount > 0 ? discount : null,
       stripeFeeAmount: stripeFee,
       netRevenue: typeof stripeFee === 'number' ? Number((amountPaid - stripeFee).toFixed(2)) : undefined,
       customerEmail: customerDetails?.email ?? targetBooking.customerEmail ?? undefined,
@@ -182,143 +180,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, config:
     }
   })
 
-  if (claim.count === 0) {
-    console.info('Booking already processed:', targetBooking.id, targetBooking.status)
-    return
-  }
-
-  console.info('Booking marked as paid:', targetBooking.id)
-
-  let updatedBooking = await bookings.findUniqueOrThrow({
-    where: { id: targetBooking.id },
-    include: { event: true }
-  })
-
-  if (updatedBooking.customerEmail) {
-    try {
-      await ensureUserFromCheckout({
-        email: updatedBooking.customerEmail,
-        name: updatedBooking.customerName,
-        bookingId: updatedBooking.id
-      })
-    } catch (accountError) {
-      console.error('[checkout-onboarding] Failed to ensure user account:', accountError)
+  if (claim.count > 0) {
+    console.info('Booking marked as paid:', targetBooking.id)
+    if (discount > 0 && targetBooking.resellerCost !== null && amountPaid - (stripeFee ?? 0) < targetBooking.resellerCost) {
+      console.warn('[stripe] Discounted booking is below supplier cost:', targetBooking.id)
     }
   }
 
-  const supplierAutomationEnabled = isSupplierAutomationEnabled(config)
-
-  if (updatedBooking.event?.isSelfBookable && supplierAutomationEnabled) {
-    try {
-      await fulfillBookingWithSupplier(updatedBooking.id, config)
-    } catch (supplierError) {
-      console.error('[supplier] Unexpected error while placing order:', supplierError)
-      await bookings.updateMany({
-        where: { id: updatedBooking.id, supplierStatus: 'PLACING' },
-        data: {
-          supplierStatus: 'FAILED',
-          supplierPayload: {
-            error: supplierError instanceof Error ? supplierError.message : String(supplierError)
-          }
-        }
-      })
-    }
-  } else {
-    await queueBookingForManualFulfillment(updatedBooking.id, supplierAutomationEnabled)
-  }
-
-  updatedBooking = await bookings.findUniqueOrThrow({
-    where: { id: updatedBooking.id },
-    include: { event: true }
-  })
-
-  const notifyEmail = config.SELF_BOOKING_NOTIFY_EMAIL || config.SMTP_USER
-
-  if (!notifyEmail) {
-    console.warn('No notification email configured for bookings.')
-    return
-  }
-
-  const optionInfo =
-    updatedBooking.optionName || updatedBooking.optionCode
-      ? `<p><strong>Ticket Option:</strong> ${[
-          updatedBooking.optionName,
-          updatedBooking.optionCode
-        ]
-          .filter(Boolean)
-          .join(' - ')}</p>`
-      : ''
-
-  const guestInfoParts: string[] = []
-  if (typeof updatedBooking.adultCount === 'number') {
-    guestInfoParts.push(`${updatedBooking.adultCount} adult${updatedBooking.adultCount === 1 ? '' : 's'}`)
-  }
-  if (typeof updatedBooking.childCount === 'number' && updatedBooking.childCount > 0) {
-    guestInfoParts.push(`${updatedBooking.childCount} child${updatedBooking.childCount === 1 ? '' : 'ren'}`)
-  }
-  const guestInfo = guestInfoParts.length
-    ? `<p><strong>Guests:</strong> ${guestInfoParts.join(' + ')}</p>`
-    : ''
-
-  const checkoutNotes =
-    updatedBooking.event.checkoutNotes
-      ? `<p><strong>Checkout Notes:</strong> ${updatedBooking.event.checkoutNotes}</p>`
-      : ''
-
-  const metaBlock = updatedBooking.metadata
-    ? `<pre style="background:#f3f4f6;padding:12px;border-radius:8px;">${JSON.stringify(
-        updatedBooking.metadata,
-        null,
-        2
-      )}</pre>`
-    : ''
-  const supplierBlock = `
-    <p><strong>Supplier Status:</strong> ${updatedBooking.supplierStatus || 'N/A'}</p>
-    ${
-      updatedBooking.supplierOrderId
-        ? `<p><strong>Supplier Order ID:</strong> ${updatedBooking.supplierOrderId}</p>`
-        : ''
-    }
-  `
-
-  const html = `
-    <h2>✅ New Paid Booking via GoTravelNha</h2>
-    <p>A customer completed a Stripe checkout for <strong>${updatedBooking.eventTitle}</strong>.</p>
-    <p><strong>Quantity:</strong> ${updatedBooking.quantity}</p>
-    <p><strong>Amount Paid:</strong> SGD ${updatedBooking.amount.toFixed(2)}</p>
-    ${optionInfo}
-    ${guestInfo}
-    <p><strong>Customer:</strong> ${
-      updatedBooking.customerName || 'N/A'
-    }</p>
-    <p><strong>Email:</strong> ${
-      updatedBooking.customerEmail || 'N/A'
-    }</p>
-    <p><strong>Phone:</strong> ${
-      updatedBooking.customerPhone || 'N/A'
-    }</p>
-    ${checkoutNotes}
-    ${supplierBlock}
-    <p><strong>Stripe Session:</strong> ${updatedBooking.stripeSessionId}</p>
-    <p><strong>Stripe Payment Intent:</strong> ${
-      updatedBooking.stripePaymentIntentId || 'N/A'
-    }</p>
-    ${metaBlock}
-    <p>Please fulfill the ticket order via the SG Attractions reseller portal.</p>
-  `
-
-  try {
-    await sendEmail({
-      to: notifyEmail,
-      subject: `New Attraction Booking - ${updatedBooking.eventTitle}`,
-      html
-    })
-    console.info('Booking payment notification sent:', updatedBooking.id)
-  } catch (err) {
-    console.error('Failed to send booking notification:', err)
-  }
-
-  await notifyCustomer(updatedBooking, config)
+  // Runs on the first delivery and again on retries; each step skips work already done
+  await runPostPaymentSteps(targetBooking.id, config)
 }
 
 async function handlePaymentIntentSuccess(paymentIntent: Stripe.PaymentIntent, config: RuntimeConfig) {
@@ -374,6 +244,7 @@ async function handlePaymentIntentSuccess(paymentIntent: Stripe.PaymentIntent, c
       if (claim.count > 0) {
         console.info('Marked booking paid via payment_intent.succeeded fallback:', bookingRecord.id)
       }
+      await runPostPaymentSteps(bookingRecord.id, config)
     }
   } else {
     console.warn('payment_intent.succeeded received with no metadata. PaymentIntent ID:', paymentIntent.id)
@@ -388,18 +259,53 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
     return
   }
 
-  const result = await bookings.updateMany({
-    where: { stripePaymentIntentId: paymentIntentId },
+  const booking = await bookings.findFirst({ where: { stripePaymentIntentId: paymentIntentId } })
+  if (!booking) {
+    console.warn('charge.refunded but no booking for payment intent:', paymentIntentId)
+    return
+  }
+
+  const refunded = charge.amount_refunded / 100
+  // Stripe sends one event per refund and retries; only act when the total grew
+  if (refunded <= (booking.refundedAmount ?? 0)) return
+
+  // A full refund on a ticket that was (or may be) ordered needs a supplier cancellation
+  const needsSupplierCancel =
+    charge.refunded && ['CONFIRMED', 'QUEUED', 'PLACING'].includes(booking.supplierStatus ?? '')
+
+  await bookings.update({
+    where: { id: booking.id },
     data: {
-      refundedAmount: charge.amount_refunded / 100,
+      refundedAmount: refunded,
       refundedAt: new Date(),
       // Partial refunds keep the booking PAID; the refunded amount is recorded
-      ...(charge.refunded ? { status: 'REFUNDED' } : {})
+      ...(charge.refunded ? { status: 'REFUNDED' } : {}),
+      ...(needsSupplierCancel ? { supplierStatus: 'CANCEL_NEEDED' } : {})
     }
   })
 
-  if (result.count === 0) {
-    console.warn('charge.refunded but no booking for payment intent:', paymentIntentId)
+  try {
+    await sendRefundNotice(booking, refunded, charge.refunded)
+  } catch (err) {
+    console.error('Failed to send refund notice:', booking.id, err)
+  }
+
+  if (needsSupplierCancel && supportEmail()) {
+    try {
+      await sendEmail({
+        to: supportEmail(),
+        subject: `ACTION NEEDED: cancel supplier order for refunded booking ${booking.reference}`,
+        html: `
+          <h2>Refunded booking needs a supplier cancellation</h2>
+          <p><strong>Reference:</strong> ${escapeHtml(booking.reference)}</p>
+          <p><strong>Attraction:</strong> ${escapeHtml(booking.eventTitle)}</p>
+          <p><strong>Supplier order:</strong> ${escapeHtml(booking.supplierOrderId || 'not recorded')}</p>
+          <p><strong>Refunded:</strong> ${escapeHtml(booking.currency)} ${refunded.toFixed(2)}</p>
+          <p>Cancel the ticket in the reseller portal, then clear it in Admin → Bookings.</p>`
+      })
+    } catch (err) {
+      console.error('Failed to send supplier cancellation alert:', booking.id, err)
+    }
   }
 }
 
@@ -421,42 +327,3 @@ async function fetchActualStripeFee(paymentIntentId: string, config: RuntimeConf
   }
   return null
 }
-
-async function notifyCustomer(updatedBooking: Awaited<ReturnType<typeof bookings.update>>, config: RuntimeConfig) {
-  if (!updatedBooking.customerEmail) {
-    return
-  }
-
-  const formattedAmount = `SGD ${updatedBooking.amount.toFixed(2)}`
-  const formattedDate = new Intl.DateTimeFormat('en-SG', {
-    dateStyle: 'long',
-    timeStyle: 'short'
-  }).format(new Date())
-
-  const html = `
-    <h2>Thanks for booking with GoTravelNha!</h2>
-    <p>We have received your payment for <strong>${updatedBooking.eventTitle}</strong>.</p>
-    <p>
-      <strong>Booking details</strong><br/>
-      Quantity: ${updatedBooking.quantity}<br/>
-      Amount Paid: ${formattedAmount}<br/>
-      Payment ID: ${updatedBooking.stripePaymentIntentId || 'N/A'}<br/>
-      Date: ${formattedDate}
-    </p>
-    <p>Our team is now processing your ticket with our supplier. You will receive your e-ticket via email once the order is confirmed.</p>
-    <p>If you have any urgent requests, reach us at <a href="mailto:${config.SELF_BOOKING_NOTIFY_EMAIL || config.SMTP_USER}">${config.SELF_BOOKING_NOTIFY_EMAIL || config.SMTP_USER}</a>.</p>
-    <p>Safe travels!<br/>The GoTravelNha Team</p>
-  `
-
-  try {
-    await sendEmail({
-      to: updatedBooking.customerEmail,
-      subject: `Your booking for ${updatedBooking.eventTitle} is confirmed`,
-      html
-    })
-    console.info('Customer confirmation email sent:', updatedBooking.id)
-  } catch (err) {
-    console.error('Failed to send customer confirmation:', err)
-  }
-}
-

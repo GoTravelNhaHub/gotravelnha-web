@@ -454,9 +454,13 @@ onBeforeUnmount(() => {
           <p class="text-slate-400 text-xs sm:text-sm">
             © {{ new Date().getFullYear() }} GoTravelNha. All rights reserved.
           </p>
-          <div class="flex items-center gap-4 sm:gap-6 text-xs text-slate-500">
-            <a href="#" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Privacy Policy</a>
-            <a href="#" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Terms of Service</a>
+          <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 sm:gap-x-6 text-xs text-slate-500">
+            <NuxtLink to="/help" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Help</NuxtLink>
+            <NuxtLink to="/bookings" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">My bookings</NuxtLink>
+            <NuxtLink to="/contact" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Contact</NuxtLink>
+            <NuxtLink to="/refund-policy" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Refunds</NuxtLink>
+            <NuxtLink to="/privacy" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Privacy Policy</NuxtLink>
+            <NuxtLink to="/terms" class="hover:text-slate-300 active:text-slate-200 transition-colors touch-manipulation py-1">Terms of Service</NuxtLink>
           </div>
         </div>
       </div>

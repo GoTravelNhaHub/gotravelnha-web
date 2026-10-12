@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
       console.error('Error updating widget:', error)
       return {
         success: false,
-        error: error.message || 'Failed to update widget'
+        error: 'Failed to update widget'
       }
     }
   }
@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
       console.error('Error deleting widget:', error)
       return {
         success: false,
-        error: error.message || 'Failed to delete widget'
+        error: 'Failed to delete widget'
       }
     }
   }

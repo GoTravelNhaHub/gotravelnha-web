@@ -10,7 +10,7 @@ Add these to your `.env` file:
 
 ```bash
 # AttractionsSG Reseller Credentials
-ATTRACTIONSG_EMAIL=enjoytravelticket@gmail.com
+ATTRACTIONSG_EMAIL=your-attractionsg-email
 ATTRACTIONSG_PASSWORD=your-attractionsg-password
 ```
 

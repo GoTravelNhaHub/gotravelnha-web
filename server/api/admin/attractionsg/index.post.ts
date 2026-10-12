@@ -91,7 +91,7 @@ export default defineEventHandler(async (event) => {
     console.error('Admin attractions update error:', error)
     throw createError({
       statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to update attractions events'
+      message: 'Failed to update attractions events'
     })
   }
 })

@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       console.error('Failed to update deal template:', error)
       return {
         success: false,
-        error: error.message || 'Failed to update template'
+        error: 'Failed to update template'
       }
     }
   }
@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
       console.error('Failed to delete deal template:', error)
       return {
         success: false,
-        error: error.message || 'Failed to delete template'
+        error: 'Failed to delete template'
       }
     }
   }

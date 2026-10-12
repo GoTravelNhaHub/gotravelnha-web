@@ -117,7 +117,7 @@ export default defineEventHandler(async (event) => {
     console.error('Failed to save affiliate slot:', error)
     throw createError({
       statusCode: error?.statusCode || 500,
-      message: error?.message || 'Failed to save affiliate slot'
+      message: 'Failed to save affiliate slot'
     })
   }
 })

@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
       console.error('Error fetching scraper jobs:', error)
       throw createError({
         statusCode: 500,
-        message: error.message || 'Failed to fetch scraper jobs'
+        message: 'Failed to fetch scraper jobs'
       })
     }
   }
@@ -131,7 +131,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error creating scraper job:', error)
     throw createError({
       statusCode: 500,
-      message: error.message || 'Failed to create scraper job'
+      message: 'Failed to create scraper job'
     })
   }
 })
@@ -265,7 +265,7 @@ async function runScraperJob(jobId: string) {
       where: { id: jobId },
       data: {
         status: 'FAILED',
-        error: error.message
+        error: (error instanceof Error ? error.message : 'Job failed').slice(0, 500)
       }
     })
   }

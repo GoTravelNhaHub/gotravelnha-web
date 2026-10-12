@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error creating price alert:', error)
     return {
       success: false,
-      error: error.message || 'Failed to create price alert'
+      error: 'Failed to create price alert'
     }
   }
 })

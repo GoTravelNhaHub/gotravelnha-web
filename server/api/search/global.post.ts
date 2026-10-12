@@ -281,7 +281,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error in unified search:', error)
     throw createError({
       statusCode: 500,
-      message: error.message || 'Failed to perform search'
+      message: 'Failed to perform search'
     })
   }
 })

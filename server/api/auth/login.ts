@@ -2,8 +2,10 @@ import * as bcrypt from 'bcrypt'
 import { defineEventHandler, readBody } from 'h3'
 import prisma from '~/server/utils/prisma'
 import { setAuthSession } from '~/server/utils/session'
+import { enforceRateLimit } from '~/server/utils/activity-limits'
 
 export default defineEventHandler(async (event) => {
+  enforceRateLimit(event, 'login', 10, 15 * 60 * 1000)
   try {
     const body = await readBody(event)
 
@@ -34,9 +36,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Verify password
-    const isValidPassword = await bcrypt.compare(body.password, user.password)
-
-    if (!isValidPassword) {
+    if (!user.password || !(await bcrypt.compare(body.password, user.password))) {
       throw createError({
         statusCode: 401,
         message: 'Invalid username or password'
@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
     await setAuthSession(event, user.id)
 
     // Return user data (without password)
-    const { password, ...userWithoutPassword } = user
+    const { password, resetToken, resetTokenExpires, ...userWithoutPassword } = user
 
     return {
       success: true,
@@ -55,7 +55,8 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error: any) {
     console.error('Login error:', error)
-    throw error
+    if (error?.statusCode && error.statusCode < 500) throw error
+    throw createError({ statusCode: 500, message: 'Could not sign in.' })
   }
 })
 

@@ -1,4 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
+import { requireAdmin } from '~/server/utils/session'
+import { assertPublicHttpUrl } from '~/server/utils/safe-url'
 import { chromium } from 'playwright'
 import * as cheerio from 'cheerio'
 import { createError } from 'h3'
@@ -36,6 +38,7 @@ interface ScrapeResult {
 }
 
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event)
   try {
     const body = await readBody(event) as PromotionScrapeRequest
 
@@ -45,6 +48,7 @@ export default defineEventHandler(async (event) => {
         message: 'URL is required'
       })
     }
+    body.url = await assertPublicHttpUrl(body.url)
 
     const isProduction = process.env.NODE_ENV === 'production'
 
@@ -105,7 +109,7 @@ export default defineEventHandler(async (event) => {
     console.error('Trip.com scraping error:', error)
     throw createError({
       statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to scrape Trip.com promotions'
+      message: error?.statusCode && error.statusCode < 500 ? error.message : 'Failed to scrape Trip.com promotions'
     })
   }
 })

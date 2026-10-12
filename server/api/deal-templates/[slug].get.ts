@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
       data: builtin
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to fetch template'
+    const message = 'Failed to fetch template'
     console.error('Failed to resolve deal template by slug:', error)
     return {
       success: false,

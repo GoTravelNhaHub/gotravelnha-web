@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
     console.error('Failed to auto fetch hero image:', error)
     return {
       success: false,
-      error: error.message || 'Failed to fetch image metadata'
+      error: 'Failed to fetch image metadata'
     }
   }
 })

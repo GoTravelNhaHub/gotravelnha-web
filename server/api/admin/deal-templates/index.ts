@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
       console.error('Failed to fetch admin deal templates:', error)
       return {
         success: false,
-        error: error.message || 'Failed to fetch templates',
+        error: 'Failed to fetch templates',
         data: []
       }
     }
@@ -86,7 +86,7 @@ export default defineEventHandler(async (event) => {
       console.error('Failed to create deal template:', error)
       return {
         success: false,
-        error: error.message || 'Failed to create template'
+        error: 'Failed to create template'
       }
     }
   }

@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
       console.error('Error fetching Klook widgets:', error)
       return {
         success: false,
-        error: error.message || 'Failed to fetch widgets'
+        error: 'Failed to fetch widgets'
       }
     }
   }
@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
       console.error('Error creating widget:', error)
       return {
         success: false,
-        error: error.message || 'Failed to create widget'
+        error: 'Failed to create widget'
       }
     }
   }

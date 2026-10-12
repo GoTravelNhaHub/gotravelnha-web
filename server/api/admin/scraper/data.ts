@@ -64,7 +64,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching scraped data:', error)
     throw createError({
       statusCode: 500,
-      message: error.message || 'Failed to fetch scraped data'
+      message: 'Failed to fetch scraped data'
     })
   }
 })

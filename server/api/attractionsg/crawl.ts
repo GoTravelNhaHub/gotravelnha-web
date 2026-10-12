@@ -7,6 +7,7 @@ import { writeFile, readFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import { join } from 'path'
 import prisma from '~/server/utils/prisma'
+import { requireAdmin } from '~/server/utils/session'
 
 const db = prisma as any
 const BASE_URL = 'https://mobile.attractionsg.com'
@@ -252,8 +253,11 @@ async function executeCrawl(body: CrawlRequest, event?: H3Event) {
   // Perform fresh crawl (local/background)
   console.log('🕷️ Starting AttractionsSG crawl...')
 
-  const email = config.ATTRACTIONSG_EMAIL || 'enjoytravelticket@gmail.com'
-  const password = config.ATTRACTIONSG_PASSWORD || 'your-attractionsg-password'
+  const email = config.ATTRACTIONSG_EMAIL
+  const password = config.ATTRACTIONSG_PASSWORD
+  if (!email || !password) {
+    throw createError({ statusCode: 500, message: 'AttractionsSG login is not configured.' })
+  }
   const waitAfterNavigation = body.fullCrawl ? 3000 : 2000
 
   const browser = await chromium.launch({
@@ -355,15 +359,14 @@ async function executeCrawl(body: CrawlRequest, event?: H3Event) {
 }
 
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event)
   try {
     const body = (await readBody(event)) as CrawlRequest
     return await executeCrawl(body, event)
   } catch (error: any) {
     console.error('Crawl error:', error)
-    throw createError({
-      statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to crawl AttractionsSG'
-    })
+    if (error?.statusCode && error.statusCode < 500) throw error
+    throw createError({ statusCode: 500, message: 'Failed to crawl AttractionsSG' })
   }
 })
 

@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching Klook widgets:', error)
     return {
       success: false,
-      error: error.message || 'Failed to fetch widgets',
+      error: 'Failed to fetch widgets',
       data: []
     }
   }

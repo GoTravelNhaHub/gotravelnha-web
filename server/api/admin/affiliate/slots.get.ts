@@ -42,7 +42,7 @@ export default defineEventHandler(async () => {
     console.error('Failed to fetch affiliate slots:', error)
     throw createError({
       statusCode: 500,
-      message: error?.message || 'Failed to fetch affiliate slots'
+      message: 'Failed to fetch affiliate slots'
     })
   }
 })

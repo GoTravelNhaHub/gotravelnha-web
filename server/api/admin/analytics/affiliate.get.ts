@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
     console.error('Affiliate analytics fetch error:', error)
     throw createError({
       statusCode: error?.statusCode || 500,
-      message: error?.message || 'Failed to fetch affiliate analytics'
+      message: 'Failed to fetch affiliate analytics'
     })
   }
 })

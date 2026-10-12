@@ -57,7 +57,7 @@ export default defineEventHandler(async (event): Promise<AnalyticsResponse> => {
     console.error('Analytics API error:', error)
     return {
       success: false,
-      error: error.message || 'Failed to fetch analytics data'
+      error: 'Failed to fetch analytics data'
     }
   }
 })

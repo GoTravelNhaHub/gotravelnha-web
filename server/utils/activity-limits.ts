@@ -8,6 +8,20 @@ const WINDOW_MS = 60 * 1000
 const MAX_PER_WINDOW = 120
 const hits = new Map<string, number[]>()
 
+/** Per-instance limit. Slows one client; it is not a global cap across serverless instances. */
+export function enforceRateLimit(event: H3Event, bucket: string, max: number, windowMs: number) {
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+  const key = `${bucket}:${ip}`
+  const now = Date.now()
+  const recent = (hits.get(key) || []).filter((time) => now - time < windowMs)
+  if (recent.length >= max) {
+    throw createError({ statusCode: 429, message: 'Too many requests. Please try again later.' })
+  }
+  recent.push(now)
+  hits.set(key, recent)
+  if (hits.size > 10000) hits.clear()
+}
+
 export function enforceActivityRateLimit(event: H3Event) {
   const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
   const now = Date.now()

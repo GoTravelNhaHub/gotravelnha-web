@@ -30,7 +30,7 @@ const getTransporter = (): Transporter | null => {
         pass: config.SMTP_PASS
       },
       tls: {
-        rejectUnauthorized: config.SMTP_TLS_REJECT_UNAUTHORIZED === 'false' ? false : true,
+        rejectUnauthorized: true,
         minVersion: config.SMTP_TLS_MIN_VERSION || undefined,
         ciphers: config.SMTP_TLS_CIPHERS || undefined
       }
@@ -50,6 +50,7 @@ export const sendEmail = async (options: {
   text?: string
   from?: string
   replyTo?: string
+  cc?: string | string[]
 }): Promise<void> => {
   const transporter = getTransporter()
   
@@ -65,6 +66,7 @@ export const sendEmail = async (options: {
       from: options.from || defaultFrom,
       to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
       replyTo: options.replyTo,
+      cc: options.cc ? (Array.isArray(options.cc) ? options.cc.join(', ') : options.cc) : undefined,
       subject: options.subject,
       html: options.html,
       text: options.text || options.html?.replace(/<[^>]*>/g, '') // Strip HTML for text version

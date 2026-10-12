@@ -27,7 +27,7 @@ export default defineEventHandler(async () => {
       data: merged
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to fetch deal templates'
+    const message = 'Failed to fetch deal templates'
     console.error('Failed to merge deal templates:', error)
     return {
       success: false,

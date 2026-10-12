@@ -169,7 +169,7 @@ export default defineEventHandler(async () => {
     console.error('Failed to import affiliate sources:', error)
     throw createError({
       statusCode: 500,
-      message: error?.message || 'Failed to import affiliate sources'
+      message: 'Failed to import affiliate sources'
     })
   }
 })

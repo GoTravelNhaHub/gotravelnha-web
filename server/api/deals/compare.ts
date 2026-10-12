@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error comparing deals:', error)
     throw createError({
       statusCode: 500,
-      message: error.message || 'Failed to compare deals'
+      message: 'Failed to compare deals'
     })
   }
 })

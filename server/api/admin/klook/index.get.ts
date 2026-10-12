@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
     console.error('Admin Klook events fetch error:', error)
     throw createError({
       statusCode: 500,
-      message: error.message || 'Failed to load Klook events'
+      message: 'Failed to load Klook events'
     })
   }
 })

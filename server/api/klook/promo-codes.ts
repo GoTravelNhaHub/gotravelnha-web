@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     console.error('Failed to fetch Klook promo codes:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: `Failed to fetch promo codes: ${error.message}`
+      statusMessage: 'Failed to fetch promo codes'
     })
   }
 })

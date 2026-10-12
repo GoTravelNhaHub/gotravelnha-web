@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
       console.error('Error fetching scraper sources:', error)
       throw createError({
         statusCode: 500,
-        message: error.message || 'Failed to fetch scraper sources'
+        message: 'Failed to fetch scraper sources'
       })
     }
   }
@@ -129,7 +129,7 @@ export default defineEventHandler(async (event) => {
       console.error('Error creating/updating scraper source:', error)
       throw createError({
         statusCode: 500,
-        message: error.message || 'Failed to create/update scraper source'
+        message: 'Failed to create/update scraper source'
       })
     }
   }
@@ -158,7 +158,7 @@ export default defineEventHandler(async (event) => {
       console.error('Error deleting scraper source:', error)
       throw createError({
         statusCode: 500,
-        message: error.message || 'Failed to delete scraper source'
+        message: 'Failed to delete scraper source'
       })
     }
   }

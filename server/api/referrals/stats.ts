@@ -1,43 +1,24 @@
-import { defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { requireUser } from '~/server/utils/session'
 
-/**
- * GET /api/referrals/stats?userId=xxx
- * Get referral statistics for a user
- */
+/** Referral stats for the signed-in user. The client cannot pick another userId. */
 export default defineEventHandler(async (event) => {
   try {
-    const query = getQuery(event)
-    const userId = query.userId as string
-
-    if (!userId) {
-      return {
-        success: false,
-        error: 'User ID is required'
-      }
-    }
+    const user = await requireUser(event)
+    const userId = user.id
 
     const [totalReferrals, signedUp, completedBookings, totalRewards] = await Promise.all([
+      prisma.referral.count({ where: { referrerId: userId } }),
       prisma.referral.count({
-        where: { referrerId: userId }
+        where: { referrerId: userId, status: { in: ['SIGNED_UP', 'COMPLETED_BOOKING', 'REWARDED'] } }
       }),
       prisma.referral.count({
-        where: {
-          referrerId: userId,
-          status: { in: ['SIGNED_UP', 'COMPLETED_BOOKING', 'REWARDED'] }
-        }
-      }),
-      prisma.referral.count({
-        where: {
-          referrerId: userId,
-          status: { in: ['COMPLETED_BOOKING', 'REWARDED'] }
-        }
+        where: { referrerId: userId, status: { in: ['COMPLETED_BOOKING', 'REWARDED'] } }
       }),
       prisma.referral.aggregate({
         where: { referrerId: userId },
-        _sum: {
-          rewardPoints: true
-        }
+        _sum: { rewardPoints: true }
       })
     ])
 
@@ -45,16 +26,12 @@ export default defineEventHandler(async (event) => {
       where: { referrerId: userId },
       orderBy: { createdAt: 'desc' },
       take: 10,
-      include: {
-        referee: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            firstName: true,
-            lastName: true
-          }
-        }
+      select: {
+        id: true,
+        status: true,
+        createdAt: true,
+        signupAt: true,
+        referee: { select: { id: true, firstName: true } }
       }
     })
 
@@ -70,10 +47,7 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error: any) {
     console.error('Error fetching referral stats:', error)
-    return {
-      success: false,
-      error: error.message || 'Failed to fetch referral stats'
-    }
+    if (error?.statusCode && error.statusCode < 500) throw error
+    return { success: false, error: 'Failed to fetch referral stats' }
   }
 })
-

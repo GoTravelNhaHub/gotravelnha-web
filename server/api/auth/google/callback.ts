@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler, getQuery, getCookie, deleteCookie } from 'h3'
 import { OAuth2Client } from 'google-auth-library'
 import * as bcrypt from 'bcrypt'
 import prisma from '~/server/utils/prisma'
@@ -7,15 +7,21 @@ import { setAuthSession } from '~/server/utils/session'
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const code = query.code as string
-  const state = query.state as string || '/user'
+  const state = typeof query.state === 'string' ? query.state : ''
   const error = query.error as string
+  const expectedState = getCookie(event, 'google_oauth_state')
+  deleteCookie(event, 'google_oauth_state', { path: '/' })
 
   if (error) {
-    return sendRedirect(event, `/login?error=${encodeURIComponent(error)}`)
+    return sendRedirect(event, '/login?error=oauth_denied')
   }
 
   if (!code) {
     return sendRedirect(event, '/login?error=no_code')
+  }
+
+  if (!expectedState || state !== expectedState) {
+    return sendRedirect(event, '/login?error=invalid_state')
   }
 
   const clientId = process.env.GOOGLE_CLIENT_ID
@@ -55,11 +61,10 @@ export default defineEventHandler(async (event) => {
     const lastName = payload.family_name
     const profileImage = payload.picture
 
-    if (!email) {
-      throw new Error('No email found in Google account')
+    if (!email || payload.email_verified !== true) {
+      return sendRedirect(event, '/login?error=email_not_verified')
     }
 
-    // Check if user exists by email or Google ID
     let user = await prisma.user.findFirst({
       where: {
         OR: [
@@ -70,7 +75,6 @@ export default defineEventHandler(async (event) => {
     })
 
     if (user) {
-      // Update existing user with Google info if needed
       if (!user.provider || !user.providerId) {
         user = await prisma.user.update({
           where: { id: user.id },
@@ -121,15 +125,10 @@ export default defineEventHandler(async (event) => {
 
     await setAuthSession(event, user.id)
 
-    // Redirect based on state (which page they came from)
-    const redirectTo = state === '/admin' ? '/admin' : '/user'
-    
-    // The login page reads the signed-in user from /api/auth/me
     return sendRedirect(event, '/login?success=true')
-    
   } catch (err: any) {
     console.error('Google OAuth error:', err)
-    return sendRedirect(event, `/login?error=${encodeURIComponent(err.message)}`)
+    return sendRedirect(event, '/login?error=sign_in_failed')
   }
 })
 

@@ -46,7 +46,7 @@ export default defineEventHandler(async () => {
     console.error('Admin dashboard stats fetch error:', error)
     throw createError({
       statusCode: 500,
-      message: error?.message || 'Failed to load dashboard stats'
+      message: 'Failed to load dashboard stats'
     })
   }
 })

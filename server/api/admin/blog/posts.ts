@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     } catch (error: any) {
       return {
         success: false,
-        error: error.message
+        error: 'Something went wrong'
       }
     }
   }
@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
     } catch (error: any) {
       return {
         success: false,
-        error: error.message
+        error: 'Something went wrong'
       }
     }
   }

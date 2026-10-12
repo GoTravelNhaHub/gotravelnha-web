@@ -140,7 +140,7 @@ export default defineEventHandler(async (event) => {
     console.error('Affiliate click tracking error:', error)
     throw createError({
       statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to track affiliate click'
+      message: 'Failed to track affiliate click'
     })
   }
 })

@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     console.error('Failed to fetch Klook hotel deals:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: `Failed to fetch hotel deals: ${error.message}`
+      statusMessage: 'Failed to fetch hotel deals'
     })
   }
 })

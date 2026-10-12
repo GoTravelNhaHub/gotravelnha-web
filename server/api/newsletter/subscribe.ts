@@ -1,15 +1,19 @@
 import { defineEventHandler, readBody } from 'h3'
 import prisma from '~/server/utils/prisma'
-import { sendEmail } from '~/server/utils/email'
+import { sendEmail, escapeHtml } from '~/server/utils/email'
+import { enforceRateLimit } from '~/server/utils/activity-limits'
 
 /**
  * POST /api/newsletter/subscribe
  * Subscribe to newsletter
  */
 export default defineEventHandler(async (event) => {
+  enforceRateLimit(event, 'newsletter', 5, 10 * 60 * 1000)
   try {
     const body = await readBody(event)
-    const { email, name, source } = body
+    const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase().slice(0, 200) : ''
+    const name = typeof body?.name === 'string' ? body.name.trim().slice(0, 100) : ''
+    const source = typeof body?.source === 'string' ? body.source.trim().slice(0, 40) : 'website'
 
     if (!email || !email.includes('@')) {
       return {
@@ -75,7 +79,7 @@ export default defineEventHandler(async (event) => {
             <p>Happy travels! 🗺️</p>
             <hr>
             <p style="font-size: 12px; color: #666;">
-              <a href="${process.env.NUXT_PUBLIC_API_BASE || 'https://gotravelnha.com'}/newsletter/unsubscribe?email=${encodeURIComponent(email)}">Unsubscribe</a>
+              <a href="${escapeHtml(process.env.NUXT_PUBLIC_SITE_URL || 'https://gotravelnha.com')}/newsletter/unsubscribe?email=${encodeURIComponent(email)}">Unsubscribe</a>
             </p>
           </div>
         `
@@ -87,14 +91,14 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: true,
-      message: 'Successfully subscribed! Check your email for confirmation.',
-      subscriber
+      message: 'Successfully subscribed! Check your email for confirmation.'
     }
   } catch (error: any) {
     console.error('Newsletter subscription error:', error)
+    if (error?.statusCode === 429) throw error
     return {
       success: false,
-      error: error.message || 'Failed to subscribe. Please try again.'
+      error: 'Failed to subscribe. Please try again.'
     }
   }
 })

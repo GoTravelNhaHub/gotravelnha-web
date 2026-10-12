@@ -71,7 +71,7 @@ SMTP_USER=your-email@enjoytravelsingapore.com
 SMTP_PASS=your-smtp-password
 
 # AttractionsSG (REQUIRED - PDPA Protected)
-ATTRACTIONSG_EMAIL=enjoytravelticket@gmail.com
+ATTRACTIONSG_EMAIL=your-attractionsg-email
 ATTRACTIONSG_PASSWORD=your-attractionsg-password
 
 # Trip.com Affiliate (Optional)

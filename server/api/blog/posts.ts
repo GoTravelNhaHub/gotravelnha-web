@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching blog posts:', error)
     return {
       success: false,
-      error: error.message || 'Failed to fetch blog posts'
+      error: 'Failed to fetch blog posts'
     }
   }
 })

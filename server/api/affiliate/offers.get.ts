@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     console.error('Affiliate offers resolve error:', error)
     throw createError({
       statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to resolve affiliate offers'
+      message: 'Failed to resolve affiliate offers'
     })
   }
 })

@@ -2,6 +2,8 @@ import { defineEventHandler, readBody } from 'h3'
 import { chromium } from 'playwright'
 import * as cheerio from 'cheerio'
 import { createError } from 'h3'
+import { requireAdmin } from '~/server/utils/session'
+import { assertPublicHttpUrl } from '~/server/utils/safe-url'
 
 interface ScraperRequest {
   url: string
@@ -12,6 +14,7 @@ interface ScraperRequest {
 }
 
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event)
   try {
     const body = await readBody(event) as ScraperRequest
 
@@ -21,6 +24,7 @@ export default defineEventHandler(async (event) => {
         message: 'URL is required'
       })
     }
+    body.url = await assertPublicHttpUrl(body.url)
 
     const isProduction = process.env.NODE_ENV === 'production'
 
@@ -95,9 +99,10 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error: any) {
     console.error('Scraping error:', error)
+    if (error?.statusCode && error.statusCode < 500) throw error
     throw createError({
-      statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to scrape the URL'
+      statusCode: 500,
+      message: 'Failed to scrape the URL'
     })
   }
 })

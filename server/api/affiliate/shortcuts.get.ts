@@ -112,7 +112,7 @@ export default defineEventHandler(async () => {
     console.error('Affiliate shortcuts fetch error:', error)
     throw createError({
       statusCode: 500,
-      message: error?.message || 'Failed to fetch affiliate shortcuts'
+      message: 'Failed to fetch affiliate shortcuts'
     })
   }
 })

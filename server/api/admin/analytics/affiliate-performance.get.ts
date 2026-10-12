@@ -113,7 +113,7 @@ export default defineEventHandler(async (event) => {
     console.error('Affiliate performance dashboard fetch error:', error)
     throw createError({
       statusCode: error?.statusCode || 500,
-      message: error?.message || 'Failed to fetch affiliate performance dashboard'
+      message: 'Failed to fetch affiliate performance dashboard'
     })
   }
 })

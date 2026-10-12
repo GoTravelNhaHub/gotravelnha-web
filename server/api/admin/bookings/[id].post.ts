@@ -105,7 +105,7 @@ export default defineEventHandler(async (event) => {
       return { success: true, refundId: refund.id, status: refund.status }
     } catch (error: any) {
       console.error('[admin] Stripe refund failed:', booking.id, error)
-      throw createError({ statusCode: 502, message: error?.message || 'Stripe refund failed.' })
+      throw createError({ statusCode: 502, message: 'Stripe refund failed.' })
     }
   }
 

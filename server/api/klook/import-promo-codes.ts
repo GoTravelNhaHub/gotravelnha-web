@@ -1,4 +1,5 @@
 import { readFile } from 'fs/promises'
+import { requireAdmin } from '~/server/utils/session'
 import pkg from 'papaparse'
 const { parse } = pkg
 import prisma from '~/server/utils/prisma'
@@ -26,6 +27,7 @@ function parseDateTime(dateStr: string): Date {
 }
 
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event)
   try {
     const body = await readBody(event)
     
@@ -47,7 +49,7 @@ export default defineEventHandler(async (event) => {
       console.error('CSV parsing errors:', parsed.errors)
       throw createError({
         statusCode: 400,
-        statusMessage: `CSV parsing failed: ${parsed.errors[0].message}`
+        statusMessage: 'CSV parsing failed'
       })
     }
 
@@ -156,7 +158,7 @@ export default defineEventHandler(async (event) => {
     console.error('Klook promo code import error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: `Import failed: ${error.message}`
+      statusMessage: 'Import failed'
     })
   }
 })

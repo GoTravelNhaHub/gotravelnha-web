@@ -1,41 +1,25 @@
-import { defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { requireUser } from '~/server/utils/session'
 
-/**
- * GET /api/referrals/my-code?userId=xxx
- * Get user's referral code (create if doesn't exist)
- */
+/** The signed-in user's own referral code. */
 export default defineEventHandler(async (event) => {
   try {
-    const query = getQuery(event)
-    const userId = query.userId as string
+    const user = await requireUser(event)
 
-    if (!userId) {
-      return {
-        success: false,
-        error: 'User ID is required'
-      }
-    }
-
-    // Find existing referral code
     let referral = await prisma.referral.findFirst({
-      where: {
-        referrerId: userId
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      where: { referrerId: user.id, status: 'PENDING', refereeId: null },
+      orderBy: { createdAt: 'desc' }
     })
 
-    // Create if doesn't exist
     if (!referral) {
-      const userIdPrefix = userId.substring(0, 8).replace(/-/g, '')
+      const userIdPrefix = user.id.substring(0, 8).replace(/-/g, '')
       const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase()
       const referralCode = `GVH${userIdPrefix}${randomSuffix}`.toUpperCase()
 
       referral = await prisma.referral.create({
         data: {
-          referrerId: userId,
+          referrerId: user.id,
           referralCode,
           status: 'PENDING'
         }
@@ -44,15 +28,11 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: true,
-      code: referral.referralCode,
-      referral
+      code: referral.referralCode
     }
   } catch (error: any) {
     console.error('Error fetching referral code:', error)
-    return {
-      success: false,
-      error: error.message || 'Failed to fetch referral code'
-    }
+    if (error?.statusCode && error.statusCode < 500) throw error
+    return { success: false, error: 'Failed to fetch referral code' }
   }
 })
-

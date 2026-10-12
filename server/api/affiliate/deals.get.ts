@@ -81,8 +81,8 @@ export default defineEventHandler(async (event) => {
   } catch (error: any) {
     console.error('Affiliate deals fetch error:', error)
     throw createError({
-      statusCode: error?.statusCode || 500,
-      message: error?.message || 'Failed to fetch affiliate deals'
+      statusCode: error?.statusCode && error.statusCode < 500 ? error.statusCode : 500,
+      message: error?.statusCode && error.statusCode < 500 ? error.message : 'Failed to fetch affiliate deals'
     })
   }
 })

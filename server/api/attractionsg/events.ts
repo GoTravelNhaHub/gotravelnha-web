@@ -94,7 +94,7 @@ export default defineEventHandler(async (event) => {
     console.error('Events API error:', error)
     throw createError({
       statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to fetch events'
+      message: 'Failed to fetch events'
     })
   }
 })

@@ -151,7 +151,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error comparing activities:', error)
     throw createError({
       statusCode: 500,
-      message: error.message || 'Failed to compare activities'
+      message: 'Failed to compare activities'
     })
   }
 })

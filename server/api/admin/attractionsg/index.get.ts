@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
     console.error('Admin attractions fetch error:', error)
     throw createError({
       statusCode: 500,
-      message: error.message || 'Failed to load attractions events'
+      message: 'Failed to load attractions events'
     })
   }
 })

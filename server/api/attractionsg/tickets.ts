@@ -1,4 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
+import { requireAdmin } from '~/server/utils/session'
 import { chromium } from 'playwright'
 import * as cheerio from 'cheerio'
 import { createError } from 'h3'
@@ -23,13 +24,16 @@ interface TicketData {
 }
 
 export default defineEventHandler(async (event) => {
+  await requireAdmin(event)
   try {
     const body = await readBody(event) as AttractionsSGRequest
-    
-    // Credentials - securely stored in environment variables
+
     const config = useRuntimeConfig()
-    const email = config.ATTRACTIONSG_EMAIL || 'enjoytravelticket@gmail.com'
-    const password = config.ATTRACTIONSG_PASSWORD || 'password'
+    const email = config.ATTRACTIONSG_EMAIL
+    const password = config.ATTRACTIONSG_PASSWORD
+    if (!email || !password) {
+      throw createError({ statusCode: 500, message: 'AttractionsSG login is not configured.' })
+    }
     
     const isProduction = process.env.NODE_ENV === 'production'
 
@@ -119,7 +123,7 @@ export default defineEventHandler(async (event) => {
     console.error('AttractionsSG API error:', error)
     throw createError({
       statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to fetch AttractionsSG tickets'
+      message: error?.statusCode && error.statusCode < 500 ? error.message : 'Failed to fetch AttractionsSG tickets'
     })
   }
 })

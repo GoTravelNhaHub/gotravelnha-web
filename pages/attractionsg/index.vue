@@ -257,14 +257,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
         </svg>
         <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">No Events Available Yet</h3>
-        <p class="text-sm sm:text-base text-slate-600 mb-4 sm:mb-6">Start by crawling AttractionsSG data to populate events</p>
-        <button
-          @click="triggerCrawl"
-          class="px-5 sm:px-6 py-3 sm:py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:from-emerald-700 hover:to-teal-700 active:from-emerald-800 active:to-teal-800 font-semibold transition-all transform active:scale-95 sm:hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto touch-manipulation min-h-[44px]"
-        >
-          <span>🕷️</span>
-          <span>Crawl AttractionsSG Data</span>
-        </button>
+        <p class="text-sm sm:text-base text-slate-600">Published attractions will show up here.</p>
       </div>
     </section>
   </div>
@@ -502,65 +495,6 @@ const rememberScrollPosition = () => {
 const loadMoreTickets = () => {
   if (!hasMoreTickets.value) return
   visibleCount.value = Math.min(visibleCount.value + ITEMS_PER_BATCH, filteredTickets.value.length)
-}
-
-const triggerCrawl = async () => {
-  try {
-    loading.value = true
-    error.value = null
-    
-    console.log('🕷️ Triggering background crawl...')
-    
-    // Trigger crawl in background (it runs headless, returns immediately)
-    $fetch('/api/attractionsg/crawl', {
-      method: 'POST',
-      body: {
-        fullCrawl: true,
-        maxPages: 30 // Crawl detailed info for first 30 events for faster response
-      }
-    }).catch(err => {
-      console.error('Crawl error (non-blocking):', err)
-    })
-    
-    console.log('✅ Crawl initiated, checking for data...')
-    
-    // Poll for data to be available
-    let attempts = 0
-    const maxAttempts = 300 // 5 minutes max (detailed crawl with images can take time)
-    
-    const checkData = setInterval(async () => {
-      attempts++
-      
-      try {
-        const res = await $fetch<{ data: AttractionEvent[] }>('/api/attractionsg/events', {
-          method: 'POST',
-          body: {
-            limit: 1
-          }
-        })
-        
-        if (res.data && res.data.length > 0) {
-          clearInterval(checkData)
-          console.log('✅ Data available, reloading...')
-          await loadTickets()
-        } else if (attempts >= maxAttempts) {
-          clearInterval(checkData)
-          error.value = 'Crawl taking longer than expected. Please try refreshing the page in a few minutes.'
-          loading.value = false
-        } else if (attempts % 10 === 0) {
-          // Show progress every 10 attempts
-          console.log(`⏳ Still crawling... (${attempts}s elapsed)`)
-        }
-      } catch (err) {
-        console.error('Error checking data:', err)
-      }
-    }, 1000) // Check every second
-    
-  } catch (err) {
-    error.value = 'Failed to initiate crawl. Please try again later.'
-    console.error('Error triggering crawl:', err)
-    loading.value = false
-  }
 }
 
 onMounted(() => {

@@ -239,7 +239,7 @@ export default defineEventHandler(async (event) => {
     console.error('Stripe session error:', err)
     throw createError({
       statusCode: 500,
-      message: err?.message || 'Unable to create checkout session.'
+      message: 'Unable to create checkout session.'
     })
   }
 

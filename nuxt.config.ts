@@ -4,6 +4,13 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     modules: ['@nuxtjs/tailwindcss'],
     css: ['@/assets/css/tailwind.css'],
+    nitro: {
+      vercel: {
+        // The trip planner's model call can take up to a minute. Applies to the whole
+        // server function; Vercel caps it at the plan's maximum.
+        functions: { maxDuration: 120 }
+      }
+    },
     app: {
         head: {
           title: 'GoTravelNha - Discover, Compare & Book Travel Deals | Trip.com, Klook & More',

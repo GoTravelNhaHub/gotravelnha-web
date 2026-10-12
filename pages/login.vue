@@ -128,6 +128,12 @@ definePageMeta({
 })
 
 const router = useRouter()
+
+// Only same-site paths, so ?redirect= can't send users to another domain
+const safeRedirect = () => {
+  const redirect = new URLSearchParams(window.location.search).get('redirect')
+  return redirect && redirect.startsWith('/') && !redirect.startsWith('//') && !redirect.startsWith('/\\') ? redirect : null
+}
 const { setUser } = useAuthState()
 
 const loginForm = ref({
@@ -177,7 +183,9 @@ const loadUserAndRedirect = async () => {
       setUser(response.user)
       
       // Redirect based on role
-      if (response.user.role === 'ADMIN') {
+      if (safeRedirect()) {
+        router.push(safeRedirect()!)
+      } else if (response.user.role === 'ADMIN') {
         router.push('/admin')
       } else {
         router.push('/user')
@@ -209,7 +217,9 @@ const handleLogin = async () => {
     setUser(response.user)
 
     // Redirect based on role
-    if (response.role === 'ADMIN') {
+    if (safeRedirect()) {
+      router.push(safeRedirect()!)
+    } else if (response.role === 'ADMIN') {
       router.push('/admin')
     } else {
       router.push('/user')

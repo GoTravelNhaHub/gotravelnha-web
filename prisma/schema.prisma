@@ -37,6 +37,8 @@ model User {
   loyaltyPoints LoyaltyPoint[]
   referrals     Referral[]      @relation("Referrer")
   referredBy    Referral?       @relation("Referee")
+  travellers    Traveller[]
+  trips         Trip[]
   
   @@unique([provider, providerId], name: "provider_unique")
   @@map("users")
@@ -576,3 +578,65 @@ enum ScraperStatus {
   FAILED
   CANCELLED
 }
+
+// Family members a user plans trips for. Age is derived from birthDate at trip time.
+model Traveller {
+  id        String    @id @default(uuid())
+  userId    String
+  name      String
+  relation  String?   // self, partner, child, grandparent, other
+  birthDate DateTime? @db.Date
+  notes     String?   // dietary, mobility, interests
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("travellers")
+}
+
+// A saved trip. The itinerary holds catalogue ids only; prices and availability
+// are read from the supplier tables whenever the trip is shown.
+model Trip {
+  id           String   @id @default(uuid())
+  userId       String
+  generationId String?  @unique
+  title        String
+  destination  String
+  startDate    DateTime @db.Date
+  endDate      DateTime @db.Date
+  budget       Float?
+  currency     String   @default("SGD")
+  party        Json     // [{ name, age }] at planning time
+  preferences  Json?
+  itinerary    Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("trips")
+}
+
+// One AI itinerary request. Used for rate limiting, cost tracking and for saving a
+// guest's itinerary after they sign in.
+model ItineraryGeneration {
+  id           String   @id @default(uuid())
+  userId       String?
+  clientKey    String   // user id, or a salted hash of the guest's IP
+  destination  String
+  request      Json
+  itinerary    Json?
+  model        String
+  status       String   // SUCCESS, REFUSED, FAILED
+  inputTokens  Int?
+  outputTokens Int?
+  createdAt    DateTime @default(now())
+
+  @@index([clientKey, createdAt])
+  @@index([createdAt])
+  @@map("itinerary_generations")
+}
+

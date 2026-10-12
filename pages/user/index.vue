@@ -134,6 +134,27 @@
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 class="text-xl font-bold text-gray-900 mb-4">⚡ Quick Actions</h2>
             <div class="space-y-2">
+              <NuxtLink
+                to="/planner"
+                class="w-full text-left px-4 py-3 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span class="text-xl">🧭</span>
+                <span class="font-medium text-gray-900">Plan a Family Trip</span>
+              </NuxtLink>
+              <NuxtLink
+                to="/trips"
+                class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span class="text-xl">🧳</span>
+                <span class="font-medium text-gray-900">My Trips</span>
+              </NuxtLink>
+              <NuxtLink
+                to="/user/family"
+                class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span class="text-xl">👪</span>
+                <span class="font-medium text-gray-900">My Family</span>
+              </NuxtLink>
               <button
                 @click="navigateToBookings"
                 class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"

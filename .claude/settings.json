@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.nuxt/**/*)",
+      "Read(./.output/**/*)",
+      "Read(./.nitro/**/*)",
+      "Read(./node_modules/**/*)",
+      "Read(./backups/**/*)",
+      "Read(./package-lock.json)",
+      "Read(./data/attractionsg-events.json)",
+      "Read(./public/data/**/*)",
+      "Read(./docs/ARCHIVED/**/*)",
+      "Read(./.env)"
+    ]
+  }
+}

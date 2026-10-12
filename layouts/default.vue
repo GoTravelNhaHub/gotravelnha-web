@@ -150,6 +150,17 @@ onBeforeUnmount(() => {
               Trip.com
             </NuxtLink>
           </li>
+          <li>
+            <NuxtLink 
+              to="/planner" 
+              @click="navigate('/planner')" 
+              :class="['nav-link', isActive('/planner')]"
+              class="px-4 py-2.5 rounded-xl hover:bg-slate-100 transition-all text-sm font-semibold text-slate-700 hover:text-emerald-600"
+            >
+              <span class="mr-1.5">🧭</span>
+              Trip Planner
+            </NuxtLink>
+          </li>
           <li v-if="showCompareNav">
             <NuxtLink 
               to="/compare" 
@@ -334,6 +345,19 @@ onBeforeUnmount(() => {
                     </div>
                     <span class="flex-1">Travel Comparison Hub</span>
                     <span class="bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-full">!</span>
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink 
+                    to="/planner" 
+                    @click="navigate('/planner')" 
+                    :class="['nav-link', isActive('/planner')]"
+                    class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-slate-100 active:bg-slate-200 transition-colors text-slate-700 font-semibold text-base touch-manipulation min-h-[56px]"
+                  >
+                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-50">
+                      <span class="text-lg">🧭</span>
+                    </div>
+                    <span>Family Trip Planner</span>
                   </NuxtLink>
                 </li>
                 <li>

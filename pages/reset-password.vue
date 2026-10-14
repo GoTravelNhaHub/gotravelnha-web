@@ -1,101 +1,44 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-    <div class="max-w-md w-full">
-      <!-- Reset Password Card -->
-      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-        <!-- Logo/Header -->
-        <div class="text-center mb-8">
-          <div class="inline-flex items-center justify-center mb-4">
-            <Logo :size="'64'" />
-          </div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">Reset Password</h1>
-          <p class="text-gray-600">Enter your new password below</p>
-        </div>
-
-        <!-- Success Message -->
-        <div v-if="success" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <div class="flex items-start gap-3">
-            <span class="text-2xl">✅</span>
-            <div>
-              <p class="text-sm font-medium text-green-800 mb-1">Password Reset Successfully!</p>
-              <p class="text-sm text-green-700">{{ success }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Form -->
-        <form v-if="!success" @submit.prevent="handleResetPassword" class="space-y-6">
-          <!-- New Password Field -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              New Password
-            </label>
-            <input
-              v-model="newPassword"
-              type="password"
-              required
-              minlength="8"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="••••••••"
-            />
-            <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters</p>
-          </div>
-
-          <!-- Confirm Password Field -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Confirm New Password
-            </label>
-            <input
-              v-model="confirmPassword"
-              type="password"
-              required
-              minlength="8"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <!-- Error Message -->
-          <div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p class="text-sm text-red-800">{{ error }}</p>
-          </div>
-
-          <!-- Submit Button -->
-          <button
-            type="submit"
-            :disabled="loading"
-            class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:bg-gray-400 font-semibold transition-all transform hover:scale-105 disabled:transform-none"
-          >
-            {{ loading ? 'Resetting...' : 'Reset Password' }}
-          </button>
-        </form>
-
-        <!-- Back to Login -->
-        <div class="mt-6 text-center">
-          <NuxtLink v-if="success" to="/login" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-            Continue to Sign In →
-          </NuxtLink>
-          <NuxtLink v-else to="/login" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-            ← Back to Sign In
-          </NuxtLink>
-        </div>
-
-        <!-- Back to Site Link -->
-        <div class="mt-4 text-center">
-          <NuxtLink to="/" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-            ← Back to GoTravelNha
-          </NuxtLink>
-        </div>
-      </div>
+  <AuthShell
+    title="Choose a new password"
+    description="Use 8 or more characters. You'll sign in with it next time."
+    image="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1600&q=80"
+    headline="Back to planning in a minute."
+    subline="Your saved trips and family profile stay as they are."
+  >
+    <div v-if="success" class="auth-success" role="status">
+      <p class="font-semibold">Password updated</p>
+      <p class="mt-1">{{ success }}</p>
     </div>
-  </div>
+
+    <form v-else class="space-y-5" @submit.prevent="handleResetPassword">
+      <div>
+        <label for="reset-new" class="auth-label">New password</label>
+        <input id="reset-new" v-model="newPassword" type="password" autocomplete="new-password" required minlength="8" class="auth-input" placeholder="At least 8 characters" />
+      </div>
+      <div>
+        <label for="reset-confirm" class="auth-label">Confirm new password</label>
+        <input id="reset-confirm" v-model="confirmPassword" type="password" autocomplete="new-password" required minlength="8" class="auth-input" placeholder="Type it again" />
+      </div>
+
+      <p v-if="error" class="auth-error" role="alert">{{ error }}</p>
+
+      <button type="submit" class="auth-primary" :disabled="loading">
+        <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
+        {{ loading ? 'Saving…' : 'Save new password' }}
+      </button>
+    </form>
+
+    <div class="mt-8 text-center text-[14px]">
+      <NuxtLink to="/login" class="auth-link">{{ success ? 'Continue to sign in' : 'Back to sign in' }}</NuxtLink>
+    </div>
+  </AuthShell>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Logo from '~/components/Logo.vue'
+import AuthShell from '~/components/site/AuthShell.vue'
 
 definePageMeta({
   layout: 'auth'

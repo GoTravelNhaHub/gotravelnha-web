@@ -1,93 +1,43 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-    <div class="max-w-md w-full">
-      <!-- Forgot Password Card -->
-      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-        <!-- Logo/Header -->
-        <div class="text-center mb-8">
-          <div class="inline-flex items-center justify-center mb-4">
-            <Logo :size="'64'" />
-          </div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h1>
-          <p class="text-gray-600">Enter your email to receive reset instructions</p>
-        </div>
-
-        <!-- Success Message -->
-        <div v-if="success" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <div class="flex items-start gap-3">
-            <span class="text-2xl">✅</span>
-            <div>
-              <p class="text-sm font-medium text-green-800 mb-1">Email Sent!</p>
-              <p class="text-sm text-green-700">{{ success }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Form (hidden after success) -->
-        <form v-if="!success" @submit.prevent="handleForgotPassword" class="space-y-6">
-          <!-- Email Field -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
-            <input
-              v-model="email"
-              type="email"
-              required
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="your.email@example.com"
-            />
-            <p class="mt-2 text-xs text-gray-500">
-              We'll send you a link to reset your password
-            </p>
-          </div>
-
-          <!-- Error Message -->
-          <div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p class="text-sm text-red-800">{{ error }}</p>
-          </div>
-
-          <!-- Submit Button -->
-          <button
-            type="submit"
-            :disabled="loading"
-            class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:bg-gray-400 font-semibold transition-all transform hover:scale-105 disabled:transform-none"
-          >
-            {{ loading ? 'Sending...' : 'Send Reset Link' }}
-          </button>
-        </form>
-
-        <!-- Back to Login -->
-        <div class="mt-6 text-center">
-          <NuxtLink to="/login" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-            ← Back to Sign In
-          </NuxtLink>
-        </div>
-
-        <!-- Register Link -->
-        <div class="mt-4 text-center">
-          <p class="text-sm text-gray-600">
-            Don't have an account?
-            <NuxtLink to="/register" class="text-blue-600 hover:text-blue-800 font-medium">
-              Sign Up Free
-            </NuxtLink>
-          </p>
-        </div>
-
-        <!-- Back to Site Link -->
-        <div class="mt-4 text-center">
-          <NuxtLink to="/" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-            ← Back to GoTravelNha
-          </NuxtLink>
-        </div>
-      </div>
+  <AuthShell
+    title="Reset your password"
+    description="Enter the email on your account and we'll send you a link to set a new password."
+    image="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1600&q=80"
+    headline="Back to planning in a minute."
+    subline="Your saved trips and family profile stay as they are."
+  >
+    <div v-if="success" class="auth-success" role="status">
+      <p class="font-semibold">Check your email</p>
+      <p class="mt-1">{{ success }}</p>
     </div>
-  </div>
+
+    <form v-else class="space-y-5" @submit.prevent="handleForgotPassword">
+      <div>
+        <label for="forgot-email" class="auth-label">Email</label>
+        <input id="forgot-email" v-model="email" type="email" autocomplete="email" required class="auth-input" placeholder="you@example.com" />
+      </div>
+
+      <p v-if="error" class="auth-error" role="alert">{{ error }}</p>
+
+      <button type="submit" class="auth-primary" :disabled="loading">
+        <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
+        {{ loading ? 'Sending…' : 'Send reset link' }}
+      </button>
+    </form>
+
+    <div class="mt-8 flex flex-col items-center gap-2 text-[14px] text-[#64748B]">
+      <NuxtLink to="/login" class="auth-link">Back to sign in</NuxtLink>
+      <p>
+        No account yet?
+        <NuxtLink to="/register" class="auth-link">Create one</NuxtLink>
+      </p>
+    </div>
+  </AuthShell>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Logo from '~/components/Logo.vue'
+import AuthShell from '~/components/site/AuthShell.vue'
 
 definePageMeta({
   layout: 'auth'

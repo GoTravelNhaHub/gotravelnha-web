@@ -2,6 +2,8 @@ import { defineEventHandler, readBody } from 'h3'
 import prisma from '~/server/utils/prisma'
 import { sendEmail, escapeHtml } from '~/server/utils/email'
 import { enforceRateLimit } from '~/server/utils/activity-limits'
+import { newsletterToken } from '~/server/utils/newsletter-token'
+import { canonicalSiteOrigin } from '~/utils/site-origin'
 
 /**
  * POST /api/newsletter/subscribe
@@ -31,7 +33,7 @@ export default defineEventHandler(async (event) => {
       if (existing.isActive) {
         return {
           success: true,
-          message: 'You are already subscribed!',
+          message: "You're already subscribed.",
           alreadySubscribed: true
         }
       } else {
@@ -46,7 +48,7 @@ export default defineEventHandler(async (event) => {
         })
         return {
           success: true,
-          message: 'Welcome back! You have been resubscribed.'
+          message: "Welcome back. You're subscribed again."
         }
       }
     }
@@ -62,24 +64,20 @@ export default defineEventHandler(async (event) => {
     })
 
     // Send welcome email
+    const siteUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
+    const unsubscribeUrl = `${siteUrl}/newsletter/unsubscribe?email=${encodeURIComponent(email)}&token=${newsletterToken(email)}`
     try {
       await sendEmail({
         to: email,
-        subject: 'Welcome to GoTravelNha Newsletter! 🎉',
+        subject: 'Welcome to GoTravelNha',
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #4F46E5;">Welcome to GoTravelNha!</h1>
-            <p>Thank you for subscribing to our newsletter. You'll receive:</p>
-            <ul>
-              <li>📧 Weekly travel deals and discounts</li>
-              <li>✈️ Exclusive offers from Trip.com, Klook, and more</li>
-              <li>🎯 Price drop alerts for destinations you're interested in</li>
-              <li>📝 Travel tips and guides</li>
-            </ul>
-            <p>Happy travels! 🗺️</p>
-            <hr>
-            <p style="font-size: 12px; color: #666;">
-              <a href="${escapeHtml(process.env.NUXT_PUBLIC_SITE_URL || 'https://gotravelnha.com')}/newsletter/unsubscribe?email=${encodeURIComponent(email)}">Unsubscribe</a>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #334155;">
+            <h1 style="color: #101D3A;">Welcome to GoTravelNha</h1>
+            <p>Thanks for subscribing. We'll send you family trip ideas, school-holiday planning tips and the occasional partner offer from Trip.com or Klook.</p>
+            <p><a href="${escapeHtml(siteUrl)}/planner" style="color: #008A9B; font-weight: bold;">Plan a family trip with the AI Travel Agent</a></p>
+            <hr style="border: none; border-top: 1px solid #E2E8F0;">
+            <p style="font-size: 12px; color: #64748B;">
+              <a href="${escapeHtml(unsubscribeUrl)}" style="color: #64748B;">Unsubscribe</a>
             </p>
           </div>
         `
@@ -91,7 +89,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: true,
-      message: 'Successfully subscribed! Check your email for confirmation.'
+      message: "You're subscribed. Watch your inbox for family trip ideas."
     }
   } catch (error: any) {
     console.error('Newsletter subscription error:', error)

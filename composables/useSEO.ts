@@ -18,7 +18,7 @@ export const useSEO = () => {
     structuredData?: any
   }) => {
     const siteName = 'GoTravelNha'
-    const defaultImage = 'https://storage.googleapis.com/travella_assets_images/app_icon.png'
+    const defaultImage = 'https://www.gotravelnha.com/og-image.jpg'
     
     const title = options.title 
       ? `${options.title} | ${siteName}`

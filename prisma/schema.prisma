@@ -640,6 +640,8 @@ model Trip {
   party        Json     // [{ name, age }] at planning time
   preferences  Json?
   itinerary    Json
+  // Random public link code. Null means the trip is private; clearing it revokes old links.
+  shareId      String?  @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

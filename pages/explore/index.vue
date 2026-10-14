@@ -180,6 +180,14 @@
         </div>
       </section>
 
+      <NewsletterSignup
+        variant="band"
+        source="explore_home"
+        title="Plan the next school holiday early"
+        text="Get family trip ideas, ready-made itineraries and the occasional partner offer from Trip.com or Klook, straight to your inbox."
+        button-label="Send me ideas"
+      />
+
       <div class="grid gap-4 lg:grid-cols-2">
         <BookingNote>
           Flight and hotel checkout opens on Trip.com or Klook. Singapore attraction tickets that we sell are paid for on GoTravelNha.
@@ -223,6 +231,7 @@
 import { computed } from 'vue'
 import DealHubCard from '~/components/deals/DealHubCard.vue'
 import KlookIcon from '~/components/KlookIcon.vue'
+import NewsletterSignup from '~/components/NewsletterSignup.vue'
 import TripWordmark from '~/components/TripWordmark.vue'
 import BookingNote from '~/components/site/BookingNote.vue'
 import CityTile from '~/components/site/CityTile.vue'
@@ -306,10 +315,8 @@ const hubOutcomeLine = (item: DealPageTemplate) =>
 
 const heroImage = 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=2400&q=80'
 
-const hubOgImage = computed(() => {
-  const first = dealTemplates.value.find((t) => t.heroImage)
-  return resolveAbsoluteOgImage(first?.heroImage || null, siteOrigin)
-})
+// The home page is the most shared link, so it uses the branded card rather than a deal photo
+const hubOgImage = computed(() => resolveAbsoluteOgImage('/og-image.jpg', siteOrigin))
 
 const hubImageMime = computed(() => inferOgImageMime(hubOgImage.value))
 

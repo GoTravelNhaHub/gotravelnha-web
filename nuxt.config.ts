@@ -38,10 +38,13 @@ export default defineNuxtConfig({
             // Social: Open Graph (Facebook, WhatsApp, Zalo, Telegram, LinkedIn — use raster, not SVG)
             { property: 'og:title', content: 'GoTravelNha - Search trips, then book with the partner' },
             { property: 'og:description', content: 'Search flights and hotels, then continue on Trip.com or Klook. Singapore attraction tickets are sold here only when a current price is listed.' },
-            { property: 'og:image', content: 'https://storage.googleapis.com/travella_assets_images/app_icon.png', key: 'og-image' },
-            { property: 'og:image:secure_url', content: 'https://storage.googleapis.com/travella_assets_images/app_icon.png', key: 'og-image-secure' },
-            { property: 'og:image:type', content: 'image/png', key: 'og-image-type' },
-            { property: 'og:image:alt', content: 'GoTravelNha travel deals', key: 'og-image-alt' },
+            // 1200x630 branded card in public/ (rendered from the logo; under 300 KB so WhatsApp shows it)
+            { property: 'og:image', content: 'https://www.gotravelnha.com/og-image.jpg', key: 'og-image' },
+            { property: 'og:image:secure_url', content: 'https://www.gotravelnha.com/og-image.jpg', key: 'og-image-secure' },
+            { property: 'og:image:type', content: 'image/jpeg', key: 'og-image-type' },
+            { property: 'og:image:width', content: '1200', key: 'og-image-width' },
+            { property: 'og:image:height', content: '630', key: 'og-image-height' },
+            { property: 'og:image:alt', content: 'GoTravelNha: family holidays, planned around your kids', key: 'og-image-alt' },
             { property: 'og:type', content: 'website' },
             { property: 'og:site_name', content: 'GoTravelNha' },
             { property: 'og:locale', content: 'en_US' },
@@ -50,7 +53,7 @@ export default defineNuxtConfig({
             { name: 'twitter:card', content: 'summary_large_image' },
             { name: 'twitter:title', content: 'GoTravelNha - Search trips, then book with the partner' },
             { name: 'twitter:description', content: 'Search flights and hotels, then continue on Trip.com or Klook.' },
-            { name: 'twitter:image', content: 'https://storage.googleapis.com/travella_assets_images/app_icon.png', key: 'twitter-image' },
+            { name: 'twitter:image', content: 'https://www.gotravelnha.com/og-image.jpg', key: 'twitter-image' },
             { name: 'twitter:site', content: '@GoTravelNha' }
           ],
           link: [
@@ -58,8 +61,9 @@ export default defineNuxtConfig({
             { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
             { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,560;8..60,650&display=swap' },
             { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-            { rel: 'icon', type: 'image/png', href: '/favicon.svg' },
-            { rel: 'apple-touch-icon', href: '/apple-touch-icon.svg' }
+            { rel: 'icon', type: 'image/png', sizes: '180x180', href: '/apple-touch-icon.png' },
+            // iOS ignores SVG touch icons, so this one is a PNG
+            { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }
           ],
           script: [
             {
@@ -69,7 +73,7 @@ export default defineNuxtConfig({
                 '@type': 'Organization',
                 name: 'GoTravelNha',
                 url: 'https://www.gotravelnha.com',
-                logo: 'https://www.gotravelnha.com/favicon.svg',
+                logo: 'https://www.gotravelnha.com/apple-touch-icon.png',
                 description: 'Search flights and hotels on Trip.com and Klook, and plan a family trip. Singapore attraction tickets are sold here only when a current price is listed.',
                 sameAs: [],
                 contactPoint: {
@@ -102,7 +106,9 @@ export default defineNuxtConfig({
       '/trips': { redirect: { to: '/mytrip', statusCode: 301 } },
       '/trips/**': { redirect: { to: '/mytrip/**', statusCode: 301 } },
       '/mytrip': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
-      '/mytrip/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } }
+      '/mytrip/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      // Shared trip links are for the people they were sent to, not search results
+      '/share/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } }
     },
     // Cached HTML only in production builds. In dev it outlives code edits, so a refresh
     // serves old markup that the new client code then hydrates into a broken page.

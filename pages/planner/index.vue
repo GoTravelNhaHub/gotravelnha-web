@@ -151,16 +151,24 @@
             </p>
           </div>
 
-          <PlannerBoard
-            v-if="result && !loading"
-            :itinerary="result.itinerary"
-            :activities="result.activities"
-            :request="result.request"
-            :authenticated="isAuthenticated"
-            :saving="saving"
-            @save="saveTrip"
-            @refine="refine"
-          />
+          <template v-if="result && !loading">
+            <PlannerBoard
+              :itinerary="result.itinerary"
+              :activities="result.activities"
+              :request="result.request"
+              :authenticated="isAuthenticated"
+              :saving="saving"
+              @save="saveTrip"
+              @refine="refine"
+            />
+            <!-- Asked right after a plan, when interest is highest -->
+            <NewsletterSignup
+              source="planner_after_plan"
+              :title="`More ideas for ${result.request.destination} and beyond`"
+              text="Get family trip ideas and school-holiday tips by email."
+              button-label="Send me ideas"
+            />
+          </template>
           <PlannerStates v-else-if="loading" kind="loading" :destination="form.destination" :revising="revising" />
           <PlannerStates v-else-if="error" kind="error" :message="error" />
           <div v-else class="mx-auto max-w-5xl py-2 sm:py-4">
@@ -193,6 +201,7 @@ definePageMeta({ wide: true })
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import PlannerBoard from '~/components/planner/PlannerBoard.vue'
+import NewsletterSignup from '~/components/NewsletterSignup.vue'
 import PlannerIcon from '~/components/planner/PlannerIcon.vue'
 import type { PlannerIconName } from '~/components/planner/PlannerIcon.vue'
 import PlannerStates from '~/components/planner/PlannerStates.vue'

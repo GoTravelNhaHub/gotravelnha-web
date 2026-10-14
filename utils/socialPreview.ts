@@ -3,8 +3,7 @@
  * Prefer absolute https URLs to raster images (JPEG/PNG/WebP); avoid SVG for og:image.
  */
 
-export const DEFAULT_SOCIAL_PREVIEW_IMAGE =
-  'https://storage.googleapis.com/travella_assets_images/app_icon.png'
+export const DEFAULT_SOCIAL_PREVIEW_IMAGE = 'https://www.gotravelnha.com/og-image.jpg'
 
 /**
  * Return an absolute https URL safe for og:image / twitter:image.

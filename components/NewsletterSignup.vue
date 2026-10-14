@@ -1,54 +1,71 @@
 <template>
-  <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 md:p-8 border-2 border-blue-200">
-    <div class="text-center mb-6">
-      <div class="text-5xl mb-4">📧</div>
-      <h3 class="text-2xl font-bold text-gray-900 mb-2">Stay Updated with Best Deals</h3>
-      <p class="text-gray-600">Get weekly travel deals, exclusive offers, and price drop alerts delivered to your inbox</p>
+  <section
+    class="font-brand"
+    :class="variant === 'band' ? 'relative isolate overflow-hidden rounded-3xl bg-[#101D3A] p-6 text-white sm:p-10' : 'rounded-2xl border border-[#E2E8F0] bg-white p-5'"
+    :aria-labelledby="titleId"
+  >
+    <div v-if="variant === 'band'" class="absolute inset-0 bg-gradient-to-br from-[#008A9B]/35 to-transparent" aria-hidden="true"></div>
+    <div class="relative" :class="variant === 'band' ? 'grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]' : ''">
+      <div>
+        <h2 :id="titleId" :class="variant === 'band' ? 'text-[24px] font-bold leading-8 tracking-[-0.02em] sm:text-[28px] sm:leading-9' : 'text-[15px] font-bold leading-5 text-[#101D3A]'">
+          {{ title }}
+        </h2>
+        <p :class="variant === 'band' ? 'mt-2 text-[15px] leading-6 text-white/80' : 'mt-1 text-[13px] leading-5 text-[#64748B]'">{{ text }}</p>
+      </div>
+
+      <div :class="variant === 'band' ? '' : 'mt-3'">
+        <p v-if="success" class="rounded-xl px-4 py-3 text-[14px] font-medium" :class="variant === 'band' ? 'bg-white/10 text-white ring-1 ring-white/20' : 'alert-success'" role="status">
+          {{ success }}
+        </p>
+        <form v-else class="flex flex-col gap-2 sm:flex-row" @submit.prevent="handleSubscribe">
+          <label :for="inputId" class="sr-only">Email address</label>
+          <input
+            :id="inputId"
+            v-model.trim="email"
+            type="email"
+            required
+            maxlength="200"
+            autocomplete="email"
+            placeholder="you@example.com"
+            class="form-input min-w-0 flex-1"
+            :disabled="loading"
+          />
+          <button type="submit" class="btn-primary sm:w-auto sm:px-6" :disabled="loading || !email">
+            {{ loading ? 'Subscribing…' : buttonLabel }}
+          </button>
+        </form>
+        <p v-if="error" class="alert-error mt-2" role="alert">{{ error }}</p>
+        <p class="mt-2 text-[12px] leading-[18px]" :class="variant === 'band' ? 'text-white/60' : 'text-[#94A3B8]'">
+          Unsubscribe any time. See our <NuxtLink to="/privacy" class="underline underline-offset-2">Privacy Policy</NuxtLink>.
+        </p>
+      </div>
     </div>
-
-    <form @submit.prevent="handleSubscribe" class="space-y-4">
-      <div class="flex flex-col sm:flex-row gap-3">
-        <input
-          v-model="email"
-          type="email"
-          required
-          placeholder="Enter your email address"
-          class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          :disabled="loading"
-        />
-        <button
-          type="submit"
-          :disabled="loading || !email"
-          class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {{ loading ? '⏳ Subscribing...' : '🚀 Subscribe' }}
-        </button>
-      </div>
-
-      <div v-if="success" class="p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm">
-        {{ success }}
-      </div>
-
-      <div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-        {{ error }}
-      </div>
-
-      <p class="text-xs text-gray-500 text-center">
-        We respect your privacy. Unsubscribe at any time.
-      </p>
-    </form>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useActivityTracker } from '~/composables/useActivityTracker'
+import { ref, useId } from 'vue'
 
-const { trackClick } = useActivityTracker()
+const props = withDefaults(
+  defineProps<{
+    source?: string
+    variant?: 'band' | 'compact'
+    title?: string
+    text?: string
+    buttonLabel?: string
+  }>(),
+  {
+    source: 'newsletter_component',
+    variant: 'compact',
+    title: 'Family trip ideas by email',
+    text: 'School-holiday ideas, family itineraries and the occasional partner offer.',
+    buttonLabel: 'Subscribe'
+  }
+)
 
-const props = defineProps<{
-  source?: string
-}>()
+const { track } = useFunnel()
+const titleId = useId()
+const inputId = useId()
 
 const email = ref('')
 const loading = ref(false)
@@ -59,29 +76,22 @@ const handleSubscribe = async () => {
   loading.value = true
   success.value = null
   error.value = null
-
   try {
-    const response = await $fetch('/api/newsletter/subscribe', {
+    const response = await $fetch<{ success: boolean; message?: string; error?: string }>('/api/newsletter/subscribe', {
       method: 'POST',
-      body: {
-        email: email.value,
-        source: props.source || 'newsletter_component'
-      }
-    }) as any
-
+      body: { email: email.value, source: props.source }
+    })
     if (response.success) {
-      success.value = response.message || 'Successfully subscribed!'
+      success.value = response.message || "You're subscribed."
       email.value = ''
-      trackClick('newsletter', { action: 'subscribe', source: props.source })
+      track('newsletter_subscribed', { source: props.source })
     } else {
-      error.value = response.error || 'Failed to subscribe. Please try again.'
+      error.value = response.error || 'Could not subscribe. Please try again.'
     }
   } catch (err: any) {
-    error.value = err.data?.error || 'Failed to subscribe. Please try again.'
-    console.error('Newsletter subscription error:', err)
+    error.value = err?.data?.message || err?.data?.error || 'Could not subscribe. Please try again.'
   } finally {
     loading.value = false
   }
 }
 </script>
-

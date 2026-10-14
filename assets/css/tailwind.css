@@ -68,8 +68,9 @@
   .form-label {
     @apply mb-1.5 block text-[13px] font-semibold text-[#334155];
   }
+  /* 16px on phones: iOS Safari zooms the page into any field with smaller text */
   .form-input {
-    @apply block w-full rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-3 text-[15px] text-[#101D3A] transition placeholder:text-[#94A3B8] hover:border-[#CBD5E1] focus:border-[#008A9B] focus:outline-none focus:ring-4 focus:ring-[#008A9B]/15;
+    @apply block w-full rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-3 text-[16px] text-[#101D3A] sm:text-[15px] transition placeholder:text-[#94A3B8] hover:border-[#CBD5E1] focus:border-[#008A9B] focus:outline-none focus:ring-4 focus:ring-[#008A9B]/15;
   }
   .btn-primary {
     @apply inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#008A9B] px-4 text-[15px] font-semibold text-white transition hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;

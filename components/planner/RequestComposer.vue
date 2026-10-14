@@ -8,7 +8,7 @@
         rows="1"
         maxlength="500"
         placeholder="Message the agent…"
-        class="max-h-32 min-h-11 w-full flex-1 resize-none border-0 bg-transparent py-2.5 text-[14px] leading-[21px] text-[#334155] placeholder:text-[#94A3B8] focus:outline-none focus:ring-0"
+        class="max-h-32 min-h-11 w-full flex-1 resize-none border-0 bg-transparent py-2.5 text-[16px] leading-6 sm:text-[14px] sm:leading-[21px] text-[#334155] placeholder:text-[#94A3B8] focus:outline-none focus:ring-0"
         @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
         @keydown.enter.exact.prevent="$emit('submit')"
       ></textarea>

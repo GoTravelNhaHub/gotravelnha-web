@@ -9,27 +9,30 @@
                 <PlannerIcon name="spark" class="h-4 w-4" />
               </span>
               <div class="min-w-0">
-                <h1 class="text-[15px] font-bold leading-5 tracking-[-0.01em] text-[#101D3A]">AI Travel Agent</h1>
-                <p class="text-[12px] leading-[18px] text-[#64748B]">GoTravelNha AI · family trip planning</p>
+                <h1 class="truncate text-[15px] font-bold leading-5 tracking-[-0.01em] text-[#101D3A]">AI Travel Agent</h1>
+                <p class="truncate text-[12px] leading-[18px] text-[#64748B]">GoTravelNha AI · family trip planning</p>
               </div>
             </div>
-            <div class="flex shrink-0 items-center gap-1">
+            <!-- Icon-only on phones so the title keeps one line; labels from sm up -->
+            <div class="flex shrink-0 items-center gap-0.5 sm:gap-1">
               <button
                 v-if="hasUserNote || result"
                 type="button"
-                class="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] disabled:opacity-50 sm:min-h-9"
+                title="New trip"
+                class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] disabled:opacity-50 sm:min-h-9 sm:min-w-0 sm:px-2.5"
                 :disabled="busy"
                 @click="newTrip"
               >
                 <PlannerIcon name="refresh" class="h-4 w-4 text-[#008A9B]" />
-                New trip
+                <span class="sr-only sm:not-sr-only">New trip</span>
               </button>
               <NuxtLink
                 :to="tripsTo"
-                class="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9"
+                title="My trips"
+                class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9 sm:min-w-0 sm:px-2.5"
               >
                 <PlannerIcon name="bookmark" class="h-4 w-4 text-[#008A9B]" />
-                My trips
+                <span class="sr-only sm:not-sr-only">My trips</span>
               </NuxtLink>
             </div>
           </header>
@@ -831,6 +834,8 @@ onMounted(async () => {
 
 useHead({
   title: 'AI Trip Planner for Families | GoTravelNha',
+  // Full-screen app: stop Safari's rubber-band scroll from dragging the whole page
+  htmlAttrs: { class: 'overscroll-none' },
   meta: [
     {
       name: 'description',

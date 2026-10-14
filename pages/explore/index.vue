@@ -164,7 +164,7 @@
       <section class="space-y-6">
         <SectionHeading eyebrow="Popular with families" title="Where to next?" subtitle="Pick a city and the AI agent starts a plan for it.">
           <template #action>
-            <NuxtLink to="/destinations" class="text-link text-[14px]">All destinations →</NuxtLink>
+            <NuxtLink to="/destinations" class="text-link text-[14px]">All {{ DESTINATIONS.length }} destinations →</NuxtLink>
           </template>
         </SectionHeading>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
@@ -238,6 +238,7 @@ import CityTile from '~/components/site/CityTile.vue'
 import PageHero from '~/components/site/PageHero.vue'
 import SectionHeading from '~/components/site/SectionHeading.vue'
 import { destinationPhoto } from '~/utils/destination-photos'
+import { DESTINATIONS } from '~/utils/destination-catalog'
 import type { DealPageTemplate } from '~/types/deal-template'
 import { inferOgImageMime, resolveAbsoluteOgImage } from '~/utils/socialPreview'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
@@ -280,14 +281,11 @@ const partners = [
 
 const agentPoints = ['Plans around every traveller’s age', 'Edits the plan without starting over', 'Links partner prices only once checked']
 
-const cities = [
-  { name: 'Singapore', caption: 'Zoos, gardens and food' },
-  { name: 'Tokyo', caption: 'Theme parks and culture' },
-  { name: 'Bangkok', caption: 'Markets and temples' },
-  { name: 'Bali', caption: 'Beaches and easy days' },
-  { name: 'Hong Kong', caption: 'Views and dim sum' },
-  { name: 'Seoul', caption: 'Palaces and play cafés' }
-].map((city) => ({ ...city, image: destinationPhoto(city.name, 600) as string }))
+// Six featured cities; /destinations lists them all
+const cities = DESTINATIONS.filter((city) => city.featured).map((city) => ({
+  ...city,
+  image: destinationPhoto(city.name, 600) as string
+}))
 
 const { data: templateList, pending: loadingTemplates } = await useAsyncData('deal-hub-templates', async () => {
   try {

@@ -183,10 +183,6 @@ const ICONS = {
   affiliate: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
   economics: 'M12 3v18M16.5 7.5c-.6-1.2-2.2-2-4.5-2-2.8 0-4.5 1.3-4.5 3s1.7 2.6 4.5 3 4.5 1.3 4.5 3-1.7 3-4.5 3c-2.3 0-3.9-.8-4.5-2',
   templates: 'M4 5h16v4H4V5Zm0 8h7v6H4v-6Zm11 0h5v6h-5v-6Z',
-  scrapers: 'M12 3v3m0 12v3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M3 12h3m12 0h3M5.6 18.4l2.1-2.1m8.6-8.6 2.1-2.1M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z',
-  attractions: 'M12 21s-7-5.6-7-11a7 7 0 1 1 14 0c0 5.4-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z',
-  klook: 'M4 7h16M4 12h16M4 17h10',
-  trip: 'M3 20V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v14M14 10h6a1 1 0 0 1 1 1v9M2 20h20M7 9h3M7 13h3M7 17h3',
   site: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-9-9h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z',
   planner: 'M12 3l1.9 4.8L19 9.5l-4.4 2.9L15.6 18 12 15l-3.6 3 1-5.6L5 9.5l5.1-1.7L12 3Z'
 }
@@ -215,15 +211,6 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
     items: [{ to: '/admin/deal-template-generator', label: 'Deal templates', icon: ICONS.templates }]
   },
   {
-    label: 'Data',
-    items: [
-      { to: '/admin/scrapers', label: 'Scrapers', icon: ICONS.scrapers },
-      { to: '/admin/scrapers/attractionsg', label: 'SG Attractions', icon: ICONS.attractions },
-      { to: '/admin/scrapers/klook', label: 'Klook events', icon: ICONS.klook },
-      { to: '/admin/scrapers/trip', label: 'Trip.com events', icon: ICONS.trip }
-    ]
-  },
-  {
     label: 'Site',
     items: [
       { to: '/explore', label: 'Explore', icon: ICONS.site, external: true },
@@ -248,7 +235,6 @@ const normalisedPath = computed(() => route.path.replace(/\/+$/, '') || '/')
 const isActive = (item: NavItem) => {
   const path = normalisedPath.value
   if (item.to === '/admin') return path === '/admin'
-  if (item.to === '/admin/scrapers') return path === '/admin/scrapers'
   return path === item.to || path.startsWith(`${item.to}/`)
 }
 

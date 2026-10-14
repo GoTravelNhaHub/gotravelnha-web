@@ -1,6 +1,7 @@
 import { defineEventHandler, getQuery } from 'h3'
 import prisma from '~/server/utils/prisma'
 
+// Admin user list (admin-gated by server/middleware/auth-guard.ts)
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
@@ -16,7 +17,10 @@ export default defineEventHandler(async (event) => {
       role: true,
       isActive: true,
       createdAt: true,
-      updatedAt: true
+      updatedAt: true,
+      provider: true,
+      // What deleting the account would remove or unlink
+      _count: { select: { trips: true, travellers: true, attractionBookings: true, loyaltyPoints: true } }
     },
     orderBy: {
       createdAt: 'desc'

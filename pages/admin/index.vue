@@ -291,7 +291,7 @@ const totals = computed(() => [
 
 const shortcuts = [
   { to: '/admin/deal-template-generator', label: 'Deal templates', detail: 'Edit the Explore comparison pages', icon: 'M4 5h16v4H4V5Zm0 8h7v6H4v-6Zm11 0h5v6h-5v-6Z' },
-  { to: '/admin/scrapers', label: 'Scrapers', detail: 'Check sources and sync jobs', icon: 'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM12 3v3m0 12v3M3 12h3m12 0h3' },
+  { to: '/admin/support', label: 'Support inbox', detail: 'Read and answer contact messages', icon: 'M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-5l-4 3v-3H6a2 2 0 0 1-2-2V6Z' },
   { to: '/admin/affiliate-performance', label: 'Affiliate performance', detail: 'Clicks and conversions by placement', icon: 'M4 20V10m6 10V4m6 16v-7m4 7H2' },
   { to: '/admin/users', label: 'Users', detail: 'Find and manage accounts', icon: 'M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z' }
 ]

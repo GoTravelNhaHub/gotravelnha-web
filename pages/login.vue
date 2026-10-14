@@ -67,7 +67,7 @@
       </div>
 
       <label class="flex items-center gap-2.5 text-[14px] text-[#334155]">
-        <input v-model="loginForm.rememberMe" type="checkbox" class="h-4 w-4 rounded border-[#CBD5E1] text-[#008A9B] focus:ring-[#008A9B]" />
+        <input v-model="loginForm.rememberMe" type="checkbox" class="h-4 w-4 rounded accent-[#008A9B]" />
         Remember me
       </label>
 

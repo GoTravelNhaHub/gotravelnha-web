@@ -79,7 +79,7 @@
       </div>
 
       <label class="flex items-start gap-2.5 text-[14px] leading-5 text-[#334155]">
-        <input v-model="registerForm.agreedToTerms" type="checkbox" required class="mt-0.5 h-4 w-4 shrink-0 rounded border-[#CBD5E1] text-[#008A9B] focus:ring-[#008A9B]" />
+        <input v-model="registerForm.agreedToTerms" type="checkbox" required class="mt-0.5 h-4 w-4 shrink-0 rounded accent-[#008A9B]" />
         <span>
           I agree to the
           <NuxtLink to="/terms" target="_blank" class="text-link">Terms of Service</NuxtLink>

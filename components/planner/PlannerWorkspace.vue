@@ -1,5 +1,5 @@
 <template>
-  <div class="site-gutter flex h-full min-h-0 flex-col py-3">
+  <div class="site-gutter flex h-full min-h-0 flex-col pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
     <div class="mb-2 shrink-0 lg:hidden">
       <div class="grid grid-cols-2 rounded-full bg-[#F1F5F9] p-1" role="tablist" aria-label="Planner">
         <button

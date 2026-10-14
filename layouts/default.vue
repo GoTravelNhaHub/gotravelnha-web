@@ -118,7 +118,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col bg-[#F6F9FC] text-ink">
+  <!-- Full-screen app pages use the visible height (dvh). 100vh is taller than the visible
+       area on phones while the address bar shows, which left an empty strip under the chat. -->
+  <div class="flex flex-col bg-[#F6F9FC] text-ink" :class="wide ? 'h-dvh overflow-hidden' : 'min-h-screen'">
     <!-- Sticky Top Nav -->
     <header class="fixed top-0 left-0 z-50 w-full border-b border-[#E2E8F0] bg-white/95 font-brand text-[#101D3A] backdrop-blur supports-[backdrop-filter]:bg-white/85">
       <nav class="site-gutter flex h-16 items-center justify-between">
@@ -354,7 +356,7 @@ onBeforeUnmount(() => {
     <!-- Main Content -->
     <main
       class="w-full"
-      :class="wide ? 'h-dvh overflow-hidden px-0 pt-16' : bleed ? 'flex-1 pt-16' : 'site-shell flex-1 pt-[5.5rem]'"
+      :class="wide ? 'min-h-0 flex-1 overflow-hidden px-0 pt-16' : bleed ? 'flex-1 pt-16' : 'site-shell flex-1 pt-[5.5rem]'"
     >
       <NuxtPage />
     </main>

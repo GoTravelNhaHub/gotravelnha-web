@@ -7,6 +7,10 @@ import type { Itinerary, ItineraryItem } from '~/types/trip'
 
 export const ITINERARY_MODEL = 'claude-opus-5-5'
 export const MAX_TRIP_DAYS = 10
+// Each generation is a paid model call, so it is capped per guest IP, per user and site-wide (rolling 24 hours)
+export const PLANNER_GUEST_DAILY_LIMIT = 3
+export const PLANNER_USER_DAILY_LIMIT = 10
+export const PLANNER_SITE_DAILY_LIMIT = 300
 
 export const TripRequestSchema = z.object({
   destination: z.string().trim().min(2).max(80),

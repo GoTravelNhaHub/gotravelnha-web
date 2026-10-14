@@ -7,6 +7,9 @@ import { loadCatalogue, resolveActivities } from '~/server/services/trip-catalog
 import {
   ITINERARY_MODEL,
   MAX_TRIP_DAYS,
+  PLANNER_GUEST_DAILY_LIMIT,
+  PLANNER_SITE_DAILY_LIMIT,
+  PLANNER_USER_DAILY_LIMIT,
   RevisionSchema,
   TripRequestSchema,
   generateItinerary,
@@ -15,11 +18,6 @@ import {
   type Itinerary,
   type Revision
 } from '~/server/services/itinerary-generator'
-
-// Each generation is a paid model call, so cap it per guest IP, per user and site-wide
-const GUEST_DAILY_LIMIT = 3
-const USER_DAILY_LIMIT = 10
-const SITE_DAILY_LIMIT = 300
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -54,7 +52,7 @@ export default defineEventHandler(async (event) => {
     prisma.itineraryGeneration.count({ where: { createdAt: { gte: since } } })
   ])
 
-  if (clientCount >= (user ? USER_DAILY_LIMIT : GUEST_DAILY_LIMIT)) {
+  if (clientCount >= (user ? PLANNER_USER_DAILY_LIMIT : PLANNER_GUEST_DAILY_LIMIT)) {
     throw createError({
       statusCode: 429,
       message: user
@@ -62,7 +60,7 @@ export default defineEventHandler(async (event) => {
         : 'Guests can create 3 trip plans a day. Sign in to create more.'
     })
   }
-  if (siteCount >= SITE_DAILY_LIMIT) {
+  if (siteCount >= PLANNER_SITE_DAILY_LIMIT) {
     console.warn('[itinerary] Site-wide daily limit reached')
     throw createError({ statusCode: 503, message: 'The trip planner is busy today. Please try again tomorrow.' })
   }

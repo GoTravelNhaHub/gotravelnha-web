@@ -1,93 +1,93 @@
 <template>
-  <div class="min-h-full bg-gray-50 pb-12">
-    <div class="px-4 sm:px-6 lg:px-8 py-5 space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 class="text-2xl font-bold text-gray-900">Bookings</h2>
-          <p class="text-sm text-gray-600">
-            Self-checkout bookings that need action: tickets not confirmed, customer emails not sent, or refunded orders still to cancel with the supplier.
+  <div class="mx-auto max-w-[1400px] space-y-5 px-4 py-6 sm:px-6 lg:px-8">
+    <div class="space-y-5">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div class="max-w-2xl">
+          <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">Bookings</h2>
+          <p class="text-[14px] text-[#64748B]">
+            Singapore attraction tickets sold on GoTravelNha. "Needs attention" lists paid tickets not confirmed or emailed, and refunds still to cancel with the supplier.
           </p>
         </div>
-        <div class="flex items-center gap-3">
-          <select
-            v-model="view"
-            class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-          >
-            <option value="attention">Needs attention</option>
-            <option value="all">All bookings</option>
-          </select>
-          <button
-            @click="fetchBookings"
-            :disabled="loading"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            <span v-if="loading" class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-            <span>{{ loading ? 'Refreshing…' : 'Refresh' }}</span>
+        <div class="flex items-center gap-2">
+          <div class="inline-grid grid-cols-2 gap-1 rounded-xl bg-[#E2E8F0]/70 p-1" role="tablist" aria-label="Bookings to show">
+            <button
+              v-for="option in views"
+              :key="option.id"
+              type="button"
+              role="tab"
+              :aria-selected="view === option.id"
+              class="min-h-9 whitespace-nowrap rounded-lg px-3.5 text-[13px] font-semibold"
+              :class="view === option.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
+              @click="view = option.id"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+          <button type="button" class="btn-secondary min-h-10 w-auto px-3.5 text-[13px]" :disabled="loading" @click="fetchBookings">
+            <svg class="h-4 w-4" :class="loading ? 'animate-spin' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4" />
+            </svg>
+            <span class="sr-only sm:not-sr-only">{{ loading ? 'Refreshing…' : 'Refresh' }}</span>
           </button>
         </div>
       </div>
 
-      <div v-if="error" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-        {{ error }}
-      </div>
-      <div v-if="notice" class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg">
-        {{ notice }}
-      </div>
+      <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
+      <p v-if="notice" class="alert-success" role="status">{{ notice }}</p>
 
-      <div v-if="fulfil.id" class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                <form @submit.prevent="submitFulfil" class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                  <div class="md:col-span-3 text-sm font-semibold text-gray-900">
-                    Tickets for {{ fulfil.reference }} – sent to the customer by email
-                  </div>
-                  <label class="block text-xs text-gray-600">
-                    Ticket link (https)
-                    <input v-model.trim="fulfil.voucherUrl" type="url" placeholder="https://…" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
-                  </label>
-                  <label class="block text-xs text-gray-600">
-                    Supplier order reference (optional)
-                    <input v-model.trim="fulfil.supplierOrderId" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
-                  </label>
-                  <label class="block text-xs text-gray-600 md:row-span-2">
-                    Note for the customer (optional)
-                    <textarea v-model.trim="fulfil.voucherNote" rows="3" placeholder="e.g. show the QR code at gate 2" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"></textarea>
-                  </label>
-                  <div class="flex gap-2 md:col-span-2">
-                    <button type="submit" :disabled="actionId === fulfil.id" class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm hover:bg-emerald-700 disabled:opacity-60">
-                      Save and email tickets
-                    </button>
-                    <button type="button" @click="fulfil.id = ''" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm">Cancel</button>
-                  </div>
-                </form>
-      </div>
+      <section v-if="fulfil.id" class="rounded-2xl border border-[#99E3EC] bg-white p-5" aria-labelledby="fulfil-title">
+        <form class="grid grid-cols-1 items-end gap-4 md:grid-cols-3" @submit.prevent="submitFulfil">
+          <div class="md:col-span-3">
+            <h3 id="fulfil-title" class="text-[15px] font-bold text-[#101D3A]">Tickets for <span class="font-mono">{{ fulfil.reference }}</span></h3>
+            <p class="text-[13px] text-[#64748B]">Saved to the booking and emailed to the customer.</p>
+          </div>
+          <div>
+            <label for="fulfil-url" class="form-label">Ticket link (https)</label>
+            <input id="fulfil-url" v-model.trim="fulfil.voucherUrl" type="url" placeholder="https://…" class="form-input" />
+          </div>
+          <div>
+            <label for="fulfil-order" class="form-label">Supplier order reference <span class="font-normal text-[#64748B]">(optional)</span></label>
+            <input id="fulfil-order" v-model.trim="fulfil.supplierOrderId" class="form-input" />
+          </div>
+          <div class="md:row-span-2">
+            <label for="fulfil-note" class="form-label">Note for the customer <span class="font-normal text-[#64748B]">(optional)</span></label>
+            <textarea id="fulfil-note" v-model.trim="fulfil.voucherNote" rows="3" placeholder="e.g. show the QR code at gate 2" class="form-input"></textarea>
+          </div>
+          <div class="flex gap-2 md:col-span-2">
+            <button type="submit" :disabled="actionId === fulfil.id" class="btn-primary w-auto px-5">Save and email tickets</button>
+            <button type="button" class="btn-secondary w-auto px-5" @click="fulfil.id = ''">Cancel</button>
+          </div>
+        </form>
+      </section>
 
-      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-          <thead class="bg-gray-50">
+      <div class="overflow-x-auto rounded-2xl border border-[#E2E8F0] bg-white">
+        <table class="min-w-full divide-y divide-[#E2E8F0] text-[14px]">
+          <thead class="bg-[#F8FAFC]">
             <tr>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Created</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Attraction</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Customer</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Amount</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Payment</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Supplier</th>
-              <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Actions</th>
+              <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">Created</th>
+              <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">Attraction</th>
+              <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">Customer</th>
+              <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">Amount</th>
+              <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">Payment</th>
+              <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">Supplier</th>
+              <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="booking in bookings" :key="booking.id" class="hover:bg-gray-50 align-top">
-              <td class="px-4 py-3 text-gray-700 whitespace-nowrap">{{ formatDate(booking.createdAt) }}</td>
+          <tbody class="divide-y divide-[#F1F5F9] bg-white">
+            <tr v-for="booking in bookings" :key="booking.id" class="align-top hover:bg-[#F8FAFC]">
+              <td class="whitespace-nowrap px-4 py-3 text-[13px] text-[#64748B]">{{ formatDate(booking.createdAt) }}</td>
               <td class="px-4 py-3">
-                <div class="font-medium text-gray-900">{{ booking.eventTitle }}</div>
-                <div class="text-xs text-gray-500">
+                <div class="font-semibold text-[#101D3A]">{{ booking.eventTitle }}</div>
+                <div class="text-[12px] text-[#64748B]">
                   {{ booking.optionName || '—' }} · Qty {{ booking.quantity }}
                 </div>
-                <div class="text-xs font-mono text-gray-700">{{ booking.reference || booking.id }}</div>
+                <div class="mt-0.5 font-mono text-[12px] text-[#475569]">{{ booking.reference || booking.id }}</div>
               </td>
-              <td class="px-4 py-3 text-gray-700">
+              <td class="px-4 py-3 text-[#334155]">
                 <div>{{ booking.customerName || '—' }}</div>
-                <div class="text-xs text-gray-500">{{ booking.customerEmail || '—' }}</div>
+                <div class="text-[12px] text-[#64748B]">{{ booking.customerEmail || '—' }}</div>
               </td>
-              <td class="px-4 py-3 text-gray-700 whitespace-nowrap">
+              <td class="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-[#101D3A]">
                 {{ booking.currency }} {{ booking.amount.toFixed(2) }}
                 <div v-if="booking.discountAmount" class="text-xs text-amber-700">
                   Discount {{ booking.discountAmount.toFixed(2) }}
@@ -101,10 +101,10 @@
                   {{ booking.status }}
                 </span>
                 <div v-if="booking.status === 'PAID'" class="mt-2 space-y-0.5 text-xs">
-                  <div :class="booking.confirmationSentAt ? 'text-gray-500' : 'text-red-600 font-semibold'">
+                  <div :class="booking.confirmationSentAt ? 'text-[#64748B]' : 'font-semibold text-[#B91C1C]'">
                     {{ booking.confirmationSentAt ? '✓ Confirmation emailed' : '✗ Confirmation not sent' }}
                   </div>
-                  <div v-if="booking.supplierStatus === 'CONFIRMED'" :class="booking.ticketSentAt ? 'text-gray-500' : 'text-red-600 font-semibold'">
+                  <div v-if="booking.supplierStatus === 'CONFIRMED'" :class="booking.ticketSentAt ? 'text-[#64748B]' : 'font-semibold text-[#B91C1C]'">
                     {{ booking.ticketSentAt ? '✓ Ticket emailed' : '✗ Ticket not sent' }}
                   </div>
                 </div>
@@ -113,7 +113,7 @@
                 <span :class="['px-2 py-1 rounded-full text-xs font-semibold border', supplierBadge(booking.supplierStatus)]">
                   {{ booking.supplierStatus || 'NOT SENT' }}
                 </span>
-                <div v-if="booking.supplierOrderId" class="text-xs text-gray-500 mt-1">#{{ booking.supplierOrderId }}</div>
+                <div v-if="booking.supplierOrderId" class="mt-1 font-mono text-[12px] text-[#64748B]">#{{ booking.supplierOrderId }}</div>
                 <div v-if="supplierError(booking)" class="text-xs text-red-600 mt-1 max-w-xs break-words">
                   {{ supplierError(booking) }}
                 </div>
@@ -124,7 +124,7 @@
                     v-if="booking.status === 'PAID' && (!booking.supplierStatus || ['QUEUED', 'FAILED'].includes(booking.supplierStatus))"
                     @click="runAction(booking, 'retry-supplier')"
                     :disabled="actionId === booking.id"
-                    class="px-3 py-1 rounded-lg bg-blue-600 text-white text-xs hover:bg-blue-700 disabled:opacity-60"
+                    class="btn-primary min-h-8 whitespace-nowrap px-3 text-[12px]"
                   >
                     Send to supplier
                   </button>
@@ -132,7 +132,7 @@
                     v-if="booking.status === 'PAID'"
                     @click="openFulfil(booking)"
                     :disabled="actionId === booking.id"
-                    class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs hover:bg-emerald-700 disabled:opacity-60"
+                    class="btn-primary min-h-8 whitespace-nowrap px-3 text-[12px]"
                   >
                     {{ booking.supplierStatus === 'CONFIRMED' ? 'Edit tickets' : 'Mark fulfilled' }}
                   </button>
@@ -140,7 +140,7 @@
                     v-if="booking.status === 'PAID' && booking.supplierStatus === 'CONFIRMED'"
                     @click="runAction(booking, 'resend-ticket')"
                     :disabled="actionId === booking.id"
-                    class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 text-xs hover:bg-gray-50 disabled:opacity-60"
+                    class="btn-secondary min-h-8 whitespace-nowrap px-3 text-[12px]"
                   >
                     Resend ticket
                   </button>
@@ -148,7 +148,7 @@
                     v-if="booking.status === 'PAID'"
                     @click="runAction(booking, 'resend-confirmation')"
                     :disabled="actionId === booking.id"
-                    class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 text-xs hover:bg-gray-50 disabled:opacity-60"
+                    class="btn-secondary min-h-8 whitespace-nowrap px-3 text-[12px]"
                   >
                     Resend confirmation
                   </button>
@@ -156,7 +156,7 @@
                     v-if="booking.status === 'PAID'"
                     @click="refund(booking)"
                     :disabled="actionId === booking.id"
-                    class="px-3 py-1 rounded-lg border border-red-200 text-red-700 text-xs hover:bg-red-50 disabled:opacity-60"
+                    class="inline-flex min-h-8 items-center justify-center whitespace-nowrap rounded-xl border border-[#FECACA] px-3 text-[12px] font-semibold text-[#B91C1C] hover:bg-[#FEF2F2] disabled:opacity-60"
                   >
                     Refund…
                   </button>
@@ -164,16 +164,16 @@
                     v-if="booking.supplierStatus === 'CANCEL_NEEDED'"
                     @click="runAction(booking, 'supplier-cancelled')"
                     :disabled="actionId === booking.id"
-                    class="px-3 py-1 rounded-lg bg-amber-600 text-white text-xs hover:bg-amber-700 disabled:opacity-60"
+                    class="inline-flex min-h-8 items-center justify-center whitespace-nowrap rounded-xl bg-[#B45309] px-3 text-[12px] font-semibold text-white hover:bg-[#92400E] disabled:opacity-60"
                   >
                     Supplier order cancelled
                   </button>
                 </div>
-                <span v-else class="text-xs text-gray-400">—</span>
+                <span v-else class="text-[12px] text-[#94A3B8]">—</span>
               </td>
             </tr>
             <tr v-if="!loading && bookings.length === 0">
-              <td colspan="7" class="px-4 py-6 text-center text-gray-500">
+              <td colspan="7" class="px-4 py-12 text-center text-[14px] text-[#64748B]">
                 {{ view === 'attention' ? 'Nothing needs attention.' : 'No bookings yet.' }}
               </td>
             </tr>
@@ -226,6 +226,10 @@ const ACTION_DONE: Record<BookingAction, string> = {
 }
 
 const view = ref<'attention' | 'all'>('attention')
+const views = [
+  { id: 'attention' as const, label: 'Needs attention' },
+  { id: 'all' as const, label: 'All bookings' }
+]
 const bookings = ref<AdminBooking[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -238,18 +242,18 @@ const formatDate = (value: string) =>
 
 const paymentBadge = (status: AdminBooking['status']) =>
   ({
-    PAID: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-    PENDING: 'bg-gray-50 text-gray-600 border-gray-200',
-    FAILED: 'bg-red-50 text-red-700 border-red-100',
-    CANCELLED: 'bg-gray-50 text-gray-500 border-gray-200',
-    REFUNDED: 'bg-amber-50 text-amber-700 border-amber-100'
+    PAID: 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]',
+    PENDING: 'bg-[#F8FAFC] text-[#475569] border-[#E2E8F0]',
+    FAILED: 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA]',
+    CANCELLED: 'bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0]',
+    REFUNDED: 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]'
   })[status]
 
 const supplierBadge = (status: string | null) => {
-  if (status === 'CONFIRMED') return 'bg-emerald-50 text-emerald-700 border-emerald-100'
-  if (status === 'FAILED') return 'bg-red-50 text-red-700 border-red-100'
-  if (status === 'PLACING') return 'bg-blue-50 text-blue-700 border-blue-100'
-  return 'bg-amber-50 text-amber-700 border-amber-100'
+  if (status === 'CONFIRMED') return 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+  if (status === 'FAILED') return 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA]'
+  if (status === 'PLACING') return 'bg-[#E8F7FA] text-[#007789] border-[#99E3EC]'
+  return 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]'
 }
 
 const supplierError = (booking: AdminBooking) =>

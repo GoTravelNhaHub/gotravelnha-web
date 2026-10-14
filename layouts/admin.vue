@@ -1,478 +1,155 @@
 <template>
-  <div class="admin-layout min-h-screen bg-gray-100">
+  <div class="min-h-dvh bg-[#F6F9FC] font-brand text-[#334155]">
     <!-- Sidebar -->
     <aside
       :class="[
-        'fixed top-0 left-0 z-40 h-screen transition-transform duration-300 ease-in-out',
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-        'lg:translate-x-0',
-        sidebarCollapsed ? 'lg:w-16' : 'lg:w-64',
-        'w-64 bg-gray-800 text-white overflow-hidden',
-        'pt-16'
+        'fixed inset-y-0 left-0 z-40 flex flex-col bg-[#101D3A] text-white transition-[width,transform] duration-200',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+        collapsed ? 'w-64 lg:w-[72px]' : 'w-64'
       ]"
+      aria-label="Admin navigation"
     >
-      <!-- Sidebar Menu -->
-      <nav class="px-3 py-4 overflow-y-auto h-[calc(100vh-4rem)]" :class="sidebarCollapsed && isDesktop ? 'px-2' : ''">
-        <ul class="space-y-2">
-          <!-- Dashboard -->
-          <li>
-            <NuxtLink
-              to="/admin"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                isActiveRoute('/admin') && (!$route.path.startsWith('/admin/') || $route.path === '/admin')
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Dashboard' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Dashboard</span>
-            </NuxtLink>
-          </li>
+      <div class="flex h-16 shrink-0 items-center gap-2.5 border-b border-white/10 px-4" :class="collapsed ? 'lg:justify-center lg:px-0' : ''">
+        <NuxtLink to="/admin" class="flex min-w-0 items-center gap-2.5" @click="closeSidebar">
+          <Logo :size="'32'" />
+          <span v-show="!collapsed || !isDesktop" class="min-w-0">
+            <span class="block truncate text-[15px] font-bold leading-5 tracking-[-0.02em]">GoTravel<span class="text-[#5EEAD4]">Nha</span></span>
+            <span class="block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-white/50">Admin</span>
+          </span>
+        </NuxtLink>
+      </div>
 
-          <!-- Users -->
-          <li>
-            <NuxtLink
-              to="/admin/users"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                $route.path === '/admin/users'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Users' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Users</span>
-            </NuxtLink>
-          </li>
-
-          <!-- Analytics -->
-          <li>
-            <NuxtLink
-              to="/admin/analytics"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                $route.path === '/admin/analytics'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Analytics' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Analytics</span>
-            </NuxtLink>
-          </li>
-
-          <li>
-            <NuxtLink
-              to="/admin/affiliate-performance"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                $route.path === '/admin/affiliate-performance'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Affiliate Performance' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a5 5 0 00-10 0v2m-2 0h14a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1z"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Affiliate Performance</span>
-            </NuxtLink>
-          </li>
-
-          <li>
-            <NuxtLink
-              to="/admin/bookings"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                $route.path === '/admin/bookings'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Bookings' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Bookings</span>
-            </NuxtLink>
-          </li>
-
-          <li>
-            <NuxtLink
-              to="/admin/support"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                $route.path === '/admin/support'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Support' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Support</span>
-            </NuxtLink>
-          </li>
-
-          <li>
-            <NuxtLink
-              to="/admin/unit-economics"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                $route.path === '/admin/unit-economics'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Unit Economics' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Unit Economics</span>
-            </NuxtLink>
-          </li>
-
-          <li>
-            <NuxtLink
-              to="/admin/deal-template-generator"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                $route.path === '/admin/deal-template-generator'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Deal Template Generator' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Deal Template Generator</span>
-            </NuxtLink>
-          </li>
-
-          <!-- Scrapers with Sub-menu -->
-          <li class="relative">
-            <div>
-              <button
-                @click="handleScrapersMenuClick"
+      <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4 [scrollbar-width:thin]">
+        <div v-for="group in navGroups" :key="group.label" class="mb-5 last:mb-0">
+          <p
+            v-show="!collapsed || !isDesktop"
+            class="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/40"
+          >
+            {{ group.label }}
+          </p>
+          <div v-show="collapsed && isDesktop" class="mx-auto mb-2 h-px w-6 bg-white/10" aria-hidden="true"></div>
+          <ul class="space-y-0.5">
+            <li v-for="item in group.items" :key="item.to">
+              <NuxtLink
+                :to="item.to"
+                :target="item.external ? '_blank' : undefined"
+                :title="collapsed && isDesktop ? item.label : undefined"
+                :aria-current="isActive(item) ? 'page' : undefined"
+                class="group relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5EEAD4]"
                 :class="[
-                  'w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                  sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                  isScraperRoute
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  isActive(item) ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white',
+                  collapsed && isDesktop ? 'lg:justify-center lg:px-0' : ''
                 ]"
-                :title="sidebarCollapsed && isDesktop ? 'Scraper Management' : ''"
+                @click="closeSidebar"
               >
-                <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <span v-if="isActive(item)" class="absolute inset-y-2 left-0 w-0.5 rounded-full bg-[#5EEAD4]" aria-hidden="true"></span>
+                <svg class="h-5 w-5 shrink-0" :class="isActive(item) ? 'text-[#5EEAD4]' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="item.icon" />
                 </svg>
-                <span v-show="!sidebarCollapsed || !isDesktop" class="flex-1 text-left">Scraper Management</span>
-                <svg
-                  v-if="!sidebarCollapsed || !isDesktop"
-                  class="w-4 h-4 transition-transform duration-200"
-                  :class="scrapersMenuOpen ? 'rotate-180' : ''"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                <span v-show="!collapsed || !isDesktop" class="min-w-0 flex-1 truncate">{{ item.label }}</span>
+                <span
+                  v-if="item.badge && counts[item.badge]"
+                  class="inline-flex min-w-5 items-center justify-center rounded-full bg-[#F97316] px-1.5 text-[11px] font-bold leading-5 text-white"
+                  :class="collapsed && isDesktop ? 'absolute right-1.5 top-1 min-w-4 px-1 text-[10px] leading-4' : ''"
+                  :aria-label="`${counts[item.badge]} waiting`"
                 >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  {{ counts[item.badge] > 99 ? '99+' : counts[item.badge] }}
+                </span>
+                <svg v-if="item.external && (!collapsed || !isDesktop)" class="h-3.5 w-3.5 shrink-0 text-white/40" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
                 </svg>
-              </button>
-              <!-- Sub-menu - Visible when expanded -->
-              <ul
-                v-if="scrapersMenuOpen && (!sidebarCollapsed || !isDesktop)"
-                class="mt-1 ml-4 space-y-1 border-l-2 border-gray-700 pl-3"
-              >
-                <li>
-                  <NuxtLink
-                    to="/admin/scrapers"
-                    @click="closeSidebar"
-                    :class="[
-                      'flex items-center px-3 py-2 text-sm rounded-lg transition-colors',
-                      $route.path === '/admin/scrapers' || $route.path === '/admin/scrapers/'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                    ]"
-                  >
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                    </svg>
-                    <span>Overview</span>
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink
-                    to="/admin/scrapers/klook"
-                    @click="closeSidebar"
-                    :class="[
-                      'flex items-center px-3 py-2 text-sm rounded-lg transition-colors',
-                      $route.path === '/admin/scrapers/klook'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                    ]"
-                  >
-                    <span class="mr-2">🎯</span>
-                    <span>Klook Events</span>
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink
-                    to="/admin/scrapers/trip"
-                    @click="closeSidebar"
-                    :class="[
-                      'flex items-center px-3 py-2 text-sm rounded-lg transition-colors',
-                      $route.path === '/admin/scrapers/trip'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                    ]"
-                  >
-                    <span class="mr-2">🏨</span>
-                    <span>Trip Events</span>
-                  </NuxtLink>
-                </li>
-              </ul>
-              
-              <!-- Dropdown menu when collapsed -->
-              <Teleport to="body">
-                <div
-                  v-if="scrapersMenuOpen && sidebarCollapsed && isDesktop"
-                  class="fixed left-16 top-20 w-56 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50"
-                  @click.stop
-                >
-                  <NuxtLink
-                    to="/admin/scrapers"
-                    @click="scrapersMenuOpen = false"
-                    :class="[
-                      'flex items-center px-4 py-2 text-sm transition-colors border-b border-gray-700 mb-1',
-                      $route.path === '/admin/scrapers' || $route.path === '/admin/scrapers/'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    ]"
-                  >
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                    </svg>
-                    <span>Overview</span>
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/admin/scrapers/klook"
-                    @click="scrapersMenuOpen = false"
-                    :class="[
-                      'flex items-center px-4 py-2 text-sm transition-colors',
-                      $route.path === '/admin/scrapers/klook'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    ]"
-                  >
-                    <span class="mr-3 text-lg">🎯</span>
-                    <span>Klook Events</span>
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/admin/scrapers/trip"
-                    @click="scrapersMenuOpen = false"
-                    :class="[
-                      'flex items-center px-4 py-2 text-sm transition-colors',
-                      $route.path === '/admin/scrapers/trip'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    ]"
-                  >
-                    <span class="mr-3 text-lg">🏨</span>
-                    <span>Trip Events</span>
-                  </NuxtLink>
-                </div>
-              </Teleport>
-            </div>
-          </li>
-
-          <!-- Divider -->
-          <li class="pt-4 mt-4 border-t border-gray-700">
-            <span v-show="!sidebarCollapsed || !isDesktop" class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Public Pages</span>
-          </li>
-
-          <!-- Trip.com -->
-          <li>
-            <NuxtLink
-              to="/trip"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Trip.com' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Trip.com</span>
-            </NuxtLink>
-          </li>
-
-          <!-- Klook -->
-          <li>
-            <NuxtLink
-              to="/klook"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Klook' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Klook</span>
-            </NuxtLink>
-          </li>
-
-          <!-- Divider -->
-          <li class="pt-4 mt-4 border-t border-gray-700">
-            <span v-show="!sidebarCollapsed || !isDesktop" class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</span>
-          </li>
-
-          <!-- Home -->
-          <li>
-            <NuxtLink
-              to="/"
-              @click="closeSidebar"
-              :class="[
-                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                sidebarCollapsed && isDesktop ? 'justify-center' : '',
-                'text-gray-300 hover:bg-gray-700 hover:text-white'
-              ]"
-              :title="sidebarCollapsed && isDesktop ? 'Home' : ''"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed && isDesktop ? '' : 'mr-3'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-              </svg>
-              <span v-show="!sidebarCollapsed || !isDesktop">Back to Home</span>
-            </NuxtLink>
-          </li>
-        </ul>
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
       </nav>
+
+      <div class="hidden shrink-0 border-t border-white/10 p-3 lg:block">
+        <button
+          type="button"
+          class="flex min-h-10 w-full items-center gap-3 rounded-lg px-3 text-[13px] font-medium text-white/60 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5EEAD4]"
+          :class="collapsed ? 'justify-center px-0' : ''"
+          :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+          @click="toggleCollapsed"
+        >
+          <svg class="h-5 w-5 shrink-0 transition-transform" :class="collapsed ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          </svg>
+          <span v-show="!collapsed">Collapse</span>
+        </button>
+      </div>
     </aside>
 
-    <!-- Overlay for mobile -->
-    <div
-      v-if="sidebarOpen && !isDesktop"
-      @click="sidebarOpen = false"
-      class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-    ></div>
+    <!-- Mobile overlay -->
+    <div v-if="sidebarOpen" class="fixed inset-0 z-30 bg-[#101D3A]/50 backdrop-blur-sm lg:hidden" aria-hidden="true" @click="sidebarOpen = false"></div>
 
-    <!-- Top Navbar - Full Width -->
-    <nav class="fixed top-0 left-0 right-0 z-30 bg-white border-b border-gray-200 h-16 flex items-center shadow-sm transition-all duration-300" :class="sidebarCollapsed && isDesktop ? 'lg:pl-16' : 'lg:pl-64'">
-      <div class="flex items-center px-4 w-full">
+    <!-- Top bar -->
+    <header
+      class="fixed inset-x-0 top-0 z-20 h-16 border-b border-[#E2E8F0] bg-white/95 backdrop-blur transition-[padding] duration-200"
+      :class="collapsed ? 'lg:pl-[72px]' : 'lg:pl-64'"
+    >
+      <div class="flex h-full items-center gap-3 px-4 sm:px-6">
         <button
-          @click="sidebarOpen = !sidebarOpen"
-          class="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mr-2"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[#334155] hover:bg-[#F1F5F9] lg:hidden"
+          aria-label="Open navigation"
+          @click="sidebarOpen = true"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
-        <!-- Sidebar Collapse Button (Desktop) -->
-        <button
-          v-if="isDesktop"
-          @click="toggleSidebarCollapse"
-          class="hidden lg:flex items-center justify-center w-10 h-10 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors mr-2"
-          title="Toggle sidebar"
+        <div class="min-w-0 flex-1">
+          <p v-if="current.group" class="hidden text-[12px] font-medium leading-4 text-[#94A3B8] sm:block">{{ current.group }}</p>
+          <h1 class="truncate text-[17px] font-bold leading-6 tracking-[-0.02em] text-[#101D3A]">{{ current.title }}</h1>
+        </div>
+
+        <NuxtLink
+          to="/"
+          target="_blank"
+          class="hidden min-h-10 items-center gap-1.5 rounded-lg border border-[#E2E8F0] px-3 text-[13px] font-semibold text-[#101D3A] hover:bg-[#F8FAFC] sm:inline-flex"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path v-if="!sidebarCollapsed" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
-            <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+          View site
+          <svg class="h-3.5 w-3.5 text-[#64748B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
           </svg>
-        </button>
+        </NuxtLink>
 
-        <div class="flex-1 flex items-center justify-between">
-          <h1 class="text-xl font-semibold text-gray-900">{{ pageTitle }}</h1>
-          
-          <div class="flex items-center gap-4">
-            <!-- User menu -->
-            <div class="relative">
-              <button
-                @click="userMenuOpen = !userMenuOpen"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-sm">
-                  A
-                </div>
-                <span class="hidden sm:block text-sm font-medium text-gray-700">Admin</span>
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-
-              <!-- User dropdown -->
-              <div
-                v-if="userMenuOpen"
-                @click.stop
-                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
-              >
-                <NuxtLink
-                  to="/user"
-                  @click="userMenuOpen = false"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  My Profile
-                </NuxtLink>
-                <NuxtLink
-                  to="/"
-                  @click="userMenuOpen = false"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Back to Site
-                </NuxtLink>
-                <hr class="my-1">
-                <button
-                  @click="logout"
-                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
+        <div ref="menuEl" class="relative">
+          <button
+            type="button"
+            class="flex h-10 items-center gap-2 rounded-lg px-1.5 hover:bg-[#F1F5F9] sm:px-2"
+            :aria-expanded="userMenuOpen"
+            aria-haspopup="menu"
+            @click="userMenuOpen = !userMenuOpen"
+          >
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#008A9B] text-[13px] font-bold text-white">{{ initial }}</span>
+            <span class="hidden text-left sm:block">
+              <span class="block max-w-[10rem] truncate text-[13px] font-semibold leading-4 text-[#101D3A]">{{ displayName }}</span>
+              <span class="block text-[11px] leading-4 text-[#64748B]">Administrator</span>
+            </span>
+            <svg class="hidden h-4 w-4 text-[#94A3B8] sm:block" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m6 8 4 4 4-4" />
+            </svg>
+          </button>
+          <div
+            v-if="userMenuOpen"
+            role="menu"
+            class="absolute right-0 mt-2 w-52 overflow-hidden rounded-xl border border-[#E2E8F0] bg-white py-1 shadow-[0_16px_40px_-16px_rgba(16,29,58,0.35)]"
+          >
+            <p v-if="user?.email" class="truncate border-b border-[#F1F5F9] px-4 py-2.5 text-[12px] text-[#64748B]">{{ user.email }}</p>
+            <NuxtLink to="/user" role="menuitem" class="block px-4 py-2.5 text-[14px] text-[#334155] hover:bg-[#F8FAFC]" @click="userMenuOpen = false">My profile</NuxtLink>
+            <NuxtLink to="/" role="menuitem" class="block px-4 py-2.5 text-[14px] text-[#334155] hover:bg-[#F8FAFC] sm:hidden" @click="userMenuOpen = false">View site</NuxtLink>
+            <button type="button" role="menuitem" class="block w-full px-4 py-2.5 text-left text-[14px] text-[#B91C1C] hover:bg-[#FEF2F2]" @click="logout">Log out</button>
           </div>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <!-- Main Content -->
-    <div :class="['transition-all duration-300 pt-16', sidebarCollapsed && isDesktop ? 'lg:pl-16' : 'lg:pl-64']">
-      <!-- Page Content -->
-      <main class="min-h-[calc(100vh-4rem)]">
+    <!-- Page -->
+    <div class="pt-16 transition-[padding] duration-200" :class="collapsed ? 'lg:pl-[72px]' : 'lg:pl-64'">
+      <main class="min-h-[calc(100dvh-4rem)]">
         <slot />
       </main>
     </div>
@@ -480,163 +157,181 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthState } from '~/composables/useAuthState'
+import Logo from '~/components/Logo.vue'
+
+type BadgeKey = 'bookings' | 'support'
+
+interface NavItem {
+  to: string
+  label: string
+  icon: string
+  /** Also active on child routes */
+  prefix?: boolean
+  badge?: BadgeKey
+  external?: boolean
+}
+
+const ICONS = {
+  dashboard: 'M4 5a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5Zm9 0a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V5Zm0 8a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-6Zm-9 3a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3Z',
+  bookings: 'M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6ZM13 5v2M13 17v2M13 11v2',
+  support: 'M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-5l-4 3v-3H6a2 2 0 0 1-2-2V6Z',
+  users: 'M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm13 9v-1a4 4 0 0 0-3-3.9M16 4.1a3 3 0 0 1 0 5.8',
+  analytics: 'M4 20V10m6 10V4m6 16v-7m4 7H2',
+  affiliate: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
+  economics: 'M12 3v18M16.5 7.5c-.6-1.2-2.2-2-4.5-2-2.8 0-4.5 1.3-4.5 3s1.7 2.6 4.5 3 4.5 1.3 4.5 3-1.7 3-4.5 3c-2.3 0-3.9-.8-4.5-2',
+  templates: 'M4 5h16v4H4V5Zm0 8h7v6H4v-6Zm11 0h5v6h-5v-6Z',
+  scrapers: 'M12 3v3m0 12v3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M3 12h3m12 0h3M5.6 18.4l2.1-2.1m8.6-8.6 2.1-2.1M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z',
+  attractions: 'M12 21s-7-5.6-7-11a7 7 0 1 1 14 0c0 5.4-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z',
+  klook: 'M4 7h16M4 12h16M4 17h10',
+  trip: 'M3 20V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v14M14 10h6a1 1 0 0 1 1 1v9M2 20h20M7 9h3M7 13h3M7 17h3',
+  site: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-9-9h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z',
+  planner: 'M12 3l1.9 4.8L19 9.5l-4.4 2.9L15.6 18 12 15l-3.6 3 1-5.6L5 9.5l5.1-1.7L12 3Z'
+}
+
+// Grouped by the job the admin is doing, most frequent first
+const navGroups: Array<{ label: string; items: NavItem[] }> = [
+  { label: 'Overview', items: [{ to: '/admin', label: 'Dashboard', icon: ICONS.dashboard }] },
+  {
+    label: 'Operations',
+    items: [
+      { to: '/admin/bookings', label: 'Bookings', icon: ICONS.bookings, badge: 'bookings' },
+      { to: '/admin/support', label: 'Support inbox', icon: ICONS.support, badge: 'support' },
+      { to: '/admin/users', label: 'Users', icon: ICONS.users }
+    ]
+  },
+  {
+    label: 'Growth',
+    items: [
+      { to: '/admin/analytics', label: 'Analytics', icon: ICONS.analytics },
+      { to: '/admin/affiliate-performance', label: 'Affiliate performance', icon: ICONS.affiliate },
+      { to: '/admin/unit-economics', label: 'Unit economics', icon: ICONS.economics }
+    ]
+  },
+  {
+    label: 'Content',
+    items: [{ to: '/admin/deal-template-generator', label: 'Deal templates', icon: ICONS.templates }]
+  },
+  {
+    label: 'Data',
+    items: [
+      { to: '/admin/scrapers', label: 'Scrapers', icon: ICONS.scrapers },
+      { to: '/admin/scrapers/attractionsg', label: 'SG Attractions', icon: ICONS.attractions },
+      { to: '/admin/scrapers/klook', label: 'Klook events', icon: ICONS.klook },
+      { to: '/admin/scrapers/trip', label: 'Trip.com events', icon: ICONS.trip }
+    ]
+  },
+  {
+    label: 'Site',
+    items: [
+      { to: '/explore', label: 'Explore', icon: ICONS.site, external: true },
+      { to: '/planner', label: 'AI Travel Agent', icon: ICONS.planner, external: true }
+    ]
+  }
+]
 
 const route = useRoute()
 const router = useRouter()
 const { user, clearUser } = useAuthState()
 
 const sidebarOpen = ref(false)
-const sidebarCollapsed = ref(false)
-const userMenuOpen = ref(false)
+const collapsed = ref(false)
 const isDesktop = ref(false)
-const scrapersMenuOpen = ref(false)
+const userMenuOpen = ref(false)
+const menuEl = ref<HTMLElement | null>(null)
+const counts = ref<Record<BadgeKey, number>>({ bookings: 0, support: 0 })
 
-// Handle scrapers menu click - navigate to overview when collapsed, toggle menu when expanded
-const handleScrapersMenuClick = () => {
-  if (sidebarCollapsed.value && isDesktop.value) {
-    // When collapsed, show dropdown or navigate to overview
-    scrapersMenuOpen.value = !scrapersMenuOpen.value
-  } else {
-    // When expanded, toggle the sub-menu
-    scrapersMenuOpen.value = !scrapersMenuOpen.value
-  }
+const normalisedPath = computed(() => route.path.replace(/\/+$/, '') || '/')
+
+const isActive = (item: NavItem) => {
+  const path = normalisedPath.value
+  if (item.to === '/admin') return path === '/admin'
+  if (item.to === '/admin/scrapers') return path === '/admin/scrapers'
+  return path === item.to || path.startsWith(`${item.to}/`)
 }
 
-// Page titles based on route
-const pageTitle = computed(() => {
-  const titles: Record<string, string> = {
-    '/admin': 'Dashboard',
-    '/admin/users': 'User Management',
-    '/admin/analytics': 'Analytics',
-    '/admin/affiliate-performance': 'Affiliate Performance',
-    '/admin/bookings': 'Bookings',
-    '/admin/unit-economics': 'Unit Economics',
-    '/admin/deal-template-generator': 'Deal Template Generator',
-    '/admin/scrapers': 'Scraper Management',
-    '/admin/scrapers/klook': 'Klook Events',
-    '/admin/scrapers/trip': 'Trip Events',
+const current = computed(() => {
+  for (const group of navGroups) {
+    const item = group.items.find(isActive)
+    if (item) return { title: item.label, group: group.label === 'Overview' ? '' : group.label }
   }
-  
-  // Check if path matches any route (including dynamic routes)
-  if (titles[route.path]) {
-    return titles[route.path]
-  }
-  
-  // Fallback for scraper routes
-  if (route.path.startsWith('/admin/scrapers')) {
-    if (route.path.includes('klook')) return 'Klook Events'
-    if (route.path.includes('trip')) return 'Trip Events'
-    return 'Scraper Management'
-  }
-  
-  return 'Admin Portal'
+  return { title: 'Admin', group: '' }
 })
 
-const isActiveRoute = (path: string) => {
-  if (path === '/admin') {
-    return route.path === '/admin' || route.path === '/admin/'
-  }
-  return route.path === path || route.path.startsWith(path + '/')
-}
-
-const isScraperRoute = computed(() => {
-  return route.path.startsWith('/admin/scrapers')
+const displayName = computed(() => {
+  const value = user.value as { firstName?: string; lastName?: string; username?: string } | null
+  if (!value) return 'Admin'
+  return [value.firstName, value.lastName].filter(Boolean).join(' ') || value.username || 'Admin'
 })
+const initial = computed(() => displayName.value.charAt(0).toUpperCase())
 
 const closeSidebar = () => {
-  if (!isDesktop.value) {
-    sidebarOpen.value = false
-  }
+  if (!isDesktop.value) sidebarOpen.value = false
 }
 
-const toggleSidebarCollapse = () => {
-  sidebarCollapsed.value = !sidebarCollapsed.value
-  // Save to localStorage
-  if (process.client) {
-    localStorage.setItem('adminSidebarCollapsed', sidebarCollapsed.value.toString())
-  }
+const toggleCollapsed = () => {
+  collapsed.value = !collapsed.value
+  localStorage.setItem('adminSidebarCollapsed', String(collapsed.value))
 }
 
-const logout = async () => {
+const logout = () => {
   clearUser()
   userMenuOpen.value = false
   router.push('/')
 }
 
-// Check screen size
-const checkScreenSize = () => {
+// Badge counts come from the dashboard stats; refreshed on navigation so they stay current
+const loadCounts = async () => {
+  try {
+    const res = await $fetch<{ data?: { attention?: { bookings?: number; support?: number } } }>('/api/admin/dashboard/stats')
+    counts.value = {
+      bookings: Number(res?.data?.attention?.bookings || 0),
+      support: Number(res?.data?.attention?.support || 0)
+    }
+  } catch {
+    // Badges are a convenience; the pages show the real lists
+  }
+}
+
+const checkScreen = () => {
   isDesktop.value = window.innerWidth >= 1024
-  if (isDesktop.value) {
-    sidebarOpen.value = false // Desktop doesn't need overlay
-  }
+  if (isDesktop.value) sidebarOpen.value = false
 }
 
-// Close menus when clicking outside
-const handleClickOutside = (event: MouseEvent) => {
-  const target = event.target as HTMLElement
-  if (!target.closest('.relative')) {
+const onDocumentClick = (event: MouseEvent) => {
+  if (userMenuOpen.value && menuEl.value && !menuEl.value.contains(event.target as Node)) userMenuOpen.value = false
+}
+
+const onKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
     userMenuOpen.value = false
-  }
-  // Close scrapers menu when clicking outside (when collapsed)
-  if (sidebarCollapsed.value && isDesktop.value && scrapersMenuOpen.value) {
-    // Check if click is outside the scrapers menu button and dropdown
-    const scrapersButton = target.closest('li.relative')
-    const scrapersDropdown = target.closest('.fixed.left-16')
-    if (!scrapersButton && !scrapersDropdown) {
-      scrapersMenuOpen.value = false
-    }
-  }
-}
-
-// Load sidebar state from localStorage
-const loadSidebarState = () => {
-  if (process.client) {
-    const saved = localStorage.getItem('adminSidebarCollapsed')
-    if (saved !== null) {
-      sidebarCollapsed.value = saved === 'true'
-    }
+    sidebarOpen.value = false
   }
 }
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-  window.addEventListener('resize', checkScreenSize)
-  checkScreenSize()
-  loadSidebarState()
-  
-  // Auto-collapse on mobile by default
-  if (window.innerWidth < 1024) {
-    sidebarOpen.value = false
-  }
-  
-  // Auto-expand scrapers menu if on a scraper route or attractionsg route
-  if (route.path.startsWith('/admin/scrapers')) {
-    scrapersMenuOpen.value = true
-  }
+  checkScreen()
+  collapsed.value = localStorage.getItem('adminSidebarCollapsed') === 'true'
+  window.addEventListener('resize', checkScreen)
+  document.addEventListener('click', onDocumentClick)
+  document.addEventListener('keydown', onKeydown)
+  loadCounts()
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
-  window.removeEventListener('resize', checkScreenSize)
+  window.removeEventListener('resize', checkScreen)
+  document.removeEventListener('click', onDocumentClick)
+  document.removeEventListener('keydown', onKeydown)
 })
 
-// Watch route changes to close mobile sidebar and auto-open scrapers menu
-watch(() => route.path, (newPath) => {
-  if (!isDesktop.value) {
+watch(
+  () => route.path,
+  () => {
     sidebarOpen.value = false
+    userMenuOpen.value = false
+    loadCounts()
   }
-  // Auto-expand scrapers menu if on a scraper route or attractionsg route
-  if (newPath.startsWith('/admin/scrapers')) {
-    scrapersMenuOpen.value = true
-  }
-})
+)
 </script>
-
-<style scoped>
-.admin-layout {
-  min-height: 100vh;
-}
-</style>

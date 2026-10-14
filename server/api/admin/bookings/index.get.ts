@@ -1,5 +1,6 @@
 import { defineEventHandler, getQuery } from 'h3'
 import prisma from '~/server/utils/prisma'
+import { BOOKING_ATTENTION_WHERE } from '~/server/utils/booking-attention'
 
 // Self-checkout bookings. view=attention (default) lists bookings someone needs to act on.
 export default defineEventHandler(async (event) => {
@@ -7,25 +8,7 @@ export default defineEventHandler(async (event) => {
   const view = query.view === 'all' ? 'all' : 'attention'
   const limit = Math.min(Math.max(Number.parseInt(String(query.limit ?? '100'), 10) || 100, 1), 500)
 
-  // Needs attention: paid but tickets not confirmed or customer not emailed, or
-  // refunded with a supplier order still to cancel
-  const where =
-    view === 'attention'
-      ? {
-          OR: [
-            {
-              status: 'PAID' as const,
-              OR: [
-                { supplierStatus: null },
-                { supplierStatus: { not: 'CONFIRMED' } },
-                { confirmationSentAt: null },
-                { ticketSentAt: null }
-              ]
-            },
-            { supplierStatus: 'CANCEL_NEEDED' }
-          ]
-        }
-      : undefined
+  const where = view === 'attention' ? BOOKING_ATTENTION_WHERE : undefined
 
   const bookings = await prisma.attractionsgBooking.findMany({
     where,

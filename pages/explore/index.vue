@@ -3,41 +3,70 @@
     <PageHero
       eyebrow="Family travel, planned and compared"
       title="Plan the trip. Compare where to book."
-      subtitle="Search flights and hotels, see Trip.com and Klook side by side, or let the AI agent plan each day for the family."
+      subtitle="Search flights and hotels on Trip.com, compare Trip.com and Klook side by side before you book, or let the AI agent plan each day for the family."
       :image="heroImage"
       image-position="center 45%"
-      :trust="['Trip.com and Klook partners', 'Prices shown by the partner before you pay', 'Day-by-day plans with AI']"
+      :trust="['Prices shown by the partner before you pay', 'No charge from GoTravelNha on partner bookings', 'Day-by-day plans with AI']"
       overlap
-    />
+    >
+      <template #badge>
+        <span class="inline-flex flex-wrap items-center gap-2 text-[13px] font-semibold text-white/80">
+          <span class="inline-flex items-center rounded-full bg-white px-3 py-1.5 shadow-sm"><TripWordmark /></span>
+          <span aria-hidden="true">+</span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[#101D3A] shadow-sm"><KlookIcon :size="16" />Klook</span>
+          <span class="ml-1">Compared side by side</span>
+        </span>
+      </template>
+    </PageHero>
 
     <div class="site-shell relative z-20 -mt-20 sm:-mt-24">
       <TravelSearch placement="deals_hub" />
     </div>
 
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
-      <nav aria-label="Ways to start" class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:gap-4">
-        <NuxtLink
-          v-for="entry in entries"
-          :key="entry.to"
-          :to="entry.to"
-          class="group flex items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 transition hover:-translate-y-0.5 hover:border-[#008A9B]/40 hover:shadow-[0_16px_32px_-20px_rgba(16,29,58,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:p-5"
-        >
-          <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="entry.icon" />
-            </svg>
-          </span>
-          <span class="min-w-0">
-            <span class="flex items-center gap-1 text-[15px] font-semibold leading-6 text-[#101D3A]">
-              {{ entry.label }}
-              <svg class="h-3.5 w-3.5 text-[#94A3B8] transition group-hover:translate-x-0.5 group-hover:text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" />
-              </svg>
-            </span>
-            <span class="mt-0.5 block text-[13px] leading-5 text-[#64748B]">{{ entry.detail }}</span>
-          </span>
-        </NuxtLink>
-      </nav>
+      <!-- The side-by-side comparison lives on /explore/[slug]; this band is the way in -->
+      <section class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white" aria-labelledby="compare-title">
+        <div class="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:p-10">
+          <div>
+            <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">Compare before you book</p>
+            <h2 id="compare-title" class="mt-1 text-[26px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[32px] sm:leading-10">Trip.com and Klook, side by side</h2>
+            <p class="mt-3 max-w-xl text-[15px] leading-6 text-[#475569]">
+              Prices, room types and what's included differ between partners. Open a comparison, check both, then book where the total works best for your family.
+            </p>
+            <div class="mt-6 grid gap-2 sm:grid-cols-3">
+              <NuxtLink
+                v-for="item in comparisons"
+                :key="item.to"
+                :to="item.to"
+                class="group flex min-h-12 items-center justify-between gap-2 rounded-xl border border-[#E2E8F0] px-4 text-[14px] font-semibold text-[#101D3A] transition hover:border-[#008A9B] hover:bg-[#E8F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+              >
+                <span class="inline-flex items-center gap-2">
+                  <svg class="h-[18px] w-[18px] text-[#008A9B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="item.icon" /></svg>
+                  {{ item.label }}
+                </span>
+                <svg class="h-4 w-4 text-[#94A3B8] transition group-hover:translate-x-0.5 group-hover:text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" /></svg>
+              </NuxtLink>
+            </div>
+          </div>
+
+          <div class="relative grid gap-3 sm:grid-cols-2">
+            <div v-for="partner in partners" :key="partner.name" class="rounded-2xl border p-5" :class="partner.surface">
+              <span class="inline-flex h-11 min-w-11 items-center justify-center rounded-xl bg-white px-2.5 shadow-sm ring-1 ring-black/5" aria-hidden="true">
+                <TripWordmark v-if="partner.name === 'Trip.com'" />
+                <KlookIcon v-else :size="24" />
+              </span>
+              <h3 class="mt-3 text-[17px] font-bold text-[#101D3A]">{{ partner.name }}</h3>
+              <ul class="mt-2 space-y-1.5">
+                <li v-for="point in partner.points" :key="point" class="flex items-start gap-2 text-[14px] leading-5 text-[#475569]">
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 10.5 3 3 7-7" /></svg>
+                  {{ point }}
+                </li>
+              </ul>
+            </div>
+            <span class="absolute left-1/2 top-1/2 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#101D3A] text-[12px] font-bold text-white ring-4 ring-white sm:inline-flex" aria-hidden="true">VS</span>
+          </div>
+        </div>
+      </section>
 
       <section class="relative isolate overflow-hidden rounded-3xl bg-[#101D3A]" aria-labelledby="agent-promo">
         <img
@@ -101,7 +130,7 @@
       </section>
 
       <section class="space-y-6">
-        <SectionHeading eyebrow="Compare and book" title="See the partners side by side" subtitle="Open a comparison to check Trip.com and Klook before you choose where to book.">
+        <SectionHeading eyebrow="Comparison guides" title="What to check on each partner" subtitle="Each guide sets Trip.com and Klook next to each other, with tips on what to compare before you pay.">
           <template #action>
             <p v-if="!loadingTemplates && dealTemplates.length" class="text-[13px] text-[#64748B]">{{ dealTemplates.length }} comparisons</p>
           </template>
@@ -133,7 +162,11 @@
       </section>
 
       <section class="space-y-6">
-        <SectionHeading eyebrow="Popular with families" title="Where to next?" subtitle="Pick a city and the AI agent starts a plan for it." />
+        <SectionHeading eyebrow="Popular with families" title="Where to next?" subtitle="Pick a city and the AI agent starts a plan for it.">
+          <template #action>
+            <NuxtLink to="/destinations" class="text-link text-[14px]">All destinations →</NuxtLink>
+          </template>
+        </SectionHeading>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
           <CityTile
             v-for="city in cities"
@@ -189,6 +222,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import DealHubCard from '~/components/deals/DealHubCard.vue'
+import KlookIcon from '~/components/KlookIcon.vue'
+import TripWordmark from '~/components/TripWordmark.vue'
 import BookingNote from '~/components/site/BookingNote.vue'
 import CityTile from '~/components/site/CityTile.vue'
 import PageHero from '~/components/site/PageHero.vue'
@@ -210,25 +245,28 @@ const { track } = useFunnel()
 
 const allowedBuiltinSlugs = new Set(['flights', 'hotels', 'attractions'])
 
-const entries = [
+const comparisons = [
   {
     to: '/explore/flights',
     label: 'Flights',
-    detail: 'Compare flight search on Trip.com and Klook',
     icon: 'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2Z'
   },
   {
     to: '/explore/hotels',
     label: 'Hotels',
-    detail: 'Compare hotel search before you book',
     icon: 'M3 20V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v14M14 10h6a1 1 0 0 1 1 1v9M2 20h20M7 9h3M7 13h3M7 17h3'
   },
   {
-    to: '/destinations',
-    label: 'Destinations',
-    detail: 'Family activities to book, by city',
-    icon: 'M12 21s-7-5.6-7-11a7 7 0 1 1 14 0c0 5.4-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z'
+    to: '/explore/attractions',
+    label: 'Attractions',
+    icon: 'M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6ZM13 5v2M13 17v2M13 11v2'
   }
+] as const
+
+// Matches the highlights on the comparison pages
+const partners = [
+  { name: 'Trip.com', surface: 'border-[#1B5FD1]/15 bg-[#F5F9FF]', points: ['Wide choice of flights and hotels', 'Quick fare and room checks', 'Flexible routes and dates'] },
+  { name: 'Klook', surface: 'border-[#C2410C]/15 bg-[#FFF8F3]', points: ['Tours, attractions and transport', 'Bundle a stay with activities', 'Handy for things to do on arrival'] }
 ] as const
 
 const agentPoints = ['Plans around every traveller’s age', 'Edits the plan without starting over', 'Links partner prices only once checked']

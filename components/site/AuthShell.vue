@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between gap-3">
         <NuxtLink to="/" class="inline-flex items-center gap-2 text-[16px] font-bold tracking-[-0.02em] text-[#101D3A] lg:invisible">
           <Logo :size="'30'" />
-          GoTravelNha
+          <span>GoTravel<span class="text-[#008A9B]">Nha</span></span>
         </NuxtLink>
         <NuxtLink
           to="/"
@@ -43,7 +43,7 @@
       <div class="relative flex h-full flex-col justify-between p-10 xl:p-14">
         <NuxtLink to="/" class="inline-flex w-fit items-center gap-2.5 text-[18px] font-bold tracking-[-0.02em] text-white" tabindex="-1">
           <Logo :size="'34'" />
-          GoTravelNha
+          <span>GoTravel<span class="text-[#5EEAD4]">Nha</span></span>
         </NuxtLink>
         <div class="max-w-lg">
           <h2 class="text-[34px] font-extrabold leading-[1.15] tracking-[-0.03em] text-white xl:text-[40px]">{{ headline }}</h2>

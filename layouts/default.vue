@@ -142,7 +142,7 @@ onBeforeUnmount(() => {
             class="flex min-w-0 items-center gap-2 text-[17px] font-bold tracking-[-0.02em] text-[#101D3A] touch-manipulation sm:text-lg"
           >
             <Logo :size="'32'" class="shrink-0" />
-            <span class="truncate">GoTravelNha</span>
+            <span class="truncate">GoTravel<span class="text-[#008A9B]">Nha</span></span>
           </NuxtLink>
           <ul class="ml-6 hidden min-w-0 flex-row items-center gap-0.5 lg:flex">
             <li v-for="item in navItems" :key="item.to">
@@ -288,7 +288,7 @@ onBeforeUnmount(() => {
             <div class="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F6F9FC] p-5">
               <div class="flex items-center gap-3">
                 <Logo :size="'32'" />
-                <span class="font-bold text-lg text-slate-900">GoTravelNha</span>
+                <span class="text-lg font-bold tracking-[-0.02em] text-[#101D3A]">GoTravel<span class="text-[#008A9B]">Nha</span></span>
               </div>
               <button
                 @click="closeMenu"
@@ -368,7 +368,7 @@ onBeforeUnmount(() => {
           <div class="col-span-2 max-w-sm md:col-span-1">
             <div class="flex items-center gap-2.5">
               <Logo :size="'28'" />
-              <p class="text-lg font-bold tracking-[-0.02em] text-white">GoTravelNha</p>
+              <p class="text-lg font-bold tracking-[-0.02em] text-white">GoTravel<span class="text-[#5EEAD4]">Nha</span></p>
             </div>
             <p class="mt-2 text-[13px] leading-5 text-white/70 sm:mt-3 sm:text-[14px] sm:leading-[22px]">
               Plan family trips and compare where to book. Flight and hotel bookings open on Trip.com or Klook. Singapore attraction tickets that we sell are paid for here.

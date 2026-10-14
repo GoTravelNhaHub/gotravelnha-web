@@ -1,57 +1,11 @@
 <template>
-  <svg 
-    :width="size" 
-    :height="size" 
-    viewBox="0 0 100 100" 
-    xmlns="http://www.w3.org/2000/svg"
-    class="logo-svg"
-  >
-    <defs>
-      <!-- Multi-platform gradient -->
-      <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-        <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
-      </linearGradient>
-      
-      <!-- Subtle shadow for depth -->
-      <filter id="logoShadow">
-        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
-      </filter>
-    </defs>
-    
-    <!-- Background Circle -->
-    <circle cx="50" cy="50" r="48" fill="url(#logoGradient)" />
-    
-    <!-- Main Design: Airplane with 3 paths/platforms -->
-    <g transform="translate(50, 50)" filter="url(#logoShadow)">
-      <!-- Three converging paths representing three platforms -->
-      <g opacity="0.8">
-        <!-- Path 1 - Trip.com -->
-        <path d="M -35 -5 Q -20 -10 -8 0 Q -20 10 -35 5" 
-              stroke="#60a5fa" stroke-width="3" fill="none" stroke-linecap="round" />
-        <!-- Path 2 - Klook -->
-        <path d="M -35 0 Q -20 0 0 0" 
-              stroke="#a78bfa" stroke-width="3" fill="none" stroke-linecap="round" />
-        <!-- Path 3 - SG Attractions -->
-        <path d="M -35 5 Q -20 10 -8 0 Q -20 -10 -35 -5" 
-              stroke="#f472b6" stroke-width="3" fill="none" stroke-linecap="round" />
-      </g>
-      
-      <!-- Central Airplane (representing GoTravelNha aggregating platforms) -->
-      <g transform="translate(0, 0)">
-        <!-- Body -->
-        <rect x="5" y="-2" width="25" height="4" rx="2" fill="white" />
-        <!-- Wings -->
-        <path d="M 15 -5 L 20 -12 L 25 -5 Z" fill="white" />
-        <path d="M 15 5 L 20 12 L 25 5 Z" fill="white" />
-        <!-- Tail -->
-        <path d="M 0 -5 L 5 -8 L 5 -5 L 8 -5 Z" fill="white" />
-        <path d="M 0 5 L 5 8 L 5 5 L 8 5 Z" fill="white" />
-        <!-- Nose -->
-        <path d="M 30 -3 L 38 0 L 30 3 Z" fill="white" />
-      </g>
-    </g>
+  <!-- A map pin with a house inside ("nhà" is home): family trips planned from one place.
+       Solid fills only, so several logos on one page never share gradient ids. -->
+  <svg :width="size" :height="size" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="logo-svg" aria-hidden="true">
+    <rect width="48" height="48" rx="13" fill="#008A9B" />
+    <path d="M24 39.5c-7-7.4-10.5-12.7-10.5-17.3a10.5 10.5 0 0 1 21 0c0 4.6-3.5 9.9-10.5 17.3Z" fill="#FFFFFF" />
+    <path d="M18.8 23 24 18.4l5.2 4.6v5.5H18.8Z" fill="#008A9B" />
+    <circle cx="35.5" cy="12.5" r="3.2" fill="#FBBF24" />
   </svg>
 </template>
 
@@ -67,11 +21,6 @@ defineProps({
 <style scoped>
 .logo-svg {
   display: inline-block;
-  transition: transform 0.3s ease;
-}
-
-.logo-svg:hover {
-  transform: scale(1.05);
+  flex-shrink: 0;
 }
 </style>
-

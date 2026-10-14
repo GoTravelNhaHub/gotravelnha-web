@@ -38,11 +38,11 @@
         <section class="rounded-2xl border border-[#E2E8F0] bg-white" aria-labelledby="trips-title">
           <header class="flex items-center justify-between gap-3 border-b border-[#F1F5F9] px-5 py-4">
             <h2 id="trips-title" class="text-[16px] font-bold text-[#101D3A]">Upcoming trips</h2>
-            <NuxtLink to="/trips" class="text-link text-[13px]">All trips</NuxtLink>
+            <NuxtLink to="/mytrip" class="text-link text-[13px]">All trips</NuxtLink>
           </header>
           <ul v-if="upcomingTrips.length" class="divide-y divide-[#F1F5F9]">
             <li v-for="trip in upcomingTrips" :key="trip.id">
-              <NuxtLink :to="`/trips/${trip.id}`" class="flex items-center gap-4 px-5 py-3.5 hover:bg-[#F8FAFC]">
+              <NuxtLink :to="`/mytrip/${trip.id}`" class="flex items-center gap-4 px-5 py-3.5 hover:bg-[#F8FAFC]">
                 <span class="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#E8F7FA]">
                   <img v-if="destinationPhoto(trip.destination, 120)" :src="destinationPhoto(trip.destination, 120)!" alt="" width="48" height="48" class="h-full w-full object-cover" />
                 </span>
@@ -194,12 +194,12 @@ const recentBookings = computed(() => bookings.value.slice(0, 3))
 
 const tiles = computed(() => [
   { label: 'Bookings', value: bookings.value.filter((b) => ['processing', 'confirmed'].includes(b.state)).length, to: '/bookings', cta: 'View bookings' },
-  { label: 'Saved trips', value: trips.value.length, to: '/trips', cta: 'View trips' },
+  { label: 'Saved trips', value: trips.value.length, to: '/mytrip', cta: 'View trips' },
   { label: 'Family', value: travellers.value.length, to: '/user/family', cta: 'Edit family' }
 ])
 
 const accountLinks = [
-  { to: '/trips', label: 'My trips' },
+  { to: '/mytrip', label: 'My trips' },
   { to: '/bookings', label: 'My bookings' },
   { to: '/user/family', label: 'Family profile' },
   { to: '/help', label: 'Help centre' },

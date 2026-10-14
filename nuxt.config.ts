@@ -98,7 +98,11 @@ export default defineNuxtConfig({
       '/forgot-password': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
       '/reset-password': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
       '/bookings/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
-      '/trips/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } }
+      // Saved trips moved from /trips (too close to /trip, the Trip.com page)
+      '/trips': { redirect: { to: '/mytrip', statusCode: 301 } },
+      '/trips/**': { redirect: { to: '/mytrip/**', statusCode: 301 } },
+      '/mytrip': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      '/mytrip/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } }
     },
     // Cached HTML only in production builds. In dev it outlives code edits, so a refresh
     // serves old markup that the new client code then hydrates into a broken page.

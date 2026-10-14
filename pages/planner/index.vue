@@ -273,7 +273,7 @@ const route = useRoute()
 const router = useRouter()
 const { track } = useFunnel()
 const { isAuthenticated } = useAuthState()
-const tripsTo = computed(() => (isAuthenticated.value ? '/trips' : '/login?redirect=/trips'))
+const tripsTo = computed(() => (isAuthenticated.value ? '/mytrip' : '/login?redirect=/mytrip'))
 
 const today = new Date().toISOString().slice(0, 10)
 const form = reactive({
@@ -769,7 +769,7 @@ const saveTrip = async () => {
       body: { generationId: result.value.generationId }
     })
     localStorage.removeItem(PENDING_KEY)
-    router.push(`/trips/${response.data.id}`)
+    router.push(`/mytrip/${response.data.id}`)
   } catch (err: any) {
     const message = err?.data?.message || 'Could not save this trip.'
     error.value = message

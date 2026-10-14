@@ -14,6 +14,7 @@ export default defineEventHandler((event) => {
     'Disallow: /reset-password',
     'Disallow: /bookings',
     'Disallow: /trips',
+    'Disallow: /mytrip',
     'Disallow: /api/',
     '',
     `Sitemap: ${site}/sitemap.xml`,

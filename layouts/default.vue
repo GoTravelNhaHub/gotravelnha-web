@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
        area on phones while the address bar shows, which left an empty strip under the chat. -->
   <div class="flex flex-col bg-[#F6F9FC] text-ink" :class="wide ? 'h-dvh overflow-hidden' : 'min-h-screen'">
     <!-- Sticky Top Nav -->
-    <header class="fixed top-0 left-0 z-50 w-full border-b border-[#E2E8F0] bg-white/95 font-brand text-[#101D3A] backdrop-blur supports-[backdrop-filter]:bg-white/85">
+    <header class="fixed top-0 left-0 z-50 w-full print:hidden border-b border-[#E2E8F0] bg-white/95 font-brand text-[#101D3A] backdrop-blur supports-[backdrop-filter]:bg-white/85">
       <nav class="site-gutter flex h-16 items-center justify-between">
         <!-- Left Side: Logo + Hamburger -->
         <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -356,14 +356,14 @@ onBeforeUnmount(() => {
     <!-- Main Content -->
     <main
       class="w-full"
-      :class="wide ? 'min-h-0 flex-1 overflow-hidden px-0 pt-16' : bleed ? 'flex-1 pt-16' : 'site-shell flex-1 pt-[5.5rem]'"
+      :class="wide ? 'min-h-0 flex-1 overflow-hidden px-0 pt-16' : bleed ? 'flex-1 pt-16' : 'site-shell flex-1 pt-[5.5rem] print:pt-0'"
     >
       <NuxtPage />
     </main>
 
     <!-- Footer: always sticks to bottom -->
     <!-- Full-screen app pages (the AI Travel Agent) have no footer -->
-    <footer v-if="!wide" class="w-full bg-[#101D3A] font-brand text-white" :class="bleed ? 'mt-0' : 'mt-12 sm:mt-16'">
+    <footer v-if="!wide" class="w-full bg-[#101D3A] font-brand text-white print:hidden" :class="bleed ? 'mt-0' : 'mt-12 sm:mt-16'">
       <div class="site-shell py-7 sm:py-12">
         <!-- Phones: Plan and Help side by side, products on one line, so the footer stays short -->
         <div class="grid grid-cols-2 gap-x-6 gap-y-5 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] md:gap-8">

@@ -6,31 +6,31 @@
     headline="Back to planning in a minute."
     subline="Your saved trips and family profile stay as they are."
   >
-    <div v-if="success" class="auth-success" role="status">
+    <div v-if="success" class="alert-success" role="status">
       <p class="font-semibold">Password updated</p>
       <p class="mt-1">{{ success }}</p>
     </div>
 
     <form v-else class="space-y-5" @submit.prevent="handleResetPassword">
       <div>
-        <label for="reset-new" class="auth-label">New password</label>
-        <input id="reset-new" v-model="newPassword" type="password" autocomplete="new-password" required minlength="8" class="auth-input" placeholder="At least 8 characters" />
+        <label for="reset-new" class="form-label">New password</label>
+        <input id="reset-new" v-model="newPassword" type="password" autocomplete="new-password" required minlength="8" class="form-input" placeholder="At least 8 characters" />
       </div>
       <div>
-        <label for="reset-confirm" class="auth-label">Confirm new password</label>
-        <input id="reset-confirm" v-model="confirmPassword" type="password" autocomplete="new-password" required minlength="8" class="auth-input" placeholder="Type it again" />
+        <label for="reset-confirm" class="form-label">Confirm new password</label>
+        <input id="reset-confirm" v-model="confirmPassword" type="password" autocomplete="new-password" required minlength="8" class="form-input" placeholder="Type it again" />
       </div>
 
-      <p v-if="error" class="auth-error" role="alert">{{ error }}</p>
+      <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
 
-      <button type="submit" class="auth-primary" :disabled="loading">
+      <button type="submit" class="btn-primary" :disabled="loading">
         <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
         {{ loading ? 'Saving…' : 'Save new password' }}
       </button>
     </form>
 
     <div class="mt-8 text-center text-[14px]">
-      <NuxtLink to="/login" class="auth-link">{{ success ? 'Continue to sign in' : 'Back to sign in' }}</NuxtLink>
+      <NuxtLink to="/login" class="text-link">{{ success ? 'Continue to sign in' : 'Back to sign in' }}</NuxtLink>
     </div>
   </AuthShell>
 </template>

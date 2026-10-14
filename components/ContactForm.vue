@@ -1,117 +1,87 @@
 <template>
-    <form @submit.prevent="submitForm" class="space-y-5 sm:space-y-6 max-w-2xl mx-auto bg-white sm:bg-white sm:p-6 md:p-10 sm:rounded-2xl sm:rounded-3xl sm:shadow-xl sm:border sm:border-slate-200/80">
-      <div class="text-center mb-6 sm:mb-8 px-4 sm:px-0">
-        <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 mb-3 sm:mb-4">
-          <svg class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-          </svg>
-        </div>
-        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Get in Touch</h2>
-        <p class="text-sm sm:text-base text-slate-600 px-2">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
-        <p v-if="supportEmail" class="mt-2 text-sm text-slate-600">
-          Or email <a :href="`mailto:${supportEmail}`" class="font-semibold text-emerald-700 hover:underline">{{ supportEmail }}</a>
+  <div class="rounded-2xl border border-[#E2E8F0] bg-white p-5 font-brand shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-8">
+    <div v-if="sent" class="py-6 text-center" role="status">
+      <span class="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#ECFDF5] text-[#059669]" aria-hidden="true">
+        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+      </span>
+      <h2 class="mt-4 text-[22px] font-bold leading-8 tracking-[-0.02em] text-[#101D3A]">Message sent</h2>
+      <p class="mx-auto mt-2 max-w-sm text-[15px] leading-6 text-[#64748B]">Thanks for getting in touch. We'll reply to the email address you gave us.</p>
+      <button type="button" class="btn-secondary mx-auto mt-6 w-auto px-6" @click="sent = false">Send another message</button>
+    </div>
+
+    <form v-else class="space-y-5" @submit.prevent="submitForm">
+      <div>
+        <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">Send us a message</h2>
+        <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">
+          Fields marked <span class="text-[#B91C1C]" aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.
         </p>
       </div>
-  
-      <div class="px-4 sm:px-0">
-        <label for="name" class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:mb-2">
-          <svg class="h-4 w-4 text-slate-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-          Your Name <span class="text-red-500">*</span>
-        </label>
-        <input
-          v-model="form.name"
-          id="name"
-          type="text"
-          required
-          placeholder="Enter your full name"
-          class="mt-2 block w-full rounded-none sm:rounded-xl border-0 sm:border border-b border-slate-200 sm:border-slate-200 bg-transparent sm:bg-white px-0 sm:px-4 py-3.5 sm:py-3 text-base sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-b-emerald-500 sm:focus:border-emerald-500 sm:focus:ring-2 sm:focus:ring-emerald-500/40 focus:outline-none touch-manipulation focus:ring-0"
-        />
-      </div>
-  
-      <div class="px-4 sm:px-0">
-        <label for="email" class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:mb-2">
-          <svg class="h-4 w-4 text-slate-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-          </svg>
-          Email Address <span class="text-red-500">*</span>
-        </label>
-        <input
-          v-model="form.email"
-          id="email"
-          type="email"
-          required
-          placeholder="your@email.com"
-          class="mt-2 block w-full rounded-none sm:rounded-xl border-0 sm:border border-b border-slate-200 sm:border-slate-200 bg-transparent sm:bg-white px-0 sm:px-4 py-3.5 sm:py-3 text-base sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-b-emerald-500 sm:focus:border-emerald-500 sm:focus:ring-2 sm:focus:ring-emerald-500/40 focus:outline-none touch-manipulation focus:ring-0"
-        />
-      </div>
-  
-      <div class="px-4 sm:px-0">
-        <label for="reference" class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:mb-2">
-          Booking reference (if this is about a booking)
-        </label>
-        <input
-          v-model="form.reference"
-          id="reference"
-          type="text"
-          maxlength="20"
-          placeholder="GTN-XXXXXXXX"
-          class="mt-2 block w-full rounded-none sm:rounded-xl border-0 sm:border border-b border-slate-200 sm:border-slate-200 bg-transparent sm:bg-white px-0 sm:px-4 py-3.5 sm:py-3 text-base sm:text-sm font-mono font-medium uppercase text-slate-900 placeholder:text-slate-400 transition-all focus:border-b-emerald-500 sm:focus:border-emerald-500 sm:focus:ring-2 sm:focus:ring-emerald-500/40 focus:outline-none touch-manipulation focus:ring-0"
-        />
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label for="contact-name" class="form-label">Name <span class="text-[#B91C1C]" aria-hidden="true">*</span></label>
+          <input id="contact-name" v-model="form.name" type="text" autocomplete="name" required class="form-input" placeholder="Your full name" />
+        </div>
+        <div>
+          <label for="contact-email" class="form-label">Email <span class="text-[#B91C1C]" aria-hidden="true">*</span></label>
+          <input id="contact-email" v-model="form.email" type="email" autocomplete="email" required class="form-input" placeholder="you@example.com" />
+        </div>
       </div>
 
-      <div class="px-4 sm:px-0">
-        <label for="message" class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:mb-2">
-          <svg class="h-4 w-4 text-slate-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-          </svg>
-          Message <span class="text-red-500">*</span>
-        </label>
+      <div>
+        <label for="contact-reference" class="form-label">Booking reference <span class="font-normal text-[#64748B]">(optional)</span></label>
+        <input
+          id="contact-reference"
+          v-model="form.reference"
+          type="text"
+          maxlength="20"
+          aria-describedby="contact-reference-hint"
+          class="form-input font-mono uppercase placeholder:font-brand placeholder:normal-case"
+          placeholder="GTN-XXXXXXXX"
+        />
+        <p id="contact-reference-hint" class="mt-1.5 text-[12px] leading-[18px] text-[#64748B]">For Singapore attraction tickets bought on GoTravelNha. It's in your confirmation email.</p>
+      </div>
+
+      <div>
+        <div class="flex items-baseline justify-between gap-2">
+          <label for="contact-message" class="form-label">Message <span class="text-[#B91C1C]" aria-hidden="true">*</span></label>
+          <span class="text-[12px] text-[#94A3B8]" aria-live="polite">{{ form.message.length }}/5000</span>
+        </div>
         <textarea
+          id="contact-message"
           v-model="form.message"
-          id="message"
           rows="6"
           required
-          placeholder="Tell us how we can help you..."
-          class="mt-2 block w-full rounded-none sm:rounded-xl border-0 sm:border border-b border-slate-200 sm:border-slate-200 bg-transparent sm:bg-white px-0 sm:px-4 py-3.5 sm:py-3 text-base sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 transition-all resize-none focus:border-b-emerald-500 sm:focus:border-emerald-500 sm:focus:ring-2 sm:focus:ring-emerald-500/40 focus:outline-none touch-manipulation focus:ring-0"
+          minlength="5"
+          maxlength="5000"
+          class="form-input resize-y"
+          placeholder="Tell us what you need help with"
         ></textarea>
       </div>
-  
-      <div class="px-4 sm:px-0 pt-4">
-        <button
-          type="submit"
-          :disabled="submitting"
-          class="w-full py-4 sm:py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-base sm:text-sm rounded-2xl sm:rounded-xl hover:from-emerald-700 hover:to-teal-600 active:from-emerald-700 active:to-teal-600 transition-all sm:shadow-lg sm:hover:shadow-xl active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none touch-manipulation min-h-[52px] sm:min-h-[48px]"
-        >
-          <span v-if="submitting" class="flex items-center justify-center gap-2.5">
-            <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Sending...
-          </span>
-          <span v-else class="flex items-center justify-center gap-2.5">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-            </svg>
-            Send Message
-          </span>
+
+      <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
+
+      <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-[12px] leading-[18px] text-[#94A3B8]">
+          We use your details only to reply. See our <NuxtLink to="/privacy" class="text-link font-medium">Privacy Policy</NuxtLink>.
+        </p>
+        <button type="submit" class="btn-primary sm:w-auto sm:px-7" :disabled="submitting">
+          <span v-if="submitting" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
+          <svg v-else class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12 20 4l-4 16-4-7-8-1Z" />
+          </svg>
+          {{ submitting ? 'Sending…' : 'Send message' }}
         </button>
       </div>
-  
-      <div v-if="status" class="mx-4 sm:mx-0 rounded-xl border p-4 text-center text-sm sm:text-base" :class="status.includes('✅') ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-700'">
-        <p class="font-semibold">{{ status }}</p>
-      </div>
     </form>
+  </div>
 </template>
-  
+
 <script setup>
   import { ref } from 'vue'
   import { useRoute } from 'vue-router'
 
   const route = useRoute()
-  const supportEmail = useRuntimeConfig().public.supportEmail
 
   const form = ref({
     name: '',
@@ -119,24 +89,25 @@
     reference: typeof route.query.ref === 'string' ? route.query.ref.slice(0, 20) : '',
     message: ''
   })
-  
-  const status = ref('')
+
+  const error = ref('')
+  const sent = ref(false)
   const submitting = ref(false)
-  
+
   const submitForm = async () => {
     try {
       submitting.value = true
-      status.value = ''
+      error.value = ''
       await $fetch('/api/contact', {
         method: 'POST',
         body: form.value
       })
-      status.value = '✅ Your message has been sent! We\'ll get back to you soon.'
+      sent.value = true
       form.value = { name: '', email: '', reference: '', message: '' }
     } catch (e) {
-      status.value = `❌ ${e?.data?.message || 'Failed to send message. Please try again later.'}`
+      error.value = e?.data?.message || 'Your message could not be sent. Please try again later.'
     } finally {
       submitting.value = false
     }
   }
-  </script>
+</script>

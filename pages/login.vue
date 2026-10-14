@@ -7,7 +7,7 @@
     subline="Sign in to see saved AI trip plans, your family profile and your bookings."
     :points="['Saved trip plans from the AI Travel Agent', 'Family ages and needs ready for every plan', 'Bookings tracked in one place']"
   >
-    <button type="button" class="auth-secondary" :disabled="loadingGoogle" @click="handleGoogleSignIn">
+    <button type="button" class="btn-secondary" :disabled="loadingGoogle" @click="handleGoogleSignIn">
       <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -17,26 +17,26 @@
       {{ loadingGoogle ? 'Opening Google…' : 'Continue with Google' }}
     </button>
 
-    <div class="auth-divider">or sign in with email</div>
+    <div class="form-divider">or sign in with email</div>
 
     <form class="space-y-5" @submit.prevent="handleLogin">
       <div>
-        <label for="login-username" class="auth-label">Username or email</label>
+        <label for="login-username" class="form-label">Username or email</label>
         <input
           id="login-username"
           v-model="loginForm.username"
           type="text"
           autocomplete="username"
           required
-          class="auth-input"
+          class="form-input"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
         <div class="flex items-center justify-between gap-2">
-          <label for="login-password" class="auth-label">Password</label>
-          <NuxtLink to="/forgot-password" class="auth-link mb-1.5 text-[13px]">Forgot password?</NuxtLink>
+          <label for="login-password" class="form-label">Password</label>
+          <NuxtLink to="/forgot-password" class="text-link mb-1.5 text-[13px]">Forgot password?</NuxtLink>
         </div>
         <div class="relative">
           <input
@@ -45,7 +45,7 @@
             :type="showPassword ? 'text' : 'password'"
             autocomplete="current-password"
             required
-            class="auth-input pr-12"
+            class="form-input pr-12"
             placeholder="Your password"
           />
           <button
@@ -71,9 +71,9 @@
         Remember me
       </label>
 
-      <p v-if="error" class="auth-error" role="alert">{{ error }}</p>
+      <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
 
-      <button type="submit" class="auth-primary" :disabled="loading">
+      <button type="submit" class="btn-primary" :disabled="loading">
         <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
         {{ loading ? 'Signing in…' : 'Sign in' }}
       </button>
@@ -81,7 +81,7 @@
 
     <p class="mt-8 text-center text-[14px] text-[#64748B]">
       New to GoTravelNha?
-      <NuxtLink to="/register" class="auth-link">Create an account</NuxtLink>
+      <NuxtLink to="/register" class="text-link">Create an account</NuxtLink>
     </p>
   </AuthShell>
 </template>

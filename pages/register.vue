@@ -11,7 +11,7 @@
       You're joining with a referral code. The friend who invited you earns points when you sign up.
     </p>
 
-    <button type="button" class="auth-secondary" :disabled="loadingGoogle" @click="handleGoogleSignUp">
+    <button type="button" class="btn-secondary" :disabled="loadingGoogle" @click="handleGoogleSignUp">
       <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -21,32 +21,32 @@
       {{ loadingGoogle ? 'Opening Google…' : 'Sign up with Google' }}
     </button>
 
-    <div class="auth-divider">or use your email</div>
+    <div class="form-divider">or use your email</div>
 
     <form class="space-y-4" @submit.prevent="handleRegister">
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="register-first" class="auth-label">First name</label>
-          <input id="register-first" v-model="registerForm.firstName" type="text" autocomplete="given-name" required class="auth-input" placeholder="Mai" />
+          <label for="register-first" class="form-label">First name</label>
+          <input id="register-first" v-model="registerForm.firstName" type="text" autocomplete="given-name" required class="form-input" placeholder="Mai" />
         </div>
         <div>
-          <label for="register-last" class="auth-label">Last name</label>
-          <input id="register-last" v-model="registerForm.lastName" type="text" autocomplete="family-name" required class="auth-input" placeholder="Nguyen" />
+          <label for="register-last" class="form-label">Last name</label>
+          <input id="register-last" v-model="registerForm.lastName" type="text" autocomplete="family-name" required class="form-input" placeholder="Nguyen" />
         </div>
       </div>
 
       <div>
-        <label for="register-username" class="auth-label">Username</label>
-        <input id="register-username" v-model="registerForm.username" type="text" autocomplete="username" required class="auth-input" placeholder="mainguyen" />
+        <label for="register-username" class="form-label">Username</label>
+        <input id="register-username" v-model="registerForm.username" type="text" autocomplete="username" required class="form-input" placeholder="mainguyen" />
       </div>
 
       <div>
-        <label for="register-email" class="auth-label">Email</label>
-        <input id="register-email" v-model="registerForm.email" type="email" autocomplete="email" required class="auth-input" placeholder="you@example.com" />
+        <label for="register-email" class="form-label">Email</label>
+        <input id="register-email" v-model="registerForm.email" type="email" autocomplete="email" required class="form-input" placeholder="you@example.com" />
       </div>
 
       <div>
-        <label for="register-password" class="auth-label">Password</label>
+        <label for="register-password" class="form-label">Password</label>
         <div class="relative">
           <input
             id="register-password"
@@ -56,7 +56,7 @@
             required
             minlength="8"
             aria-describedby="register-password-hint"
-            class="auth-input pr-12"
+            class="form-input pr-12"
             placeholder="At least 8 characters"
           />
           <button
@@ -82,16 +82,16 @@
         <input v-model="registerForm.agreedToTerms" type="checkbox" required class="mt-0.5 h-4 w-4 shrink-0 rounded border-[#CBD5E1] text-[#008A9B] focus:ring-[#008A9B]" />
         <span>
           I agree to the
-          <NuxtLink to="/terms" target="_blank" class="auth-link">Terms of Service</NuxtLink>
+          <NuxtLink to="/terms" target="_blank" class="text-link">Terms of Service</NuxtLink>
           and
-          <NuxtLink to="/privacy" target="_blank" class="auth-link">Privacy Policy</NuxtLink>
+          <NuxtLink to="/privacy" target="_blank" class="text-link">Privacy Policy</NuxtLink>
         </span>
       </label>
 
-      <p v-if="error" class="auth-error" role="alert">{{ error }}</p>
-      <p v-if="success" class="auth-success" role="status">{{ success }}</p>
+      <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
+      <p v-if="success" class="alert-success" role="status">{{ success }}</p>
 
-      <button type="submit" class="auth-primary" :disabled="loading">
+      <button type="submit" class="btn-primary" :disabled="loading">
         <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
         {{ loading ? 'Creating account…' : 'Create account' }}
       </button>
@@ -99,7 +99,7 @@
 
     <p class="mt-8 text-center text-[14px] text-[#64748B]">
       Already have an account?
-      <NuxtLink to="/login" class="auth-link">Sign in</NuxtLink>
+      <NuxtLink to="/login" class="text-link">Sign in</NuxtLink>
     </p>
   </AuthShell>
 </template>

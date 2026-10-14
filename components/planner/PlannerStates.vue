@@ -1,21 +1,28 @@
 <template>
-  <div class="flex min-h-[28rem] flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-sand/50 px-5 py-10 text-center">
+  <div class="flex min-h-[28rem] flex-col items-center justify-center rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] px-5 py-10 text-center">
     <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-sea-50 text-sea">
       <span v-if="kind === 'loading'" class="h-6 w-6 animate-spin rounded-full border-2 border-sea/30 border-t-sea"></span>
       <PlannerIcon v-else :name="kind === 'error' ? 'info' : 'calendar'" class="h-7 w-7" />
     </span>
-    <h2 class="mt-4 font-display text-2xl text-ink">{{ title }}</h2>
+    <h2 class="mt-4 text-[22px] font-bold leading-[30px] tracking-[-0.025em] text-[#101D3A]">{{ title }}</h2>
     <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/70" :role="kind === 'error' ? 'alert' : undefined">{{ message }}</p>
 
-    <div v-if="kind === 'loading'" class="mt-8 w-full max-w-md space-y-3 text-left" aria-hidden="true">
-      <div class="flex gap-2">
-        <div v-for="n in 4" :key="n" class="h-12 flex-1 animate-pulse rounded-xl bg-white"></div>
-      </div>
-      <div v-for="n in 3" :key="`row-${n}`" class="flex items-center gap-3">
-        <div class="h-10 w-10 animate-pulse rounded-full bg-white"></div>
-        <div class="h-16 flex-1 animate-pulse rounded-xl bg-white"></div>
-      </div>
-    </div>
+    <ol v-if="kind === 'loading'" class="mt-8 w-full max-w-md space-y-2 text-left" aria-label="Agent progress">
+      <li
+        v-for="(step, index) in workSteps"
+        :key="step"
+        class="flex items-center gap-3 rounded-xl border bg-white px-3 py-2.5 text-sm"
+        :class="index === activeStep ? 'border-sea text-ink' : 'border-line text-ink/70'"
+        :aria-current="index === activeStep ? 'step' : undefined"
+      >
+        <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full" :class="index < activeStep ? 'bg-[#059669] text-white' : 'bg-sea-50 text-sea'">
+          <PlannerIcon v-if="index < activeStep" name="check" class="h-3.5 w-3.5" />
+          <span v-else-if="index === activeStep" class="h-3 w-3 animate-spin rounded-full border-2 border-sea/30 border-t-sea"></span>
+          <span v-else class="text-xs font-semibold">{{ index + 1 }}</span>
+        </span>
+        <span :class="index === activeStep ? 'font-semibold' : ''">{{ step }}</span>
+      </li>
+    </ol>
 
     <ol v-else-if="kind === 'empty'" class="mt-8 grid w-full max-w-lg gap-3 text-left sm:grid-cols-3">
       <li v-for="(step, index) in steps" :key="step" class="rounded-xl border border-line bg-white p-3 text-sm text-ink">
@@ -27,18 +34,39 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import PlannerIcon from '~/components/planner/PlannerIcon.vue'
 
 const props = defineProps<{
   kind: 'empty' | 'loading' | 'error'
   message?: string
+  destination?: string
+  revising?: boolean
 }>()
 
-const steps = ['Pick a trip or describe one', 'Check dates and ages', 'Send to plan the days']
+const steps = ['Describe the trip in your own words', 'The agent fills in the brief and asks for gaps', 'Review the days and refine in chat']
+
+// One request does all of this, so the steps advance on a timer and the last one
+// stays open until the plan arrives
+const workSteps = computed(() => [
+  props.revising ? 'Reading your change' : 'Reading your brief',
+  `Checking partner activities${props.destination ? ` in ${props.destination}` : ''}`,
+  props.revising ? 'Rewriting the affected days' : 'Drafting each day around ages and pace',
+  'Matching checked partner prices'
+])
+const activeStep = ref(0)
+let timer: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  if (props.kind !== 'loading') return
+  timer = setInterval(() => {
+    if (activeStep.value < workSteps.value.length - 1) activeStep.value += 1
+  }, 6000)
+})
+onBeforeUnmount(() => clearInterval(timer))
 
 const title = computed(() => {
-  if (props.kind === 'loading') return 'Planning the days'
+  if (props.kind === 'loading') return props.revising ? 'Revising your plan' : 'Planning the days'
   if (props.kind === 'error') return 'Check the request'
   return 'Your itinerary will appear here'
 })
@@ -46,6 +74,6 @@ const title = computed(() => {
 const message = computed(() => {
   if (props.message) return props.message
   if (props.kind === 'loading') return 'This can take up to a minute. The days will replace this note when they are ready.'
-  return 'Tell me where you are going, when, and who is coming. A suggestion is not a booking, and a price appears only when a partner has checked it.'
+  return 'Tell the agent where you are going, when, and who is coming. A suggestion is not a booking, and a price appears only when a partner has checked it.'
 })
 </script>

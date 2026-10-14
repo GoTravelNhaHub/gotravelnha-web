@@ -7,10 +7,13 @@ import { loadCatalogue, resolveActivities } from '~/server/services/trip-catalog
 import {
   ITINERARY_MODEL,
   MAX_TRIP_DAYS,
+  RevisionSchema,
   TripRequestSchema,
   generateItinerary,
   itineraryActivityIds,
-  tripDates
+  tripDates,
+  type Itinerary,
+  type Revision
 } from '~/server/services/itinerary-generator'
 
 // Each generation is a paid model call, so cap it per guest IP, per user and site-wide
@@ -19,11 +22,16 @@ const USER_DAILY_LIMIT = 10
 const SITE_DAILY_LIMIT = 300
 
 export default defineEventHandler(async (event) => {
-  const parsed = TripRequestSchema.safeParse(await readBody(event))
+  const body = await readBody(event)
+  const parsed = TripRequestSchema.safeParse(body)
   if (!parsed.success) {
     throw createError({ statusCode: 400, message: 'Please check the destination, dates and travellers.' })
   }
   const request = parsed.data
+  const revise = body?.revise ? RevisionSchema.safeParse(body.revise) : null
+  if (revise && !revise.success) {
+    throw createError({ statusCode: 400, message: 'Describe the change in a few words.' })
+  }
 
   const today = new Date().toISOString().slice(0, 10)
   if (request.startDate < today || request.endDate < request.startDate) {
@@ -59,8 +67,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 503, message: 'The trip planner is busy today. Please try again tomorrow.' })
   }
 
+  let revision: Revision | undefined
+  if (revise?.success) {
+    const previous = await prisma.itineraryGeneration.findUnique({ where: { id: revise.data.generationId } })
+    // Same visibility rule as /api/planner/generations/[id]
+    if (!previous || previous.status !== 'SUCCESS' || !previous.itinerary || (previous.userId && previous.userId !== user?.id)) {
+      throw createError({ statusCode: 404, message: 'The plan to change was not found. Build a new plan instead.' })
+    }
+    revision = { itinerary: previous.itinerary as unknown as Itinerary, change: revise.data.change }
+  }
+
   const catalogue = await loadCatalogue(request.destination)
-  const result = await generateItinerary(request, catalogue)
+  const result = await generateItinerary(request, catalogue, revision)
 
   const generation = await prisma.itineraryGeneration.create({
     data: {

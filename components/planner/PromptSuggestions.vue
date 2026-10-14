@@ -1,32 +1,46 @@
 <template>
-  <div class="grid grid-cols-2 gap-2.5">
+  <div class="grid gap-2.5" :class="layout === 'gallery' ? 'grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4' : 'grid-cols-2'">
     <button
       v-for="prompt in prompts"
       :key="prompt.id"
       type="button"
-      class="group relative aspect-[2/1] overflow-hidden rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
+      class="group relative overflow-hidden text-left shadow-[0_1px_2px_rgba(16,29,58,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
+      :class="layout === 'gallery' ? 'aspect-[4/3] rounded-2xl xl:aspect-[3/4]' : 'aspect-[2/1] rounded-[10px]'"
       @click="$emit('select', prompt)"
     >
       <img
         :src="prompt.image"
         alt=""
-        width="320"
-        height="180"
+        width="640"
+        height="480"
         loading="lazy"
         decoding="async"
-        class="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+        class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
       />
-      <span class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent"></span>
-      <span class="absolute inset-x-0 bottom-0 p-2.5">
-        <span class="block text-[13px] font-semibold leading-4 tracking-[-0.025em] text-white">{{ prompt.label }}</span>
-        <span class="mt-0.5 block text-[11px] leading-4 text-white/90">{{ prompt.caption }}</span>
+      <span class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent"></span>
+      <span class="absolute inset-x-0 bottom-0" :class="layout === 'gallery' ? 'p-4' : 'p-2.5'">
+        <span
+          class="block font-semibold tracking-[-0.025em] text-white"
+          :class="layout === 'gallery' ? 'text-[16px] leading-6' : 'text-[13px] leading-4'"
+        >{{ prompt.label }}</span>
+        <span class="mt-0.5 block text-white/90" :class="layout === 'gallery' ? 'text-[13px] leading-5' : 'text-[11px] leading-4'">{{ prompt.caption }}</span>
+        <span
+          v-if="layout === 'gallery'"
+          class="mt-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold leading-4 text-[#101D3A] opacity-90 transition group-hover:opacity-100"
+        >
+          Use this trip
+          <PlannerIcon name="arrow" class="h-3 w-3" />
+        </span>
       </span>
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
+import PlannerIcon from '~/components/planner/PlannerIcon.vue'
 import type { TripPace } from '~/types/trip'
+
+withDefaults(defineProps<{ layout?: 'compact' | 'gallery' }>(), { layout: 'compact' })
 
 export interface PlannerPrompt {
   id: string

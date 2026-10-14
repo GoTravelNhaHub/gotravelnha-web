@@ -1,117 +1,207 @@
 <template>
-  <div class="space-y-8 pb-12 sm:space-y-10 sm:pb-16">
-    <section class="overflow-hidden rounded-3xl bg-ink text-white">
-      <div class="relative">
+  <div class="pb-16 font-brand sm:pb-20">
+    <PageHero
+      eyebrow="Family travel, planned and compared"
+      title="Plan the trip. Compare where to book."
+      subtitle="Search flights and hotels, see Trip.com and Klook side by side, or let the AI agent plan each day for the family."
+      :image="heroImage"
+      image-position="center 45%"
+      :trust="['Trip.com and Klook partners', 'Prices shown by the partner before you pay', 'Day-by-day plans with AI']"
+      overlap
+    />
+
+    <div class="site-shell relative z-20 -mt-20 sm:-mt-24">
+      <TravelSearch placement="deals_hub" />
+    </div>
+
+    <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
+      <nav aria-label="Ways to start" class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:gap-4">
+        <NuxtLink
+          v-for="entry in entries"
+          :key="entry.to"
+          :to="entry.to"
+          class="group flex items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 transition hover:-translate-y-0.5 hover:border-[#008A9B]/40 hover:shadow-[0_16px_32px_-20px_rgba(16,29,58,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:p-5"
+        >
+          <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="entry.icon" />
+            </svg>
+          </span>
+          <span class="min-w-0">
+            <span class="flex items-center gap-1 text-[15px] font-semibold leading-6 text-[#101D3A]">
+              {{ entry.label }}
+              <svg class="h-3.5 w-3.5 text-[#94A3B8] transition group-hover:translate-x-0.5 group-hover:text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" />
+              </svg>
+            </span>
+            <span class="mt-0.5 block text-[13px] leading-5 text-[#64748B]">{{ entry.detail }}</span>
+          </span>
+        </NuxtLink>
+      </nav>
+
+      <section class="relative isolate overflow-hidden rounded-3xl bg-[#101D3A]" aria-labelledby="agent-promo">
         <img
-          v-if="heroPhoto"
-          :src="heroPhoto"
+          src="https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=1600&q=80"
           alt=""
-          width="1200"
-          height="640"
-          class="absolute inset-0 h-full w-full object-cover"
+          width="1600"
+          height="900"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 h-full w-full object-cover opacity-40 lg:left-1/3 lg:w-2/3 lg:opacity-90"
         />
-        <div class="absolute inset-0 bg-ink/80"></div>
-        <div class="relative px-5 py-8 sm:px-8 sm:py-12">
-          <p class="text-sm font-semibold text-white/80">Flights, hotels, and things to do</p>
-          <h1 class="mt-2 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Find the trip, then compare where to book</h1>
-          <p class="mt-3 max-w-2xl text-base leading-relaxed text-white/90">
-            Search flights and hotels here. Open a comparison when you want Trip.com and Klook side by side. Prices are shown by the partner before you pay.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <TravelSearch placement="deals_hub" />
-
-    <nav aria-label="Ways to start" class="grid grid-cols-2 gap-3 lg:grid-cols-3">
-      <NuxtLink
-        v-for="entry in entries"
-        :key="entry.to"
-        :to="entry.to"
-        class="rounded-2xl border border-line bg-white px-4 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
-      >
-        <span class="block text-base font-semibold text-ink">{{ entry.label }}</span>
-        <span class="mt-1 block text-sm leading-snug text-ink/65">{{ entry.detail }}</span>
-      </NuxtLink>
-    </nav>
-
-    <section class="space-y-4">
-      <div class="flex items-end justify-between gap-3">
-        <h2 class="font-display text-2xl text-ink sm:text-3xl">Compare and book</h2>
-        <p v-if="!loadingTemplates" class="text-sm text-ink/70">{{ dealTemplates.length }} pages</p>
-      </div>
-
-      <div v-if="loadingTemplates" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <div v-for="n in 3" :key="n" class="overflow-hidden rounded-2xl border border-line bg-white">
-          <div class="aspect-[3/2] animate-pulse bg-sand"></div>
-          <div class="space-y-2 p-5">
-            <div class="h-3 w-24 animate-pulse rounded bg-sand"></div>
-            <div class="h-5 w-4/5 animate-pulse rounded bg-sand"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#101D3A] via-[#101D3A]/90 to-[#101D3A]/30"></div>
+        <div class="relative grid items-center gap-8 p-6 sm:p-10 lg:grid-cols-2 lg:p-12">
+          <div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#008A9B]/20 px-3 py-1 text-[12px] font-semibold leading-4 text-[#5EEAD4] ring-1 ring-[#5EEAD4]/30">
+              <span class="h-1.5 w-1.5 rounded-full bg-[#5EEAD4]" aria-hidden="true"></span>
+              New · AI Travel Agent
+            </span>
+            <h2 id="agent-promo" class="mt-4 text-[28px] font-bold leading-9 tracking-[-0.025em] text-white sm:text-[36px] sm:leading-[44px]">
+              Tell us the trip. Get a day-by-day plan.
+            </h2>
+            <p class="mt-3 max-w-lg text-[15px] leading-6 text-white/75">
+              Describe where you are going and who is coming. The agent fills in the details, plans around ages and pace, and edits the plan when you ask.
+            </p>
+            <ul class="mt-5 space-y-2 text-[14px] leading-5 text-white/85">
+              <li v-for="line in agentPoints" :key="line" class="flex items-center gap-2">
+                <svg class="h-4 w-4 shrink-0 text-[#5EEAD4]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 10.5 3 3 7-7" />
+                </svg>
+                {{ line }}
+              </li>
+            </ul>
+            <NuxtLink
+              to="/planner"
+              class="mt-7 inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#008A9B] px-6 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#101D3A]"
+            >
+              Plan with the AI agent
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" />
+              </svg>
+            </NuxtLink>
+          </div>
+          <div class="hidden justify-end lg:flex" aria-hidden="true">
+            <div class="w-full max-w-sm rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#94A3B8]">Example</p>
+              <div class="mt-3 flex justify-end">
+                <p class="rounded-2xl rounded-br-md bg-[#008A9B] px-3.5 py-2.5 text-[13px] leading-5 text-white">5 days in Tokyo with our kids aged 4 and 8</p>
+              </div>
+              <p class="mt-3 rounded-2xl rounded-bl-md bg-[#F1F5F9] px-3.5 py-2.5 text-[13px] leading-5 text-[#1E293B]">
+                I set Tokyo for 5 relaxed days with 2 adults and 2 children. Planning the days now.
+              </p>
+              <ul class="mt-3 space-y-1 rounded-xl border border-[#E2E8F0] px-3 py-2 text-[12px] leading-[18px] text-[#475569]">
+                <li v-for="line in ['Destination set to Tokyo', 'Travellers set to 4', 'Pace set to relaxed']" :key="line" class="flex items-center gap-1.5">
+                  <svg class="h-3.5 w-3.5 text-[#059669]" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 10.5 3 3 7-7" /></svg>
+                  {{ line }}
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div v-else-if="dealTemplates.length === 0" class="rounded-2xl border border-dashed border-line bg-white px-6 py-10 text-center">
-        <p class="font-semibold text-ink">No comparison pages yet</p>
-        <p class="mt-1 text-sm text-ink/65">Flight, hotel, and attraction comparisons will show up here when they are published.</p>
-      </div>
+      <section class="space-y-6">
+        <SectionHeading eyebrow="Compare and book" title="See the partners side by side" subtitle="Open a comparison to check Trip.com and Klook before you choose where to book.">
+          <template #action>
+            <p v-if="!loadingTemplates && dealTemplates.length" class="text-[13px] text-[#64748B]">{{ dealTemplates.length }} comparisons</p>
+          </template>
+        </SectionHeading>
 
-      <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <DealHubCard
-          v-for="item in dealTemplates"
-          :key="item.slug"
-          :template="item"
-          :outcome="hubOutcomeLine(item)"
-        />
-      </div>
-    </section>
+        <div v-if="loadingTemplates" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div v-for="n in 3" :key="n" class="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white">
+            <div class="aspect-[16/10] animate-pulse bg-[#F1F5F9]"></div>
+            <div class="space-y-2 p-5">
+              <div class="h-3 w-24 animate-pulse rounded bg-[#F1F5F9]"></div>
+              <div class="h-5 w-4/5 animate-pulse rounded bg-[#F1F5F9]"></div>
+            </div>
+          </div>
+        </div>
 
-    <section class="rounded-2xl border border-line bg-white px-5 py-5 sm:px-6">
-      <h2 class="font-display text-xl text-ink">Where you book</h2>
-      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink/75">
-        Flight and hotel checkout opens on Trip.com or Klook. Singapore attraction tickets that we sell are paid for on GoTravelNha.
-        Questions go through Help or Contact.
-      </p>
-      <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
-        <NuxtLink to="/help" class="text-sea underline-offset-2 hover:underline">Help</NuxtLink>
-        <NuxtLink to="/contact" class="text-sea underline-offset-2 hover:underline">Contact</NuxtLink>
-        <NuxtLink to="/planner" class="text-sea underline-offset-2 hover:underline">AI Travel Agent</NuxtLink>
-      </div>
-    </section>
+        <div v-else-if="dealTemplates.length === 0" class="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-10 text-center">
+          <p class="font-semibold text-[#101D3A]">No comparison pages yet</p>
+          <p class="mt-1 text-sm text-[#64748B]">Flight, hotel, and attraction comparisons will show up here when they are published.</p>
+        </div>
 
-    <section class="rounded-2xl border border-line bg-white px-5 py-5 sm:px-6">
-      <p class="text-xs font-semibold uppercase tracking-wide text-sea">Our products</p>
-      <h2 class="mt-1 font-display text-xl text-ink">FamilyHub</h2>
-      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink/75">
-        For families with kids ages 5–12. Daily routines return each morning, afternoon, and evening. Kids earn stars and request rewards. Parents approve before those stars are spent. Everyone shares one family calendar. It works on phone, tablet, and web, with no ads.
-      </p>
-      <a
-        :href="familyHubUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg bg-ink px-3.5 text-sm font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
-        @click="track('familyhub_promo_clicked', { placement: 'explore_home' })"
-      >
-        Open FamilyHub
-        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
-        </svg>
-        <span class="sr-only">opens in a new tab</span>
-      </a>
-    </section>
+        <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-5">
+          <DealHubCard
+            v-for="item in dealTemplates"
+            :key="item.slug"
+            :template="item"
+            :outcome="hubOutcomeLine(item)"
+          />
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <SectionHeading eyebrow="Popular with families" title="Where to next?" subtitle="Pick a city and the AI agent starts a plan for it." />
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+          <CityTile
+            v-for="city in cities"
+            :key="city.name"
+            :name="city.name"
+            :caption="city.caption"
+            :image="city.image"
+            :to="`/planner?destination=${encodeURIComponent(city.name)}`"
+            cta="Plan a trip"
+          />
+        </div>
+      </section>
+
+      <div class="grid gap-4 lg:grid-cols-2">
+        <BookingNote>
+          Flight and hotel checkout opens on Trip.com or Klook. Singapore attraction tickets that we sell are paid for on GoTravelNha.
+          Questions go through Help or Contact.
+          <template #links>
+            <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[14px] font-semibold">
+              <NuxtLink to="/help" class="text-[#008A9B] underline-offset-2 hover:underline">Help</NuxtLink>
+              <NuxtLink to="/contact" class="text-[#008A9B] underline-offset-2 hover:underline">Contact</NuxtLink>
+            </div>
+          </template>
+        </BookingNote>
+
+        <section class="flex flex-col justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-gradient-to-br from-white to-[#E8F7FA] p-5 sm:p-6">
+          <div>
+            <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">Our products</p>
+            <h2 class="mt-1 text-[18px] font-bold leading-6 text-[#101D3A]">FamilyHub</h2>
+            <p class="mt-1.5 text-[14px] leading-[22px] text-[#475569]">
+              For families with kids ages 5–12. Daily routines return each morning, afternoon, and evening. Kids earn stars and request rewards. Parents approve before those stars are spent. Everyone shares one family calendar. It works on phone, tablet, and web, with no ads.
+            </p>
+          </div>
+          <a
+            :href="familyHubUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl bg-[#101D3A] px-4 text-[14px] font-semibold text-white hover:bg-[#1E2D4F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
+            @click="track('familyhub_promo_clicked', { placement: 'explore_home' })"
+          >
+            Open FamilyHub
+            <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
+            </svg>
+            <span class="sr-only">opens in a new tab</span>
+          </a>
+        </section>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import DealHubCard from '~/components/deals/DealHubCard.vue'
+import BookingNote from '~/components/site/BookingNote.vue'
+import CityTile from '~/components/site/CityTile.vue'
+import PageHero from '~/components/site/PageHero.vue'
+import SectionHeading from '~/components/site/SectionHeading.vue'
+import { destinationPhoto } from '~/utils/destination-photos'
 import type { DealPageTemplate } from '~/types/deal-template'
 import { inferOgImageMime, resolveAbsoluteOgImage } from '~/utils/socialPreview'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { FAMILY_HUB_URL } from '~/utils/family-hub'
 
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  bleed: true
 })
 
 const siteOrigin = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
@@ -121,12 +211,36 @@ const { track } = useFunnel()
 const allowedBuiltinSlugs = new Set(['flights', 'hotels', 'attractions'])
 
 const entries = [
-  { to: '/explore/flights', label: 'Flights', detail: 'Compare flight search on Trip.com and Klook' },
-  { to: '/explore/hotels', label: 'Hotels', detail: 'Compare hotel search before you book' },
-  { to: '/attractionsg', label: 'Attractions', detail: 'Singapore tickets, when a current price is listed' },
-  { to: '/destinations', label: 'Destinations', detail: 'Places to visit' },
-  { to: '/planner', label: 'AI Travel Agent', detail: 'A day-by-day plan for your family' }
+  {
+    to: '/explore/flights',
+    label: 'Flights',
+    detail: 'Compare flight search on Trip.com and Klook',
+    icon: 'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2Z'
+  },
+  {
+    to: '/explore/hotels',
+    label: 'Hotels',
+    detail: 'Compare hotel search before you book',
+    icon: 'M3 20V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v14M14 10h6a1 1 0 0 1 1 1v9M2 20h20M7 9h3M7 13h3M7 17h3'
+  },
+  {
+    to: '/destinations',
+    label: 'Destinations',
+    detail: 'Family activities to book, by city',
+    icon: 'M12 21s-7-5.6-7-11a7 7 0 1 1 14 0c0 5.4-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z'
+  }
 ] as const
+
+const agentPoints = ['Plans around every traveller’s age', 'Edits the plan without starting over', 'Links partner prices only once checked']
+
+const cities = [
+  { name: 'Singapore', caption: 'Zoos, gardens and food' },
+  { name: 'Tokyo', caption: 'Theme parks and culture' },
+  { name: 'Bangkok', caption: 'Markets and temples' },
+  { name: 'Bali', caption: 'Beaches and easy days' },
+  { name: 'Hong Kong', caption: 'Views and dim sum' },
+  { name: 'Seoul', caption: 'Palaces and play cafés' }
+].map((city) => ({ ...city, image: destinationPhoto(city.name, 600) as string }))
 
 const { data: templateList, pending: loadingTemplates } = await useAsyncData('deal-hub-templates', async () => {
   try {
@@ -152,7 +266,7 @@ const hubOutcomeLine = (item: DealPageTemplate) =>
   item.summaryBullets?.[0] ||
   'Compare trusted partners in one place.'
 
-const heroPhoto = computed(() => dealTemplates.value.find((item) => item.heroImage)?.heroImage || '')
+const heroImage = 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=2400&q=80'
 
 const hubOgImage = computed(() => {
   const first = dealTemplates.value.find((t) => t.heroImage)

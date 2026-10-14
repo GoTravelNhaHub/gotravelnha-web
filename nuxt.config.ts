@@ -56,7 +56,7 @@ export default defineNuxtConfig({
           link: [
             { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
             { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-            { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,560;8..60,650&display=swap' },
+            { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,560;8..60,650&display=swap' },
             { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
             { rel: 'icon', type: 'image/png', href: '/favicon.svg' },
             { rel: 'apple-touch-icon', href: '/apple-touch-icon.svg' }
@@ -87,14 +87,6 @@ export default defineNuxtConfig({
       '/': { redirect: { to: '/explore', statusCode: 301 } },
       '/deals': { redirect: { to: '/explore', statusCode: 301 } },
       '/deals/**': { redirect: { to: '/explore/**', statusCode: 301 } },
-      '/explore': { swr: 3600 },
-      '/explore/**': { swr: 3600 },
-      '/attractionsg': { swr: 3600 },
-      '/attractionsg/**': { swr: 1800 },
-      '/destinations': { swr: 3600 },
-      '/destinations/**': { swr: 3600 },
-      '/klook': { swr: 3600 },
-      '/compare': { swr: 600 },
       '/privacy': { prerender: true },
       '/terms': { prerender: true },
       '/refund-policy': { prerender: true },
@@ -107,6 +99,20 @@ export default defineNuxtConfig({
       '/reset-password': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
       '/bookings/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
       '/trips/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } }
+    },
+    // Cached HTML only in production builds. In dev it outlives code edits, so a refresh
+    // serves old markup that the new client code then hydrates into a broken page.
+    $production: {
+      routeRules: {
+        '/explore': { swr: 3600 },
+        '/explore/**': { swr: 3600 },
+        '/attractionsg': { swr: 3600 },
+        '/attractionsg/**': { swr: 1800 },
+        '/destinations': { swr: 3600 },
+        '/destinations/**': { swr: 3600 },
+        '/klook': { swr: 3600 },
+        '/compare': { swr: 600 }
+      }
     },
     runtimeConfig: {
       SMTP_HOST: process.env.SMTP_HOST,

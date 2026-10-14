@@ -11,6 +11,8 @@ module.exports = {
       fontFamily: {
         sans: ['"Source Sans 3"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         display: ['"Source Serif 4"', 'Georgia', 'ui-serif', 'serif'],
+        // Product UI (nav, planner, booking hubs)
+        brand: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
       colors: {
         ink: '#0B1F33',

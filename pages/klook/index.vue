@@ -1,35 +1,30 @@
 <template>
-  <div class="space-y-8 pb-12 sm:space-y-10 sm:pb-16">
-    <section class="overflow-hidden rounded-3xl bg-ink text-white">
-      <div class="relative">
-        <img
-          src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1600&q=80"
-          alt=""
-          width="1200"
-          height="640"
-          class="absolute inset-0 h-full w-full object-cover"
-        />
-        <div class="absolute inset-0 bg-ink/75"></div>
-        <div class="relative px-5 py-8 sm:px-8 sm:py-12">
-          <p class="text-sm font-semibold text-white">Activities and experiences</p>
-          <h1 class="mt-2 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Find something to do, then book it on Klook</h1>
-          <p class="mt-3 max-w-2xl text-base leading-relaxed text-white/90">
-            Search activities here. Klook shows the ticket, the time, and the price before you pay.
-          </p>
-          <p class="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-ink">
-            <KlookIcon :size="18" />
-            Klook booking partner
-          </p>
-        </div>
-      </div>
-    </section>
+  <div class="pb-16 font-brand sm:pb-20">
+    <PageHero
+      eyebrow="Activities and experiences"
+      title="Find something to do, then book it on Klook"
+      subtitle="Search activities here. Klook shows the ticket, the time, and the price before you pay."
+      image="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=2400&q=80"
+      image-position="center 60%"
+      :trust="['Checkout on Klook', 'No charge from GoTravelNha', 'Attractions, tours and transport']"
+      overlap
+    >
+      <template #badge>
+        <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[#101D3A] shadow-sm">
+          <KlookIcon :size="18" />
+          Klook booking partner
+        </span>
+      </template>
+    </PageHero>
 
-    <section id="klook-search" class="scroll-mt-28">
-      <h2 class="font-display text-2xl text-ink sm:text-3xl">Search Klook</h2>
-      <p class="mt-1 mb-4 text-sm text-ink/70">The search runs on Klook, which confirms the ticket, the time, and the price. This page does not sell the ticket.</p>
-      <ClientOnly>
-        <div class="overflow-hidden rounded-2xl border border-line bg-white">
-          <div class="klook-search-widget-container">
+    <section id="klook-search" class="site-shell relative z-20 -mt-20 scroll-mt-24 sm:-mt-24" aria-labelledby="klook-search-title">
+      <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 id="klook-search-title" class="text-[16px] font-bold leading-6 text-[#101D3A]">Search Klook</h2>
+          <p class="text-[13px] leading-5 text-[#64748B]">Results open on Klook, which confirms the ticket, the time, and the price.</p>
+        </div>
+        <ClientOnly>
+          <div class="klook-search-widget-container mt-4 overflow-hidden rounded-xl">
             <ins
               class="klk-aff-widget"
               :data-wid="searchWidgetId"
@@ -42,143 +37,125 @@
               <a :href="`//www.klook.com/?aid=${klookAdId}`">Klook.com</a>
             </ins>
           </div>
-        </div>
-        <template #fallback>
-          <div class="rounded-2xl border border-line bg-white px-6 py-10" aria-hidden="true">
-            <div class="mx-auto h-12 max-w-md animate-pulse rounded-xl bg-sand"></div>
-            <div class="mx-auto mt-3 h-10 max-w-xs animate-pulse rounded-xl bg-sand"></div>
-          </div>
-        </template>
-      </ClientOnly>
-    </section>
-
-    <section class="space-y-4">
-      <div>
-        <h2 class="font-display text-2xl text-ink sm:text-3xl">Places to explore</h2>
-        <p class="mt-1 text-sm text-ink/70">Opens a Klook search for that city. A city card is a starting point, not a confirmed ticket.</p>
-      </div>
-      <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
-        <button
-          v-for="place in places"
-          :key="place.name"
-          type="button"
-          class="overflow-hidden rounded-2xl border border-line bg-white text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
-          @click="openKlookCity(place.name)"
-        >
-          <div class="relative aspect-[3/2] overflow-hidden bg-sand">
-            <img
-              :src="place.image"
-              alt=""
-              width="640"
-              height="427"
-              loading="lazy"
-              decoding="async"
-              class="absolute inset-0 h-full w-full object-cover"
-            />
-          </div>
-          <div class="p-3 sm:p-4">
-            <h3 class="font-display text-lg leading-snug text-ink sm:text-xl">{{ place.name }}</h3>
-            <p class="mt-1 text-sm font-semibold text-sea">Search on Klook</p>
-          </div>
-        </button>
-      </div>
-    </section>
-
-    <section id="klook-widget" class="scroll-mt-28 space-y-6">
-      <div>
-        <h2 class="font-display text-2xl text-ink sm:text-3xl">Collections</h2>
-        <p class="mt-1 text-sm text-ink/70">Browse what Klook is showing through GoTravelNha.</p>
-      </div>
-
-      <div class="flex gap-2 overflow-x-auto border-b border-line" role="tablist" aria-label="Klook collections">
-        <button
-          type="button"
-          role="tab"
-          :aria-selected="selectedTab === 'things_to_do'"
-          class="min-h-12 whitespace-nowrap border-b-2 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
-          :class="selectedTab === 'things_to_do' ? 'border-ink text-ink' : 'border-transparent text-ink/70'"
-          @click="selectedTab = 'things_to_do'"
-        >
-          Things to do
-        </button>
-        <button
-          type="button"
-          role="tab"
-          :aria-selected="selectedTab === 'hotels'"
-          class="min-h-12 whitespace-nowrap border-b-2 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
-          :class="selectedTab === 'hotels' ? 'border-ink text-ink' : 'border-transparent text-ink/70'"
-          @click="selectedTab = 'hotels'"
-        >
-          Hotels
-        </button>
-      </div>
-
-      <div v-if="selectedTab === 'things_to_do'" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <button
-          v-for="category in categories"
-          :key="category.slug"
-          type="button"
-          class="rounded-2xl border border-line bg-white px-4 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
-          @click="scrollToWidget(category)"
-        >
-          <span class="block text-base font-semibold text-ink">{{ category.name }}</span>
-          <span class="mt-1 block text-sm leading-snug text-ink/70">{{ category.description }}</span>
-        </button>
-      </div>
-
-      <div v-if="loadingWidgets" class="space-y-4" aria-hidden="true">
-        <div v-for="n in 2" :key="n" class="overflow-hidden rounded-2xl border border-line bg-white">
-          <div class="space-y-2 p-5">
-            <div class="h-6 w-40 animate-pulse rounded bg-sand"></div>
-            <div class="h-40 animate-pulse rounded-xl bg-sand"></div>
-          </div>
-        </div>
-      </div>
-
-      <ClientOnly v-else>
-        <div class="space-y-4">
-          <article
-            v-for="widget in filteredWidgets"
-            :key="widget.id"
-            :id="`widget-${widget.id}`"
-            class="scroll-mt-28 overflow-hidden rounded-2xl border border-line bg-white"
-          >
-            <div class="px-4 pt-5 sm:px-6">
-              <h3 class="font-display text-2xl text-ink">{{ widget.name }}</h3>
-              <p v-if="widget.description" class="mt-1 text-sm text-ink/70">{{ widget.description }}</p>
+          <template #fallback>
+            <div class="mt-4 space-y-3 py-6" aria-hidden="true">
+              <div class="mx-auto h-12 max-w-md animate-pulse rounded-xl bg-[#F1F5F9]"></div>
+              <div class="mx-auto h-10 max-w-xs animate-pulse rounded-xl bg-[#F1F5F9]"></div>
             </div>
-            <div class="klook-widget-container px-3 py-4 sm:px-5 sm:pb-6">
-              <ins
-                class="klk-aff-widget"
-                :data-adid="String(widget.adId)"
-                :data-prod="widget.widgetType === 'hotels' ? 'hotel_dynamic_widget' : 'dynamic_widget'"
+          </template>
+        </ClientOnly>
+      </div>
+    </section>
+
+    <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
+      <section class="space-y-6">
+        <SectionHeading eyebrow="Places to explore" title="Things to do by city" subtitle="Opens a Klook search for that city. A city card is a starting point, not a confirmed ticket." />
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+          <CityTile
+            v-for="place in places"
+            :key="place.name"
+            :name="place.name"
+            :image="place.image"
+            cta="Search on Klook"
+            @select="openKlookCity(place.name)"
+          />
+        </div>
+      </section>
+
+      <section id="klook-widget" class="scroll-mt-24 space-y-6">
+        <SectionHeading eyebrow="Collections" title="Browse by category" subtitle="Browse what Klook is showing through GoTravelNha.">
+          <template #action>
+            <div class="inline-grid grid-cols-2 gap-1 rounded-xl bg-[#E2E8F0]/70 p-1" role="tablist" aria-label="Klook collections">
+              <button
+                v-for="tab in collectionTabs"
+                :key="tab.id"
+                type="button"
+                role="tab"
+                :aria-selected="selectedTab === tab.id"
+                class="min-h-11 whitespace-nowrap rounded-lg px-4 text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-10"
+                :class="selectedTab === tab.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
+                @click="selectedTab = tab.id"
               >
-                <a href="//www.klook.com/">Klook.com</a>
-              </ins>
+                {{ tab.label }}
+              </button>
             </div>
-          </article>
+          </template>
+        </SectionHeading>
+
+        <div v-if="selectedTab === 'things_to_do'" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <button
+            v-for="category in categories"
+            :key="category.slug"
+            type="button"
+            class="group flex items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#008A9B]/40 hover:shadow-[0_16px_32px_-20px_rgba(16,29,58,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+            @click="scrollToWidget(category)"
+          >
+            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="categoryIcon(category.slug)" />
+              </svg>
+            </span>
+            <span class="min-w-0">
+              <span class="block text-[15px] font-semibold leading-6 text-[#101D3A]">{{ category.name }}</span>
+              <span class="mt-0.5 block text-[13px] leading-5 text-[#64748B]">{{ category.description }}</span>
+            </span>
+          </button>
         </div>
-        <template #fallback>
-          <div class="rounded-2xl border border-line bg-white px-6 py-8 text-sm text-ink/70">Loading Klook collections…</div>
-        </template>
-      </ClientOnly>
 
-      <div v-if="!loadingWidgets && widgetsFailed" class="rounded-2xl border border-line bg-white px-6 py-10 text-center">
-        <p class="font-semibold text-ink">Klook's collections didn't load</p>
-        <p class="mt-1 text-sm text-ink/70">Refresh the page to try again. You can still search above.</p>
-      </div>
-      <div v-else-if="!loadingWidgets && !filteredWidgets.length" class="rounded-2xl border border-dashed border-line bg-white px-6 py-10 text-center">
-        <p class="font-semibold text-ink">No {{ selectedTab === 'hotels' ? 'hotel' : 'activity' }} collections yet</p>
-        <p class="mt-1 text-sm text-ink/70">Use the search above. Collections show up here when they are published.</p>
-      </div>
-    </section>
+        <div v-if="loadingWidgets" class="space-y-4" aria-hidden="true">
+          <div v-for="n in 2" :key="n" class="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white">
+            <div class="space-y-2 p-5">
+              <div class="h-6 w-40 animate-pulse rounded bg-[#F1F5F9]"></div>
+              <div class="h-40 animate-pulse rounded-xl bg-[#F1F5F9]"></div>
+            </div>
+          </div>
+        </div>
 
-    <section class="rounded-2xl border border-line bg-white px-5 py-5 sm:px-6">
-      <h2 class="font-display text-xl text-ink">Where you book</h2>
-      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink/75">
+        <ClientOnly v-else>
+          <div class="space-y-4">
+            <article
+              v-for="widget in filteredWidgets"
+              :key="widget.id"
+              :id="`widget-${widget.id}`"
+              class="scroll-mt-28 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white"
+            >
+              <div class="flex items-center gap-3 border-b border-[#F1F5F9] px-4 py-4 sm:px-6">
+                <KlookIcon :size="20" class="shrink-0" />
+                <div class="min-w-0">
+                  <h3 class="text-[17px] font-bold leading-6 text-[#101D3A]">{{ widget.name }}</h3>
+                  <p v-if="widget.description" class="text-[13px] leading-5 text-[#64748B]">{{ widget.description }}</p>
+                </div>
+              </div>
+              <div class="klook-widget-container px-3 py-4 sm:px-5 sm:pb-6">
+                <ins
+                  class="klk-aff-widget"
+                  :data-adid="String(widget.adId)"
+                  :data-prod="widget.widgetType === 'hotels' ? 'hotel_dynamic_widget' : 'dynamic_widget'"
+                >
+                  <a href="//www.klook.com/">Klook.com</a>
+                </ins>
+              </div>
+            </article>
+          </div>
+          <template #fallback>
+            <div class="rounded-2xl border border-[#E2E8F0] bg-white px-6 py-8 text-sm text-[#64748B]">Loading Klook collections…</div>
+          </template>
+        </ClientOnly>
+
+        <div v-if="!loadingWidgets && widgetsFailed" class="rounded-2xl border border-[#E2E8F0] bg-white px-6 py-10 text-center">
+          <p class="font-semibold text-[#101D3A]">Klook's collections didn't load</p>
+          <p class="mt-1 text-sm text-[#64748B]">Refresh the page to try again. You can still search above.</p>
+        </div>
+        <div v-else-if="!loadingWidgets && !filteredWidgets.length" class="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-10 text-center">
+          <p class="font-semibold text-[#101D3A]">No {{ selectedTab === 'hotels' ? 'hotel' : 'activity' }} collections yet</p>
+          <p class="mt-1 text-sm text-[#64748B]">Use the search above. Collections show up here when they are published.</p>
+        </div>
+      </section>
+
+      <BookingNote>
         Activity checkout opens on Klook. GoTravelNha does not charge you for these bookings.
-      </p>
-    </section>
+      </BookingNote>
+    </div>
   </div>
 </template>
 
@@ -189,12 +166,33 @@ import { appendKlookAffiliateId, openTrackedOutbound } from '~/utils/affiliate-l
 import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { getVisitorSessionId } from '~/utils/visitor-session'
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import BookingNote from '~/components/site/BookingNote.vue'
+import CityTile from '~/components/site/CityTile.vue'
+import PageHero from '~/components/site/PageHero.vue'
+import SectionHeading from '~/components/site/SectionHeading.vue'
+
+definePageMeta({ bleed: true })
 
 const { startTracking, trackPageView, trackClick } = useActivityTracker()
 const { track } = useFunnel()
 const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
 const categories = KLOOK_CATEGORIES
+
+const collectionTabs = [
+  { id: 'things_to_do' as const, label: 'Things to do' },
+  { id: 'hotels' as const, label: 'Hotels' }
+]
+
+const CATEGORY_ICONS: Record<string, string> = {
+  attractions: 'M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6ZM13 5v2M13 17v2M13 11v2',
+  tours: 'M3 11 21 3l-8 18-2-8-8-2Z',
+  food: 'M7 3v8m-3-8v5a3 3 0 0 0 6 0V3M7 11v10M17 3c-1.7 0-3 2.2-3 5s1.3 4 3 4m0-9v18',
+  transport: 'M6 17h12M5 17V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v10M5 12h14M8 20l-1 1m9-1 1 1M8.5 14.5h.01M15.5 14.5h.01',
+  activities: 'm3 20 6-11 4 6 2-3 6 8H3ZM15 6.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z',
+  passes: 'M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Zm4 4h8M8 15h5'
+}
+const categoryIcon = (slug: string) => CATEGORY_ICONS[slug] || CATEGORY_ICONS.attractions
 
 const { data: loadedWidgets, pending: loadingWidgets } = await useAsyncData('klook-widgets', async () => {
   try {
@@ -214,12 +212,12 @@ const klookAdId = computed(() => String(runtimeConfig.public?.KLOOK_AD_ID || '10
 const searchWidgetId = computed(() => String(runtimeConfig.public?.KLOOK_SEARCH_WIDGET_ID || '89020'))
 
 const places = [
-  { name: 'Singapore', image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80' },
-  { name: 'Bangkok', image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=900&q=80' },
-  { name: 'Tokyo', image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=900&q=80' },
-  { name: 'Bali', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80' },
-  { name: 'Hong Kong', image: 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?auto=format&fit=crop&w=900&q=80' },
-  { name: 'Seoul', image: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?auto=format&fit=crop&w=900&q=80' }
+  { name: 'Singapore', image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Bangkok', image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Tokyo', image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Bali', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Hong Kong', image: 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Seoul', image: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?auto=format&fit=crop&w=600&q=80' }
 ]
 
 const openKlookCity = (name: string) => {

@@ -1,6 +1,6 @@
 <template>
   <HighConvertingDealTemplate v-if="template" :template="template" />
-  <div v-else-if="legacyDeal" class="min-h-screen bg-slate-50 px-4 py-12">
+  <div v-else-if="legacyDeal" class="site-shell py-12">
     <div class="max-w-4xl mx-auto bg-white border border-slate-200 rounded-2xl p-6 sm:p-8">
       <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">{{ legacyDeal.title }}</h1>
       <p v-if="legacyDeal.description" class="mt-3 text-slate-600">{{ legacyDeal.description }}</p>
@@ -34,7 +34,7 @@
       </button>
     </div>
   </div>
-  <div v-else class="min-h-screen bg-slate-50 px-4 py-16">
+  <div v-else class="site-shell py-16">
     <div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl p-10 text-center">
       <h1 class="text-3xl font-bold text-slate-900 mb-3">Deal Page Not Found</h1>
       <p class="text-slate-600 mb-6">This slug does not match a configured template or existing deal.</p>
@@ -55,7 +55,9 @@ import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { openTrackedOutbound } from '~/utils/affiliate-links'
 
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  // The comparison template draws its own full-width hero
+  bleed: true
 })
 
 const route = useRoute()

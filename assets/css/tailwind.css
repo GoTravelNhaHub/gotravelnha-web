@@ -52,6 +52,19 @@
   }
 }
 
+@layer components {
+  /* One page width for the nav, footer and page content, so nothing shifts between pages */
+  .site-shell {
+    @apply mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+
+  /* Same side padding as .site-shell, without the width cap. The nav uses it on every
+     page so the logo and menu never move when switching pages. */
+  .site-gutter {
+    @apply w-full px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+}
+
 @layer utilities {
   .touch-manipulation {
     touch-action: manipulation;

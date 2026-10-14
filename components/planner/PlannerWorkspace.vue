@@ -1,6 +1,6 @@
 <template>
-  <div class="flex min-h-0 flex-1 flex-col px-3 py-3 sm:px-4 sm:py-4">
-    <div class="mb-3 shrink-0 lg:hidden">
+  <div class="site-gutter flex h-full min-h-0 flex-col py-3">
+    <div class="mb-2 shrink-0 lg:hidden">
       <div class="grid grid-cols-2 rounded-full bg-[#F1F5F9] p-1" role="tablist" aria-label="Planner">
         <button
           type="button"
@@ -26,16 +26,16 @@
       </div>
     </div>
 
-    <div class="grid min-h-[70dvh] flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)] gap-1 lg:min-h-0 lg:grid-cols-[minmax(0,28fr)_minmax(0,72fr)]">
+    <div class="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)] gap-2 sm:gap-3 lg:grid-cols-[minmax(360px,400px)_minmax(0,1fr)] 2xl:grid-cols-[440px_minmax(0,1fr)]">
       <section
         :class="tab === 'talk' ? 'flex' : 'hidden lg:flex'"
-        class="min-h-0 min-w-0 flex-col overflow-hidden rounded-[20px] bg-white p-3 shadow-[0_8px_24px_rgba(16,29,58,0.06)] sm:p-6"
+        class="min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white p-3 shadow-[0_1px_3px_rgba(16,29,58,0.06)] sm:p-4"
       >
         <slot name="conversation" />
       </section>
       <section
         :class="tab === 'plan' ? 'block' : 'hidden lg:block'"
-        class="min-h-0 overflow-y-auto rounded-[20px] bg-white p-4 shadow-[0_8px_24px_rgba(16,29,58,0.06)] sm:p-6"
+        class="min-h-0 overflow-y-auto rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_1px_3px_rgba(16,29,58,0.06)] sm:p-6 xl:p-8"
       >
         <slot name="itinerary" />
       </section>

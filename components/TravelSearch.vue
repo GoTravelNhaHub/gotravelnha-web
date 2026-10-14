@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-    <div class="grid grid-cols-2 gap-2 mb-4 sm:flex" role="tablist">
+  <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 font-brand shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-6">
+    <div class="mb-5 inline-grid grid-cols-2 gap-1 rounded-xl bg-[#F1F5F9] p-1" role="tablist">
       <button
         v-for="tab in tabs"
         :key="tab.id"
@@ -9,11 +9,14 @@
         :aria-selected="mode === tab.id"
         @click="mode = tab.id"
         :class="[
-          'px-4 py-2 rounded-xl text-sm font-semibold transition-colors min-h-[44px] sm:w-auto',
-          mode === tab.id ? 'bg-ink text-white' : 'bg-sand text-ink hover:bg-line'
+          'inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg px-4 text-[14px] font-semibold transition-colors sm:min-h-10 sm:px-5',
+          mode === tab.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'
         ]"
       >
-        {{ tab.icon }} {{ tab.label }}
+        <svg class="h-4 w-4" :class="mode === tab.id ? 'text-[#008A9B]' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="tab.icon" />
+        </svg>
+        {{ tab.label }}
       </button>
     </div>
 
@@ -63,7 +66,7 @@
         </label>
       </div>
       <div class="flex">
-        <button type="submit" class="w-full sm:ml-auto sm:w-auto min-h-12 rounded-xl bg-ink px-6 py-3 font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea">
+        <button type="submit" class="min-h-12 w-full rounded-xl bg-[#008A9B] px-7 py-3 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] focus-visible:ring-offset-2 sm:ml-auto sm:w-auto">
           Search flights
         </button>
       </div>
@@ -101,14 +104,14 @@
         </label>
       </div>
       <div class="flex">
-        <button type="submit" class="w-full sm:ml-auto sm:w-auto min-h-12 rounded-xl bg-ink px-6 py-3 font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea">
+        <button type="submit" class="min-h-12 w-full rounded-xl bg-[#008A9B] px-7 py-3 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] focus-visible:ring-offset-2 sm:ml-auto sm:w-auto">
           Search hotels
         </button>
       </div>
     </form>
 
     <p v-if="error" class="mt-3 text-sm text-red-600">{{ error }}</p>
-      <p class="mt-3 text-sm leading-relaxed text-ink/70">
+      <p class="mt-4 border-t border-[#F1F5F9] pt-3 text-[13px] leading-5 text-[#64748B]">
       Checkout happens on Trip.com, which confirms the price and availability. GoTravelNha does not charge you for this booking.
     </p>
   </div>
@@ -131,8 +134,8 @@ const config = useRuntimeConfig().public
 const { track } = useFunnel()
 const cities = SEARCH_CITIES
 const tabs = [
-  { id: 'flight' as const, label: 'Flights', icon: '✈️' },
-  { id: 'hotel' as const, label: 'Hotels', icon: '🏨' }
+  { id: 'flight' as const, label: 'Flights', icon: 'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2Z' },
+  { id: 'hotel' as const, label: 'Hotels', icon: 'M3 20V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v14M14 10h6a1 1 0 0 1 1 1v9M2 20h20M7 9h3M7 13h3M7 17h3' }
 ]
 
 const today = new Date().toISOString().slice(0, 10)
@@ -246,7 +249,7 @@ defineExpose({ selectHotelCity })
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 600;
-  color: rgb(71 85 105);
+  color: #475569;
 }
 
 .field-control {
@@ -255,18 +258,23 @@ defineExpose({ selectHotelCity })
   min-width: 0;
   max-width: 100%;
   padding: 0.625rem 0.75rem;
-  border: 1px solid #e4e0d8;
-  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
   font-size: 1rem;
   line-height: 1.5rem;
   background: white;
-  color: #0b1f33;
+  color: #101d3a;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field-control:hover {
+  border-color: #cbd5e1;
 }
 
 .field-control:focus {
   outline: none;
-  border-color: #0e7c86;
-  box-shadow: 0 0 0 2px #0e7c86;
+  border-color: #008a9b;
+  box-shadow: 0 0 0 3px rgba(0, 138, 155, 0.18);
 }
 
 input[type='date'].field-control {

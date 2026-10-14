@@ -1,141 +1,146 @@
 <template>
-  <div class="flex flex-col font-[Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif] text-[#334155] lg:h-full lg:overflow-hidden">
-    <section class="relative isolate shrink-0 overflow-hidden bg-[#101D3A] lg:h-[248px]">
-      <img
-        src="https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=2400&q=80"
-        alt=""
-        width="2400"
-        height="900"
-        fetchpriority="high"
-        class="absolute inset-0 h-full w-full object-cover object-[center_58%]"
-      />
-      <div class="absolute inset-0 bg-gradient-to-r from-[#101D3A]/75 via-[#101D3A]/30 to-transparent"></div>
-      <div class="relative z-10 flex items-start gap-6 px-4 py-4 sm:gap-8 sm:px-10 sm:py-4 lg:h-full lg:items-center xl:px-20">
-        <div class="min-w-0 flex-1">
-          <p class="text-[12px] font-semibold leading-[18px] text-white/80">GoTravelNha AI</p>
-          <h1 class="mt-1 text-[28px] font-extrabold leading-9 tracking-[-0.025em] text-white sm:text-[40px] sm:leading-[48px]">Your Personal AI Travel Agent</h1>
-          <p class="mt-1 text-[16px] font-semibold leading-6 text-white sm:text-[19px] sm:leading-7">Plan smarter. Travel better.</p>
-          <p class="mt-1 hidden max-w-xl text-[14px] leading-[21px] text-white/90 sm:line-clamp-1 sm:block">
-            Tell us where you want to go and who is coming. The agent writes a personalised day-by-day plan, and links experiences only when a partner has checked them.
-          </p>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <button
-              v-for="chip in agentChips"
-              :key="chip.label"
-              type="button"
-              class="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-3 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9"
-              @click="useExample(chip.draft, chip.note)"
-            >
-              <PlannerIcon :name="chip.icon" class="h-3.5 w-3.5 text-[#008A9B]" />
-              {{ chip.label }}
-            </button>
-          </div>
-        </div>
-        <aside class="hidden w-60 shrink-0 rounded-2xl bg-white/95 p-3 xl:block">
-          <p class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#101D3A]">GoTravelNha AI</p>
-          <ul class="mt-2 space-y-1.5 text-[12px] leading-[18px] text-[#334155]">
-            <li v-for="line in capabilities" :key="line" class="flex items-start gap-1.5">
-              <PlannerIcon name="check" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#059669]" />
-              {{ line }}
-            </li>
-          </ul>
-        </aside>
-      </div>
-    </section>
-
+  <div class="flex h-full flex-col overflow-hidden font-brand text-[#334155]">
     <PlannerWorkspace v-model:tab="tab" :has-plan="!!result">
       <template #conversation>
-        <div class="flex h-full min-h-0 min-w-0 flex-col gap-3 sm:gap-4">
-          <nav class="grid grid-cols-3 gap-2" aria-label="Planner sections">
-            <span class="inline-flex min-h-11 items-center justify-center rounded-full bg-[#008A9B] px-2 text-center text-[13px] font-semibold leading-5 text-white sm:min-h-9" aria-current="page">
-              Plan with AI
-            </span>
-            <NuxtLink
-              :to="tripsTo"
-              class="inline-flex min-h-11 items-center justify-center rounded-full bg-[#F1F5F9] px-2 text-center text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#E2E8F0] sm:min-h-9"
-            >
-              My Trips
-            </NuxtLink>
-            <NuxtLink
-              :to="tripsTo"
-              class="inline-flex min-h-11 items-center justify-center rounded-full bg-[#F1F5F9] px-2 text-center text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#E2E8F0] sm:min-h-9"
-            >
-              Saved
-            </NuxtLink>
-          </nav>
+        <div class="flex h-full min-h-0 min-w-0 flex-col">
+          <header class="flex shrink-0 items-center justify-between gap-2 border-b border-[#E2E8F0] pb-3">
+            <div class="flex min-w-0 items-center gap-2.5">
+              <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+                <PlannerIcon name="spark" class="h-4 w-4" />
+              </span>
+              <div class="min-w-0">
+                <h1 class="text-[15px] font-bold leading-5 tracking-[-0.01em] text-[#101D3A]">AI Travel Agent</h1>
+                <p class="text-[12px] leading-[18px] text-[#64748B]">GoTravelNha AI · family trip planning</p>
+              </div>
+            </div>
+            <div class="flex shrink-0 items-center gap-1">
+              <button
+                v-if="hasUserNote || result"
+                type="button"
+                class="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] disabled:opacity-50 sm:min-h-9"
+                :disabled="busy"
+                @click="newTrip"
+              >
+                <PlannerIcon name="refresh" class="h-4 w-4 text-[#008A9B]" />
+                New trip
+              </button>
+              <NuxtLink
+                :to="tripsTo"
+                class="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9"
+              >
+                <PlannerIcon name="bookmark" class="h-4 w-4 text-[#008A9B]" />
+                My trips
+              </NuxtLink>
+            </div>
+          </header>
 
-          <div ref="logEl" class="-mx-1 min-h-0 flex-1 space-y-4 overflow-y-auto px-1">
-            <ul class="space-y-4" role="log" aria-live="polite" aria-relevant="additions">
-              <li v-for="note in messages" :key="note.id" class="flex items-start gap-2.5">
-                <span
-                  class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold"
-                  :class="note.role === 'user' ? 'bg-[#101D3A] text-white' : 'bg-[#E8F7FA] text-[#008A9B]'"
-                  aria-hidden="true"
-                >
-                  <PlannerIcon v-if="note.role === 'assistant'" name="spark" class="h-4 w-4" />
-                  <template v-else>Y</template>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <p class="flex items-baseline gap-2">
-                    <span class="text-[13px] font-semibold leading-5 text-[#101D3A]">{{ note.role === 'user' ? 'You' : 'GoTravelNha AI' }}</span>
-                    <span v-if="note.time" class="text-[12px] leading-[18px] text-[#94A3B8]">{{ note.time }}</span>
+          <section class="shrink-0 border-b border-[#E2E8F0] py-3" aria-label="Trip brief">
+            <div class="flex items-center justify-between gap-2">
+              <h2 class="text-[11px] font-semibold uppercase leading-4 tracking-[0.06em] text-[#64748B]">Trip brief</h2>
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold leading-4" :class="briefMissing.length ? 'text-[#C2410C]' : 'text-[#047857]'">
+                <span class="h-1.5 w-1.5 rounded-full" :class="briefMissing.length ? 'bg-[#F97316]' : 'bg-[#10B981]'" aria-hidden="true"></span>
+                {{ briefMissing.length ? `Needs ${briefMissing.join(', ')}` : 'Ready to plan' }}
+              </span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button
+                v-for="field in briefFields"
+                :key="field.id"
+                type="button"
+                class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-[12px] font-semibold leading-[18px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-8"
+                :class="[
+                  field.active ? 'border-[#008A9B] bg-[#E8F7FA] text-[#008A9B]' : 'bg-white hover:bg-[#F8FAFC]',
+                  !field.active && (field.value ? 'border-[#E2E8F0] text-[#101D3A]' : 'border-dashed border-[#CBD5E1] text-[#64748B]')
+                ]"
+                :aria-expanded="field.active"
+                :aria-label="`${field.label}: ${field.value || 'not set'}. Edit`"
+                @click="toggleControl(field.control)"
+              >
+                <PlannerIcon :name="field.icon" class="h-3.5 w-3.5 shrink-0" :class="field.value || field.active ? 'text-[#008A9B]' : ''" />
+                {{ field.value || field.placeholder }}
+              </button>
+            </div>
+            <div v-if="partyOpen || preferencesOpen" class="mt-3 max-h-[45dvh] overflow-y-auto">
+              <div v-if="partyOpen" class="rounded-xl border border-[#E2E8F0] bg-white p-3">
+                <TravellerStrip :party="party" :authenticated="isAuthenticated" @add="addTraveller" @remove="removeTraveller" />
+              </div>
+              <PreferenceSheet v-if="preferencesOpen" v-model:open="preferencesOpen" :form="form" :today="today" />
+            </div>
+          </section>
+
+          <div ref="logEl" class="-mx-1 min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-4">
+            <ul class="space-y-5" role="log" aria-live="polite" aria-relevant="additions">
+              <li
+                v-for="(note, index) in messages"
+                :key="note.id"
+                class="flex flex-col"
+                :class="note.role === 'user' ? 'items-end' : 'items-start'"
+              >
+                <div class="max-w-[92%]" :class="note.role === 'user' ? 'text-right' : ''">
+                  <p v-if="note.time" class="mb-1 text-[11px] leading-4 text-[#94A3B8]">
+                    {{ note.role === 'user' ? 'You' : 'GoTravelNha AI' }} · {{ note.time }}
                   </p>
-                  <p class="mt-1 rounded-[14px] bg-[#F1F5F9] px-3.5 py-2.5 text-[14px] leading-[21px] text-[#334155]">
+                  <p
+                    class="inline-block whitespace-pre-line px-3.5 py-2.5 text-left text-[14px] leading-[21px]"
+                    :class="note.role === 'user' ? 'rounded-2xl rounded-br-md bg-[#008A9B] text-white' : 'rounded-2xl rounded-bl-md bg-[#F1F5F9] text-[#1E293B]'"
+                  >
                     {{ note.text }}
                   </p>
+                  <ul v-if="note.actions?.length" class="mt-2 space-y-1 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-left" aria-label="Brief updated">
+                    <li v-for="action in note.actions" :key="action" class="flex items-start gap-1.5 text-[12px] leading-[18px] text-[#475569]">
+                      <PlannerIcon name="check" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#059669]" />
+                      {{ action }}
+                    </li>
+                  </ul>
+                  <div v-if="note.replies?.length && index === messages.length - 1 && !busy" class="mt-2 flex flex-wrap gap-1.5">
+                    <button
+                      v-for="reply in note.replies"
+                      :key="reply"
+                      type="button"
+                      class="min-h-11 rounded-full border border-[#008A9B]/40 bg-white px-3 text-[13px] font-medium leading-5 text-[#007789] hover:bg-[#E8F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-8"
+                      @click="sendReply(reply)"
+                    >
+                      {{ reply }}
+                    </button>
+                  </div>
+                </div>
+              </li>
+              <li v-if="thinking" class="flex items-start">
+                <div class="inline-flex items-center gap-1 rounded-2xl rounded-bl-md bg-[#F1F5F9] px-3.5 py-3">
+                  <span class="sr-only">GoTravelNha AI is thinking</span>
+                  <span v-for="n in 3" :key="n" class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#64748B]" :style="{ animationDelay: `${(n - 1) * 150}ms` }" aria-hidden="true"></span>
                 </div>
               </li>
             </ul>
-            <PromptSuggestions v-if="!hasUserNote" @select="applyPrompt" />
+            <PromptSuggestions v-if="!hasUserNote" class="lg:hidden" @select="applyPrompt" />
           </div>
 
-          <div class="space-y-2 border-t border-[#E2E8F0] pt-3 sm:space-y-3">
-            <p class="text-[12px] leading-[18px] text-[#64748B]">{{ contextLine }}</p>
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="control in controls"
-                :key="control.id"
-                type="button"
-                class="inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3 text-[13px] font-semibold leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9"
-                :class="control.active ? 'border-[#008A9B] bg-[#E8F7FA] text-[#008A9B]' : 'border-[#E2E8F0] bg-white text-[#101D3A] hover:bg-[#F1F5F9]'"
-                :aria-expanded="control.active"
-                @click="toggleControl(control.id)"
-              >
-                <PlannerIcon :name="control.icon" class="h-3.5 w-3.5" />
-                {{ control.label }}
-              </button>
-            </div>
-
-            <div v-if="partyOpen" class="rounded-2xl border border-line bg-white p-3">
-              <TravellerStrip :party="party" :authenticated="isAuthenticated" @add="addTraveller" @remove="removeTraveller" />
-            </div>
-            <PreferenceSheet v-if="preferencesOpen" v-model:open="preferencesOpen" :form="form" :today="today" />
-
-            <RequestComposer v-model="draft" :loading="loading" :authenticated="isAuthenticated" @submit="ask" />
-
-            <div class="flex flex-wrap gap-2">
+          <div class="shrink-0 space-y-2 pt-1">
+            <div v-if="result && !busy" class="-mx-1 flex gap-1.5 overflow-x-auto px-1 [scrollbar-width:none]" aria-label="Quick changes">
               <button
                 v-for="item in adjustments"
                 :key="item.id"
                 type="button"
-                class="min-h-11 rounded-full border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#334155] hover:border-[#008A9B] hover:text-[#008A9B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9"
+                class="min-h-11 shrink-0 rounded-full border border-[#E2E8F0] bg-white px-3 text-[12px] font-semibold leading-[18px] text-[#334155] hover:border-[#008A9B] hover:text-[#008A9B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-8"
                 @click="adjust(item.id)"
               >
                 {{ item.label }}
               </button>
             </div>
+            <RequestComposer v-model="draft" :loading="loading" :thinking="thinking" :authenticated="isAuthenticated" @submit="ask" />
           </div>
         </div>
       </template>
 
       <template #itinerary>
         <div class="space-y-4">
-          <div v-if="result" class="flex flex-wrap items-center justify-between gap-2">
+          <div v-if="result && !loading" class="flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
-              class="inline-flex min-h-11 items-center text-sm font-semibold text-ink/70 hover:text-ink"
+              class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-[#64748B] hover:text-[#101D3A]"
               @click="startOver"
             >
+              <PlannerIcon name="refresh" class="h-4 w-4" />
               Plan another trip
             </button>
             <p v-if="result.catalogueSize === 0" class="text-sm text-ink/70">
@@ -144,7 +149,7 @@
           </div>
 
           <PlannerBoard
-            v-if="result"
+            v-if="result && !loading"
             :itinerary="result.itinerary"
             :activities="result.activities"
             :request="result.request"
@@ -153,9 +158,26 @@
             @save="saveTrip"
             @refine="refine"
           />
-          <PlannerStates v-else-if="loading" kind="loading" />
+          <PlannerStates v-else-if="loading" kind="loading" :destination="form.destination" :revising="revising" />
           <PlannerStates v-else-if="error" kind="error" :message="error" />
-          <PlannerStates v-else kind="empty" />
+          <div v-else class="mx-auto max-w-5xl py-2 sm:py-4">
+            <p class="text-[12px] font-semibold uppercase leading-[18px] tracking-[0.06em] text-[#008A9B]">Start here</p>
+            <h2 class="mt-1 text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px] sm:leading-9">Where should the family go next?</h2>
+            <p class="mt-2 max-w-2xl text-[14px] leading-[22px] text-[#64748B]">
+              Pick a trip to fill in the brief, or describe your own in the chat. The agent asks for anything missing, then plans the days.
+            </p>
+            <PromptSuggestions layout="gallery" class="mt-6" @select="applyPrompt" />
+            <ol class="mt-8 grid gap-4 border-t border-[#E2E8F0] pt-6 sm:grid-cols-3">
+              <li v-for="(step, index) in howItWorks" :key="step.title" class="flex items-start gap-3">
+                <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#E8F7FA] text-[13px] font-bold text-[#008A9B]">{{ index + 1 }}</span>
+                <span>
+                  <span class="block text-[14px] font-semibold leading-5 text-[#101D3A]">{{ step.title }}</span>
+                  <span class="mt-0.5 block text-[13px] leading-5 text-[#64748B]">{{ step.text }}</span>
+                </span>
+              </li>
+            </ol>
+            <p class="mt-6 text-[12px] leading-[18px] text-[#94A3B8]">A suggestion is not a booking. A price appears only when a partner has checked it.</p>
+          </div>
         </div>
       </template>
     </PlannerWorkspace>
@@ -201,45 +223,36 @@ interface Note {
   role: 'user' | 'assistant'
   text: string
   time?: string
+  /** What the agent changed in the brief this turn */
+  actions?: string[]
+  /** Tap-to-send replies the agent suggested */
+  replies?: string[]
+}
+
+interface AgentTurn {
+  reply: string
+  updates: {
+    destination?: string
+    startDate?: string
+    endDate?: string
+    travellers?: Array<{ age: number; label: string | null }>
+    budget?: number
+    pace?: TripPace
+    interests?: string
+  }
+  action: 'ask' | 'plan' | 'revise' | 'none'
+  change: string | null
+  quickReplies: string[]
 }
 
 type ControlId = 'dates' | 'family' | 'budget' | 'style'
 
 const CITIES = ['Ho Chi Minh City', 'Kuala Lumpur', 'Hong Kong', 'Singapore', 'Bangkok', 'Phuket', 'Hanoi', 'Taipei', 'Seoul', 'Tokyo', 'Osaka', 'Sydney', 'Bali']
 
-const agentChips: ReadonlyArray<{ label: string; icon: PlannerIconName; draft: string; note: string }> = [
-  {
-    label: 'Personalised itineraries',
-    icon: 'spark',
-    draft: 'Plan a 5-day family holiday in Tokyo with a budget of S$4,000',
-    note: 'I set Tokyo, five days, and an activity budget of SGD 4,000. Check the ages, then start planning.'
-  },
-  {
-    label: 'Family-friendly planning',
-    icon: 'users',
-    draft: 'Plan a relaxed family weekend in Singapore with playgrounds and short queues',
-    note: 'I set a relaxed Singapore weekend for a family. Check the ages, then start planning.'
-  },
-  {
-    label: 'Smart recommendations',
-    icon: 'bulb',
-    draft: 'Suggest a balanced family trip with food and easy sightseeing',
-    note: 'Add a city if this one is not right. Linked activities appear only when a partner has checked them.'
-  },
-  {
-    label: 'Real travel options',
-    icon: 'ticket',
-    draft: 'Show a Singapore weekend with tickets we can check',
-    note: 'I set a Singapore weekend. A ticket link appears only when we sell it or a partner has checked it.'
-  }
-]
-
-const capabilities = [
-  'Understands your travel style',
-  'Creates personalised itineraries',
-  'Links partner offers once checked',
-  'Refines the whole trip on request',
-  'Saves trips when you sign in'
+const howItWorks = [
+  { title: 'Describe the trip', text: 'Where, when and who is coming, in your own words.' },
+  { title: 'The agent fills the brief', text: 'It sets dates and travellers and asks for anything missing.' },
+  { title: 'Review and refine', text: 'Read the days, then ask for changes in the chat.' }
 ]
 
 const adjustments = [
@@ -248,6 +261,8 @@ const adjustments = [
   { id: 'walking', label: 'Less walking' },
   { id: 'food', label: 'Add more food options' }
 ] as const
+
+type AdjustmentId = (typeof adjustments)[number]['id']
 
 const PENDING_KEY = 'gotravelnha_pending_trip'
 
@@ -272,6 +287,9 @@ const party = ref<PartyRow[]>([
 ])
 const result = ref<PlannerResult | null>(null)
 const loading = ref(false)
+const thinking = ref(false)
+const revising = ref(false)
+const busy = computed(() => loading.value || thinking.value)
 const saving = ref(false)
 const error = ref<string | null>(null)
 const draft = ref('')
@@ -284,7 +302,8 @@ const messages = ref<Note[]>([
   {
     id: noteId,
     role: 'assistant',
-    text: "Hi, I'm GoTravelNha AI, your travel agent. Tell me where you'd like to go, when, and who is coming, or pick a trip below to start. A suggestion is not a booking, and a price shows up only when a partner has checked it."
+    text: "Hi, I'm GoTravelNha AI. Tell me where you'd like to go, when, and who is coming. I'll fill in the brief, ask for anything missing, and plan the days.",
+    replies: ['Weekend in Singapore with a 5-year-old', '5 days in Tokyo, family of four']
   }
 ])
 
@@ -295,19 +314,55 @@ const paceLabels: Record<TripPace, string> = { relaxed: 'Relaxed', balanced: 'Ba
 const shortDate = (value: string) =>
   new Intl.DateTimeFormat('en-SG', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`))
 
-const contextLine = computed(() => {
-  const travellers = party.value.filter((person) => person.include).length
-  const dates = form.startDate && form.endDate ? `${shortDate(form.startDate)} – ${shortDate(form.endDate)}` : 'No dates yet'
-  const parts = [form.destination || 'No destination', dates, `${travellers} ${travellers === 1 ? 'traveller' : 'travellers'}`, paceLabels[form.pace]]
-  if (form.budget) parts.push(`S$${form.budget.toLocaleString('en-SG')} activities`)
-  return parts.join(' · ')
+const includedParty = computed(() => party.value.filter((person) => person.include))
+const agesKnown = computed(
+  () =>
+    includedParty.value.length > 0 &&
+    includedParty.value.every((person) => person.age !== null && person.age !== undefined && !Number.isNaN(Number(person.age)))
+)
+
+const briefMissing = computed(() => {
+  const missing: string[] = []
+  if (!form.destination.trim() || form.destination.trim().length < 2) missing.push('destination')
+  if (!form.startDate || !form.endDate) missing.push('dates')
+  if (!agesKnown.value) missing.push('ages')
+  return missing
 })
 
-const controls = computed<Array<{ id: ControlId; label: string; icon: PlannerIconName; active: boolean }>>(() => [
-  { id: 'dates', label: 'Dates', icon: 'calendar', active: preferencesOpen.value },
-  { id: 'family', label: 'Family profile', icon: 'users', active: partyOpen.value },
-  { id: 'budget', label: 'Budget', icon: 'wallet', active: preferencesOpen.value },
-  { id: 'style', label: 'Travel style', icon: 'sliders', active: preferencesOpen.value }
+const partyLabel = () => {
+  const people = includedParty.value
+  if (!people.length || !agesKnown.value) return null
+  const children = people.filter((person) => Number(person.age) < 18).length
+  const adults = people.length - children
+  const parts = [`${adults} ${adults === 1 ? 'adult' : 'adults'}`]
+  if (children) parts.push(`${children} ${children === 1 ? 'child' : 'children'}`)
+  return parts.join(', ')
+}
+
+const briefFields = computed<
+  Array<{ id: string; label: string; icon: PlannerIconName; value: string | null; placeholder: string; control: ControlId; active: boolean }>
+>(() => [
+  { id: 'destination', label: 'Destination', icon: 'pin', value: form.destination.trim() || null, placeholder: 'Add destination', control: 'dates', active: preferencesOpen.value },
+  {
+    id: 'dates',
+    label: 'Dates',
+    icon: 'calendar',
+    value: form.startDate && form.endDate ? `${shortDate(form.startDate)} – ${shortDate(form.endDate)}` : null,
+    placeholder: 'Add dates',
+    control: 'dates',
+    active: preferencesOpen.value
+  },
+  { id: 'party', label: 'Travellers', icon: 'users', value: partyLabel(), placeholder: 'Add ages', control: 'family', active: partyOpen.value },
+  {
+    id: 'budget',
+    label: 'Activity budget',
+    icon: 'wallet',
+    value: form.budget ? `S$${form.budget.toLocaleString('en-SG')}` : null,
+    placeholder: 'Budget (optional)',
+    control: 'budget',
+    active: preferencesOpen.value
+  },
+  { id: 'pace', label: 'Pace', icon: 'sliders', value: paceLabels[form.pace], placeholder: 'Pace', control: 'style', active: preferencesOpen.value }
 ])
 
 const toggleControl = (id: ControlId) => {
@@ -326,10 +381,10 @@ const scrollLog = () => {
   })
 }
 
-const pushNote = (role: Note['role'], text: string) => {
+const pushNote = (role: Note['role'], text: string, extra: Pick<Note, 'actions' | 'replies'> = {}) => {
   noteId += 1
   const time = new Intl.DateTimeFormat('en-SG', { hour: '2-digit', minute: '2-digit' }).format(new Date())
-  messages.value.push({ id: noteId, role, text, time })
+  messages.value.push({ id: noteId, role, text, time, ...extra })
   scrollLog()
 }
 
@@ -351,8 +406,9 @@ const fillWeekend = () => {
   form.endDate = iso(end)
 }
 
-const readDraft = () => {
-  const text = draft.value.trim()
+// Local reading of a request, used when the agent is unavailable
+const readDraft = (input = draft.value) => {
+  const text = input.trim()
   if (!text) return
   const city = CITIES.find((name) => text.toLowerCase().includes(name.toLowerCase()))
   if (city) form.destination = city
@@ -377,14 +433,6 @@ const readDraft = () => {
     if (amount > 0 && amount <= 1_000_000) form.budget = amount
   }
   if (!form.interests.trim()) form.interests = text.slice(0, 500)
-}
-
-const useExample = (text: string, note: string) => {
-  draft.value = text
-  readDraft()
-  preferencesOpen.value = false
-  tab.value = 'talk'
-  pushNote('assistant', note)
 }
 
 const ageOn = (birthDate: string, onDate: string) => {
@@ -461,36 +509,48 @@ const focusRequest = () => {
   nextTick(() => document.getElementById('planner-request')?.focus())
 }
 
-const adjust = (id: (typeof adjustments)[number]['id']) => {
+const adjust = async (id: AdjustmentId) => {
+  if (busy.value) return
+  let change: string
+  let note: string
   if (id === 'cheaper') {
     const current = form.budget && form.budget > 0 ? form.budget : 2000
     form.budget = Math.max(200, Math.round(current * 0.8))
-    draft.value = `Make this cheaper in ${form.destination}, with an activity budget of S$${form.budget}`
-    pushNote('assistant', `I set the activity budget to SGD ${form.budget.toLocaleString('en-SG')}. Send the message to build a new plan.`)
+    change = `Keep activities within S$${form.budget} for the whole family and prefer free or low-cost options`
+    note = `I set the activity budget to SGD ${form.budget.toLocaleString('en-SG')}.`
   } else if (id === 'kids') {
     addInterest('kid-friendly, playgrounds, short queues')
-    draft.value = `Make ${form.destination} more kid-friendly, with short queues`
-    pushNote('assistant', 'I added kid-friendly time and shorter queues. Send the message to build a new plan.')
+    change = 'Make it more kid-friendly, with playgrounds and short queues'
+    note = 'I added kid-friendly time and shorter queues.'
   } else if (id === 'walking') {
     form.pace = 'relaxed'
     addInterest('less walking, rest after lunch')
-    draft.value = `A slower ${form.destination} trip with less walking`
-    pushNote('assistant', 'I set a relaxed pace and less walking. Send the message to build a new plan.')
+    change = 'Cut walking between places and leave rest after lunch'
+    note = 'I set a relaxed pace and less walking.'
   } else {
     addInterest('more local food')
-    draft.value = `Add more food stops in ${form.destination}`
-    pushNote('assistant', 'I added more local food. Send the message to build a new plan.')
+    change = 'Add more local food stops'
+    note = 'I added more local food.'
   }
+
+  const label = adjustments.find((item) => item.id === id)?.label ?? change
+  if (result.value) {
+    // A plan exists: edit it now instead of waiting for another message
+    pushNote('user', label)
+    await generate({ change })
+    return
+  }
+  draft.value = change
+  pushNote('assistant', `${note} Send the message to build the plan.`)
   tab.value = 'talk'
   focusRequest()
 }
 
 const refine = () => {
   tab.value = 'talk'
-  pushNote(
-    'assistant',
-    'Tell me what to change, or tap a quick change below. Sending builds a new plan for the whole trip from the dates and ages already set.'
-  )
+  pushNote('assistant', 'What should I change? For example, "swap day 2 for something indoors". I will edit this plan and keep the rest.', {
+    replies: ['Add a rest afternoon', 'More indoor options', 'Fewer early starts']
+  })
   focusRequest()
 }
 
@@ -514,27 +574,127 @@ const clarify = () => {
   return null
 }
 
-const ask = async () => {
-  if (loading.value) return
-  readDraft()
+const planFromBrief = async () => {
   const question = clarify()
-  const spoken = draft.value.trim()
-  const when = form.startDate && form.endDate ? `${form.startDate} to ${form.endDate}` : 'dates not set yet'
-  pushNote('user', spoken || `${form.destination}, ${when}`)
   if (question) {
     error.value = question
     pushNote('assistant', question)
     tab.value = 'talk'
     return
   }
-  draft.value = ''
   await generate()
 }
 
-const generate = async () => {
+/** Applies the agent's brief updates and returns a line for each field that changed. */
+const applyUpdates = (updates: AgentTurn['updates']) => {
+  const done: string[] = []
+  if (updates.destination && updates.destination !== form.destination) {
+    form.destination = updates.destination
+    done.push(`Destination set to ${updates.destination}`)
+  }
+  if (updates.startDate || updates.endDate) {
+    if (updates.startDate) form.startDate = updates.startDate
+    if (updates.endDate) form.endDate = updates.endDate
+    if (form.endDate && form.startDate && form.endDate < form.startDate) form.endDate = ''
+    if (form.startDate && form.endDate) done.push(`Dates set to ${shortDate(form.startDate)} – ${shortDate(form.endDate)}`)
+  }
+  if (updates.travellers?.length && !party.value.some((person) => person.fromProfile)) {
+    party.value = updates.travellers.map((person) => ({ name: person.label || '', age: person.age, include: true, fromProfile: false }))
+    done.push(`Travellers set to ${updates.travellers.length} (ages ${updates.travellers.map((person) => person.age).join(', ')})`)
+  }
+  if (updates.budget && updates.budget !== form.budget) {
+    form.budget = updates.budget
+    done.push(`Activity budget set to S$${updates.budget.toLocaleString('en-SG')}`)
+  }
+  if (updates.pace && updates.pace !== form.pace) {
+    form.pace = updates.pace
+    done.push(`Pace set to ${paceLabels[updates.pace].toLowerCase()}`)
+  }
+  if (updates.interests && updates.interests !== form.interests) {
+    form.interests = updates.interests
+    done.push(`Interests: ${updates.interests}`)
+  }
+  return done
+}
+
+const sendReply = (text: string) => {
+  draft.value = text
+  ask()
+}
+
+const ask = async () => {
+  if (busy.value) return
+  const spoken = draft.value.trim()
+
+  // Empty box: plan from the brief as it stands
+  if (!spoken) {
+    const when = form.startDate && form.endDate ? `${shortDate(form.startDate)} – ${shortDate(form.endDate)}` : 'dates not set yet'
+    pushNote('user', `Plan ${form.destination || 'my trip'}, ${when}`)
+    await planFromBrief()
+    return
+  }
+
+  pushNote('user', spoken)
+  draft.value = ''
+  thinking.value = true
+  let turn: AgentTurn | null = null
+  try {
+    turn = await $fetch<AgentTurn>('/api/planner/chat', {
+      method: 'POST',
+      body: {
+        messages: messages.value.slice(1).map((note) => ({ role: note.role, text: note.text.slice(0, 800) })),
+        brief: {
+          destination: form.destination || undefined,
+          startDate: form.startDate || undefined,
+          endDate: form.endDate || undefined,
+          travellers: includedParty.value.map((person) => ({
+            age: person.age === null || person.age === undefined || Number.isNaN(Number(person.age)) ? null : Number(person.age)
+          })),
+          travellersFromProfile: party.value.some((person) => person.fromProfile),
+          budget: form.budget || null,
+          pace: form.pace,
+          interests: form.interests || undefined
+        },
+        plan: result.value
+          ? { title: result.value.itinerary.title.slice(0, 200), days: result.value.itinerary.days.map((day) => day.theme.slice(0, 200)) }
+          : null
+      }
+    })
+  } catch {
+    turn = null
+  } finally {
+    thinking.value = false
+  }
+
+  if (!turn) {
+    // Agent unavailable: read the message locally and plan as before
+    readDraft(spoken)
+    await planFromBrief()
+    return
+  }
+
+  const destinationChanged = !!turn.updates.destination && turn.updates.destination !== form.destination
+  const done = applyUpdates(turn.updates)
+  pushNote('assistant', turn.reply, { actions: done, replies: turn.quickReplies })
+
+  if (turn.action === 'plan') {
+    await planFromBrief()
+  } else if (turn.action === 'revise' && result.value) {
+    // A new city is a new trip, not an edit of the old one
+    if (destinationChanged) await planFromBrief()
+    else await generate({ change: turn.change || spoken })
+  } else if (turn.action === 'ask') {
+    // Open the editor for the missing detail; the agent has already asked in its reply
+    clarify()
+  }
+}
+
+const generate = async (revision?: { change: string }) => {
   const travellers = party.value.filter((person) => person.include)
+  const revise = revision && result.value ? { generationId: result.value.generationId, change: revision.change.slice(0, 300) } : undefined
   try {
     loading.value = true
+    revising.value = !!revise
     error.value = null
     preferencesOpen.value = false
     partyOpen.value = false
@@ -553,7 +713,8 @@ const generate = async () => {
         budget: form.budget || null,
         currency: 'SGD',
         pace: form.pace,
-        interests: form.interests || undefined
+        interests: form.interests || undefined,
+        revise
       }
     })
     result.value = response
@@ -565,7 +726,13 @@ const generate = async () => {
       searchType: 'itinerary'
     })
     const days = response.itinerary.days.length
-    pushNote('assistant', `Here is a ${days}-day plan for ${response.request.destination}. Prices stay with the partner that checked them.`)
+    pushNote(
+      'assistant',
+      revise
+        ? `I updated the ${days}-day plan for ${response.request.destination}. Anything else to change?`
+        : `Here is a ${days}-day plan for ${response.request.destination}. Prices stay with the partner that checked them. Tell me what to change and I will edit it.`,
+      { replies: revise ? [] : ['Make day 1 lighter', 'Add a rainy-day backup', 'More food stops'] }
+    )
   } catch (err: any) {
     const message = err?.data?.message || 'The trip planner could not finish. Please try again.'
     error.value = message
@@ -573,6 +740,7 @@ const generate = async () => {
     tab.value = 'talk'
   } finally {
     loading.value = false
+    revising.value = false
   }
 }
 
@@ -608,12 +776,30 @@ const saveTrip = async () => {
   }
 }
 
+// Fresh conversation for a different trip; travellers stay so the family profile is kept
+const newTrip = () => {
+  if (busy.value) return
+  result.value = null
+  error.value = null
+  draft.value = ''
+  localStorage.removeItem(PENDING_KEY)
+  form.startDate = ''
+  form.endDate = ''
+  form.budget = null
+  form.interests = ''
+  form.pace = 'balanced'
+  preferencesOpen.value = false
+  partyOpen.value = false
+  tab.value = 'talk'
+  messages.value = [messages.value[0]]
+}
+
 const startOver = () => {
   result.value = null
   error.value = null
   localStorage.removeItem(PENDING_KEY)
   tab.value = 'talk'
-  pushNote('assistant', 'What should we plan next?')
+  pushNote('assistant', 'What should we plan next? Describe the trip and I will set up a new brief.')
 }
 
 onMounted(async () => {
@@ -644,14 +830,11 @@ onMounted(async () => {
 })
 
 useHead({
-  title: 'Family Trip Planner | GoTravelNha',
-  link: [
-    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' }
-  ],
+  title: 'AI Trip Planner for Families | GoTravelNha',
   meta: [
     {
       name: 'description',
-      content: 'Plan a family trip day by day. The agent suggests a route, and a partner link appears only after a price has been checked.'
+      content: 'Describe your family trip and the GoTravelNha AI agent plans it day by day, asks for missing details and edits the plan on request. Partner links appear only after a price has been checked.'
     }
   ]
 })

@@ -9,6 +9,8 @@ const isMenuOpen = ref(false);
 const isProfileDropdownOpen = ref(false);
 const route = useRoute();
 const wide = computed(() => route.meta.wide === true);
+// Full-width pages draw their own hero and use .site-shell for content
+const bleed = computed(() => route.meta.bleed === true);
 const router = useRouter();
 
 // Auth state
@@ -47,6 +49,13 @@ const navItems = computed(() => {
 
 const footerPlaces = [
   { to: '/destinations', label: 'Destinations' }
+]
+
+const footerHelp = [
+  { to: '/help', label: 'Help' },
+  { to: '/bookings', label: 'My bookings' },
+  { to: '/contact', label: 'Contact' },
+  { to: '/refund-policy', label: 'Refunds' }
 ]
 
 const familyHubUrl = FAMILY_HUB_URL
@@ -109,13 +118,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col text-ink" :class="wide ? 'bg-[#F6F9FC]' : 'bg-sand'">
+  <div class="flex min-h-screen flex-col bg-[#F6F9FC] text-ink">
     <!-- Sticky Top Nav -->
-    <header class="fixed top-0 left-0 w-full bg-white text-ink z-50 border-b border-line">
-      <nav
-        class="mx-auto flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8"
-        :class="wide ? 'max-w-none' : 'container'"
-      >
+    <header class="fixed top-0 left-0 z-50 w-full border-b border-[#E2E8F0] bg-white/95 font-brand text-[#101D3A] backdrop-blur supports-[backdrop-filter]:bg-white/85">
+      <nav class="site-gutter flex h-16 items-center justify-between">
         <!-- Left Side: Logo + Hamburger -->
         <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <!-- Toggle Button for Mobile -->
@@ -133,7 +139,7 @@ onBeforeUnmount(() => {
           <NuxtLink 
             to="/" 
             @click="navigate('/')" 
-            class="flex items-center gap-2 font-semibold text-base sm:text-lg text-ink touch-manipulation min-w-0"
+            class="flex min-w-0 items-center gap-2 text-[17px] font-bold tracking-[-0.02em] text-[#101D3A] touch-manipulation sm:text-lg"
           >
             <Logo :size="'32'" class="shrink-0" />
             <span class="truncate">GoTravelNha</span>
@@ -144,11 +150,11 @@ onBeforeUnmount(() => {
                 :to="item.to"
                 @click="navigate(item.to)"
                 :class="['nav-link', isActive(item.to)]"
-                class="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-semibold text-ink/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                class="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-[14px] font-semibold text-[#334155] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
               >
                 <KlookIcon v-if="item.to === '/klook'" :size="16" />
                 {{ item.label }}
-                <span v-if="item.badge" class="rounded-full bg-sea px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide text-white">{{ item.badge }}</span>
+                <span v-if="item.badge" class="rounded-full bg-[#008A9B] px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wide text-white">{{ item.badge }}</span>
               </NuxtLink>
             </li>
             <li>
@@ -156,7 +162,7 @@ onBeforeUnmount(() => {
                 :href="familyHubUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-lg px-3 text-sm font-semibold text-ink/70 hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                class="inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-lg px-3 text-[14px] font-semibold text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#101D3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
                 @click="trackFamilyHub('header')"
               >
                 FamilyHub
@@ -176,7 +182,7 @@ onBeforeUnmount(() => {
               <NuxtLink 
                 to="/login" 
                 @click="navigate('/login')" 
-                class="inline-flex h-10 items-center justify-center rounded-lg bg-ink px-3.5 text-sm font-semibold leading-none text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                class="inline-flex h-10 items-center justify-center rounded-lg bg-[#101D3A] px-4 text-[14px] font-semibold leading-none text-white hover:bg-[#1E2D4F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
               >
                 Log in
               </NuxtLink>
@@ -186,9 +192,9 @@ onBeforeUnmount(() => {
             <div v-else class="relative">
             <button
               @click="toggleProfileDropdown"
-              class="flex h-10 items-center gap-2 rounded-lg border border-line px-1.5 transition-colors hover:bg-sand active:bg-sand sm:gap-2.5 sm:px-2"
+              class="flex h-10 items-center gap-2 rounded-lg border border-[#E2E8F0] px-1.5 transition-colors hover:bg-[#F1F5F9] active:bg-[#F1F5F9] sm:gap-2.5 sm:px-2"
             >
-              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-sea text-sm font-semibold text-white">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#008A9B] text-sm font-semibold text-white">
                 {{ user.firstName ? user.firstName.charAt(0) : user.username.charAt(0) }}
               </div>
               <span class="hidden lg:block text-sm font-semibold text-slate-700">{{ user.firstName || user.username }}</span>
@@ -240,7 +246,7 @@ onBeforeUnmount(() => {
           
           <template #fallback>
             <div class="flex items-center gap-3 flex-shrink-0">
-              <div class="h-10 w-16 animate-pulse rounded-lg bg-sand"></div>
+              <div class="h-10 w-16 animate-pulse rounded-lg bg-[#F1F5F9]"></div>
             </div>
           </template>
         </ClientOnly>
@@ -276,10 +282,10 @@ onBeforeUnmount(() => {
         >
           <aside
             v-if="isMenuOpen"
-            class="fixed left-0 top-0 bottom-0 w-[85vw] max-w-sm bg-white z-[70] lg:hidden shadow-2xl flex flex-col overflow-hidden"
+            class="fixed left-0 top-0 bottom-0 z-[70] flex w-[85vw] max-w-sm flex-col overflow-hidden bg-white font-brand shadow-2xl lg:hidden"
           >
             <!-- Drawer Header -->
-            <div class="flex items-center justify-between border-b border-line bg-sand p-5">
+            <div class="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F6F9FC] p-5">
               <div class="flex items-center gap-3">
                 <Logo :size="'32'" />
                 <span class="font-bold text-lg text-slate-900">GoTravelNha</span>
@@ -303,19 +309,19 @@ onBeforeUnmount(() => {
                     :to="item.to"
                     @click="navigate(item.to)"
                     :class="['nav-link', isActive(item.to)]"
-                    class="flex min-h-14 items-center gap-3 rounded-2xl px-4 text-base font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                    class="flex min-h-14 items-center gap-3 rounded-xl px-4 text-base font-semibold text-[#101D3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
                   >
                     <KlookIcon v-if="item.to === '/klook'" :size="20" />
                     {{ item.label }}
-                    <span v-if="item.badge" class="rounded-full bg-sea px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide text-white">{{ item.badge }}</span>
+                    <span v-if="item.badge" class="rounded-full bg-[#008A9B] px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide text-white">{{ item.badge }}</span>
                   </NuxtLink>
                 </li>
-                <li class="mt-2 border-t border-line pt-2">
+                <li class="mt-2 border-t border-[#E2E8F0] pt-2">
                   <a
                     :href="familyHubUrl"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="flex min-h-14 items-center gap-2 rounded-2xl px-4 text-base font-semibold text-ink/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
+                    class="flex min-h-14 items-center gap-2 rounded-xl px-4 text-base font-semibold text-[#64748B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
                     @click="trackFamilyHub('menu')"
                   >
                     FamilyHub
@@ -331,7 +337,7 @@ onBeforeUnmount(() => {
             <!-- Drawer Footer (User section) -->
             <div v-if="isAuthenticated" class="p-4 border-t border-slate-200 bg-slate-50">
               <div class="flex items-center gap-3 px-2 py-2">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#008A9B] text-lg font-bold text-white">
                   {{ user.firstName ? user.firstName.charAt(0) : user.username.charAt(0) }}
                 </div>
                 <div class="flex-1 min-w-0">
@@ -348,53 +354,63 @@ onBeforeUnmount(() => {
     <!-- Main Content -->
     <main
       class="w-full"
-      :class="wide ? 'px-0 pt-16 lg:h-dvh lg:overflow-hidden' : 'container mx-auto flex-1 px-4 pt-[5.5rem] sm:px-6 lg:px-8'"
+      :class="wide ? 'h-dvh overflow-hidden px-0 pt-16' : bleed ? 'flex-1 pt-16' : 'site-shell flex-1 pt-[5.5rem]'"
     >
       <NuxtPage />
     </main>
 
     <!-- Footer: always sticks to bottom -->
-    <footer class="w-full bg-ink py-8 text-white" :class="wide ? 'mt-0' : 'mt-12 sm:mt-16 sm:py-10'">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-6 max-w-2xl">
-          <div class="mb-3 flex items-center gap-2.5">
-            <Logo :size="'28'" />
-            <h3 class="text-lg font-semibold text-white">GoTravelNha</h3>
+    <!-- Full-screen app pages (the AI Travel Agent) have no footer -->
+    <footer v-if="!wide" class="w-full bg-[#101D3A] font-brand text-white" :class="bleed ? 'mt-0' : 'mt-12 sm:mt-16'">
+      <div class="site-shell py-7 sm:py-12">
+        <!-- Phones: Plan and Help side by side, products on one line, so the footer stays short -->
+        <div class="grid grid-cols-2 gap-x-6 gap-y-5 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] md:gap-8">
+          <div class="col-span-2 max-w-sm md:col-span-1">
+            <div class="flex items-center gap-2.5">
+              <Logo :size="'28'" />
+              <p class="text-lg font-bold tracking-[-0.02em] text-white">GoTravelNha</p>
+            </div>
+            <p class="mt-2 text-[13px] leading-5 text-white/70 sm:mt-3 sm:text-[14px] sm:leading-[22px]">
+              Plan family trips and compare where to book. Flight and hotel bookings open on Trip.com or Klook. Singapore attraction tickets that we sell are paid for here.
+            </p>
           </div>
-          <p class="text-sm leading-relaxed text-white/75">
-            Flight and hotel bookings open on Trip.com or Klook. Singapore attraction tickets that we sell are paid for here.
-          </p>
-        </div>
-        <nav aria-label="Footer" class="mb-6 flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
-          <NuxtLink v-for="item in navItems" :key="item.to" :to="item.to" class="text-white/90 hover:text-white">{{ item.footerLabel || item.label }}</NuxtLink>
-          <NuxtLink v-for="item in footerPlaces" :key="item.to" :to="item.to" class="text-white/90 hover:text-white">{{ item.label }}</NuxtLink>
-        </nav>
-        <div class="mb-6">
-          <h3 class="text-sm font-semibold text-white">Our products</h3>
-          <a
-            :href="familyHubUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-white/90 hover:text-white"
-            @click="trackFamilyHub('footer')"
-          >
-            FamilyHub
-            <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
-            </svg>
-            <span class="sr-only">opens in a new tab</span>
-          </a>
+          <nav aria-label="Plan">
+            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">Plan</h3>
+            <ul class="mt-1.5 sm:mt-3 sm:space-y-1">
+              <li v-for="item in [...navItems, ...footerPlaces]" :key="item.to">
+                <NuxtLink :to="item.to" class="inline-flex min-h-9 items-center text-[13px] font-medium text-white/85 hover:text-white sm:text-[14px]">{{ item.footerLabel || item.label }}</NuxtLink>
+              </li>
+            </ul>
+          </nav>
+          <nav aria-label="Help">
+            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">Help</h3>
+            <ul class="mt-1.5 sm:mt-3 sm:space-y-1">
+              <li v-for="item in footerHelp" :key="item.to">
+                <NuxtLink :to="item.to" class="inline-flex min-h-9 items-center text-[13px] font-medium text-white/85 hover:text-white sm:text-[14px]">{{ item.label }}</NuxtLink>
+              </li>
+            </ul>
+          </nav>
+          <div class="col-span-2 flex items-center gap-4 md:col-span-1 md:block">
+            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">Our products</h3>
+            <a
+              :href="familyHubUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex min-h-9 items-center gap-1.5 text-[13px] font-medium text-white/85 hover:text-white sm:text-[14px] md:mt-3"
+              @click="trackFamilyHub('footer')"
+            >
+              FamilyHub
+              <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
+              </svg>
+              <span class="sr-only">opens in a new tab</span>
+            </a>
+          </div>
         </div>
 
-        <div class="flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-4 text-center md:flex-row md:text-left">
-          <p class="text-xs text-white/60 sm:text-sm">
-            © {{ new Date().getFullYear() }} GoTravelNha. All rights reserved.
-          </p>
-          <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-white/70">
-            <NuxtLink to="/help" class="py-1 hover:text-white">Help</NuxtLink>
-            <NuxtLink to="/bookings" class="py-1 hover:text-white">My bookings</NuxtLink>
-            <NuxtLink to="/contact" class="py-1 hover:text-white">Contact</NuxtLink>
-            <NuxtLink to="/refund-policy" class="py-1 hover:text-white">Refunds</NuxtLink>
+        <div class="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-white/10 pt-3 md:mt-10 md:pt-5">
+          <p class="text-[12px] text-white/55 sm:text-[13px]">© {{ new Date().getFullYear() }} GoTravelNha. All rights reserved.</p>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-white/60 sm:text-[13px]">
             <NuxtLink to="/privacy" class="py-1 hover:text-white">Privacy Policy</NuxtLink>
             <NuxtLink to="/terms" class="py-1 hover:text-white">Terms of Service</NuxtLink>
           </div>
@@ -418,11 +434,17 @@ ul {
 }
 
 .nav-link.active-link {
-  background: #e6f4f4;
-  color: #0b1f33;
+  background: #e8f7fa;
+  color: #007789;
 }
 
 .nav-link:hover {
-  background-color: #f6f3ee;
+  background-color: #f1f5f9;
+  color: #101d3a;
+}
+
+.nav-link.active-link:hover {
+  background: #e8f7fa;
+  color: #007789;
 }
 </style>

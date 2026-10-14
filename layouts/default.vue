@@ -47,10 +47,6 @@ const navItems = computed(() => {
   return items
 })
 
-const footerPlaces = [
-  { to: '/destinations', label: 'Destinations' }
-]
-
 const footerHelp = [
   { to: '/help', label: 'Help' },
   { to: '/bookings', label: 'My bookings' },
@@ -379,7 +375,7 @@ onBeforeUnmount(() => {
           <nav aria-label="Plan">
             <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">Plan</h3>
             <ul class="mt-1.5 sm:mt-3 sm:space-y-1">
-              <li v-for="item in [...navItems, ...footerPlaces]" :key="item.to">
+              <li v-for="item in navItems" :key="item.to">
                 <NuxtLink :to="item.to" class="inline-flex min-h-9 items-center text-[13px] font-medium text-white/85 hover:text-white sm:text-[14px]">{{ item.footerLabel || item.label }}</NuxtLink>
               </li>
             </ul>

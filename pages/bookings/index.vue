@@ -1,55 +1,116 @@
 <template>
-  <div class="min-h-screen bg-slate-50 pb-16">
-    <div class="max-w-3xl mx-auto px-4 pt-8 space-y-6">
+  <div class="mx-auto max-w-[1200px] pb-12 font-brand">
+    <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 class="text-3xl font-bold text-slate-900">🎟️ My bookings</h1>
-        <p class="mt-1 text-slate-600">Check the status of an attraction booking and get your tickets.</p>
+        <h1 class="text-[26px] font-bold leading-9 tracking-[-0.025em] text-[#101D3A]">My bookings</h1>
+        <p class="text-[15px] text-[#64748B]">Singapore attraction tickets bought on GoTravelNha. Check the status and get your tickets.</p>
+      </div>
+      <NuxtLink v-if="!isAuthenticated" to="/login?redirect=/bookings" class="btn-secondary w-auto px-5">Sign in to see all bookings</NuxtLink>
+    </div>
+
+    <div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+      <div class="min-w-0 space-y-5">
+        <!-- Signed in: the account's bookings -->
+        <template v-if="isAuthenticated">
+          <div v-if="myBookings.length" class="inline-grid grid-cols-4 gap-1 rounded-xl bg-[#E2E8F0]/70 p-1" role="tablist" aria-label="Bookings to show">
+            <button
+              v-for="option in filters"
+              :key="option.id"
+              type="button"
+              role="tab"
+              :aria-selected="filter === option.id"
+              class="min-h-9 whitespace-nowrap rounded-lg px-3 text-[13px] font-semibold"
+              :class="filter === option.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
+              @click="filter = option.id"
+            >
+              {{ option.label }}<span v-if="option.count" class="ml-1 text-[#94A3B8]">{{ option.count }}</span>
+            </button>
+          </div>
+
+          <p v-if="listError" class="alert-error" role="alert">{{ listError }}</p>
+
+          <div v-if="listLoading" class="space-y-3" aria-hidden="true">
+            <div v-for="n in 2" :key="n" class="h-48 animate-pulse rounded-2xl bg-[#E2E8F0]/60"></div>
+          </div>
+          <div v-else-if="shownBookings.length" class="space-y-4">
+            <BookingStatusCard v-for="booking in shownBookings" :key="booking.reference || booking.createdAt" :booking="booking" />
+          </div>
+          <div v-else-if="!listError" class="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-12 text-center">
+            <span class="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6ZM13 5v2M13 17v2M13 11v2" /></svg>
+            </span>
+            <template v-if="myBookings.length">
+              <p class="mt-3 font-semibold text-[#101D3A]">No {{ filterLabel }} bookings</p>
+              <button type="button" class="text-link mt-1 text-[14px]" @click="filter = 'all'">Show all bookings</button>
+            </template>
+            <template v-else>
+              <p class="mt-3 font-semibold text-[#101D3A]">No bookings on your account yet</p>
+              <p class="mx-auto mt-1 max-w-sm text-[14px] leading-[22px] text-[#64748B]">Booked as a guest? Find it with your reference and email.</p>
+            </template>
+          </div>
+        </template>
+
+        <!-- Find a booking: main task for guests, secondary when signed in -->
+        <section id="find-booking" class="rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6" aria-labelledby="find-title">
+          <h2 id="find-title" class="text-[17px] font-bold text-[#101D3A]">{{ isAuthenticated ? 'Booked as a guest?' : 'Find your booking' }}</h2>
+          <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">Use the reference from your confirmation email (GTN-…) and the email you paid with.</p>
+          <form class="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_auto] sm:items-end" @submit.prevent="lookup">
+            <div>
+              <label for="lookup-ref" class="form-label">Booking reference</label>
+              <input id="lookup-ref" v-model.trim="reference" required maxlength="20" placeholder="GTN-XXXXXXXX" autocomplete="off" class="form-input font-mono uppercase placeholder:font-brand placeholder:normal-case" />
+            </div>
+            <div>
+              <label for="lookup-email" class="form-label">Email</label>
+              <input id="lookup-email" v-model.trim="email" type="email" required maxlength="200" autocomplete="email" placeholder="you@example.com" class="form-input" />
+            </div>
+            <button type="submit" class="btn-primary sm:w-auto sm:px-6" :disabled="lookupLoading">
+              <span v-if="lookupLoading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
+              {{ lookupLoading ? 'Looking up…' : 'Find booking' }}
+            </button>
+          </form>
+          <p v-if="lookupError" class="alert-error mt-3" role="alert">{{ lookupError }}</p>
+        </section>
+
+        <BookingStatusCard v-if="found" :booking="found" />
       </div>
 
-      <template v-if="isAuthenticated">
-        <div v-if="listError" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">{{ listError }}</div>
-        <BookingStatusCard v-for="booking in myBookings" :key="booking.reference || booking.createdAt" :booking="booking" />
-        <div v-if="!listLoading && !listError && myBookings.length === 0" class="bg-white border border-dashed border-slate-300 rounded-2xl p-6 text-center text-slate-500">
-          No bookings on your account yet. Booked as a guest? Look it up below.
-        </div>
-      </template>
+      <aside class="min-w-0 space-y-4" aria-label="Help with bookings">
+        <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5">
+          <div class="flex items-start gap-3">
+            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F1F5F9] text-[#334155]" aria-hidden="true">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" /></svg>
+            </span>
+            <div>
+              <h2 class="text-[15px] font-bold leading-6 text-[#101D3A]">Booked on Trip.com or Klook?</h2>
+              <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">
+                Flights, hotels and activities you checked out on Trip.com or Klook are held by that partner and won't show here. Open them from the partner's app or confirmation email.
+              </p>
+            </div>
+          </div>
+        </section>
 
-      <form @submit.prevent="lookup" class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
-        <h2 class="text-lg font-bold text-slate-900">Find a booking</h2>
-        <p class="text-sm text-slate-600">Use the reference from your confirmation email (GTN-…) and the email you paid with.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <label class="block">
-            <span class="text-sm font-semibold text-slate-700">Booking reference</span>
-            <input
-              v-model.trim="reference"
-              required
-              maxlength="20"
-              placeholder="GTN-XXXXXXXX"
-              class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg uppercase font-mono"
-            />
-          </label>
-          <label class="block">
-            <span class="text-sm font-semibold text-slate-700">Email</span>
-            <input v-model.trim="email" type="email" required maxlength="200" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
-          </label>
-        </div>
-        <div v-if="lookupError" class="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{{ lookupError }}</div>
-        <button
-          type="submit"
-          :disabled="lookupLoading"
-          class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 disabled:opacity-60"
-        >
-          {{ lookupLoading ? 'Looking up…' : 'Find booking' }}
-        </button>
-      </form>
-
-      <BookingStatusCard v-if="found" :booking="found" />
+        <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5">
+          <h2 class="text-[15px] font-bold text-[#101D3A]">About your tickets</h2>
+          <ul class="mt-3 space-y-2.5 text-[14px] leading-[22px] text-[#475569]">
+            <li v-for="line in ticketNotes" :key="line" class="flex items-start gap-2.5">
+              <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+                <svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="m5 10.5 3 3 7-7" /></svg>
+              </span>
+              {{ line }}
+            </li>
+          </ul>
+          <div class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
+            <NuxtLink to="/contact" class="text-link">Contact support</NuxtLink>
+            <NuxtLink to="/refund-policy" class="text-link">Refund policy</NuxtLink>
+          </div>
+        </section>
+      </aside>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import type { CustomerBooking } from '~/types/booking'
 
@@ -59,6 +120,29 @@ const { isAuthenticated } = useAuthState()
 const myBookings = ref<CustomerBooking[]>([])
 const listLoading = ref(false)
 const listError = ref<string | null>(null)
+
+type Filter = 'all' | 'confirmed' | 'progress' | 'closed'
+const filter = ref<Filter>('all')
+const GROUPS: Record<Exclude<Filter, 'all'>, CustomerBooking['state'][]> = {
+  confirmed: ['confirmed'],
+  progress: ['processing', 'awaiting_payment'],
+  closed: ['refunded', 'cancelled', 'failed']
+}
+const inGroup = (booking: CustomerBooking, group: Filter) => group === 'all' || GROUPS[group].includes(booking.state)
+const shownBookings = computed(() => myBookings.value.filter((booking) => inGroup(booking, filter.value)))
+const filters = computed(() => [
+  { id: 'all' as const, label: 'All', count: 0 },
+  { id: 'confirmed' as const, label: 'Confirmed', count: myBookings.value.filter((b) => inGroup(b, 'confirmed')).length },
+  { id: 'progress' as const, label: 'In progress', count: myBookings.value.filter((b) => inGroup(b, 'progress')).length },
+  { id: 'closed' as const, label: 'Closed', count: myBookings.value.filter((b) => inGroup(b, 'closed')).length }
+])
+const filterLabel = computed(() => ({ all: '', confirmed: 'confirmed', progress: 'in-progress', closed: 'closed' })[filter.value])
+
+const ticketNotes = [
+  'Tickets are emailed as soon as the supplier confirms them.',
+  'Once your tickets are ready, their link also appears on the booking here.',
+  'Quote your GTN- reference when you contact us.'
+]
 
 const reference = ref(typeof route.query.ref === 'string' ? route.query.ref.slice(0, 20) : '')
 const email = ref('')

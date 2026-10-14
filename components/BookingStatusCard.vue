@@ -1,64 +1,143 @@
 <template>
-  <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
-    <div class="flex flex-wrap items-start justify-between gap-3">
-      <div>
-        <div class="text-xs font-mono text-slate-500">{{ booking.reference }}</div>
-        <div class="text-lg font-bold text-slate-900">{{ booking.eventTitle }}</div>
-        <div class="text-sm text-slate-600">
-          <span v-if="booking.optionName">{{ booking.optionName }} · </span>{{ guests }}
+  <article class="overflow-hidden rounded-2xl border bg-white font-brand" :class="badge.border">
+    <div class="flex flex-wrap items-start justify-between gap-3 px-5 pt-5">
+      <div class="min-w-0">
+        <div class="flex items-center gap-1.5">
+          <span class="font-mono text-[12px] font-semibold tracking-wide text-[#64748B]">{{ booking.reference }}</span>
+          <button
+            v-if="booking.reference"
+            type="button"
+            class="inline-flex h-7 items-center rounded-md px-1.5 text-[11px] font-semibold text-[#007789] hover:bg-[#E8F7FA]"
+            :aria-label="`Copy booking reference ${booking.reference}`"
+            @click="copyReference"
+          >
+            {{ copied ? 'Copied' : 'Copy' }}
+          </button>
         </div>
+        <h3 class="text-[17px] font-bold leading-6 text-[#101D3A]">
+          <NuxtLink v-if="booking.eventSlug" :to="`/attractionsg/${booking.eventSlug}`" class="hover:text-[#007789] hover:underline">{{ booking.eventTitle }}</NuxtLink>
+          <template v-else>{{ booking.eventTitle }}</template>
+        </h3>
+        <p class="mt-0.5 text-[14px] text-[#475569]">
+          <span v-if="booking.optionName">{{ booking.optionName }} · </span>{{ guests }}
+        </p>
       </div>
-      <span :class="['px-3 py-1 rounded-full text-xs font-semibold', badge.class]">{{ badge.label }}</span>
+      <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold" :class="badge.pill">
+        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="badge.icon" /></svg>
+        {{ badge.label }}
+      </span>
     </div>
 
-    <p class="text-sm text-slate-700">{{ badge.detail }}</p>
+    <!-- Progress while tickets are being ordered -->
+    <ol v-if="booking.state === 'processing' || booking.state === 'confirmed'" class="mx-5 mt-4 grid grid-cols-3 gap-2" aria-label="Booking progress">
+      <li v-for="(step, index) in steps" :key="step" class="min-w-0">
+        <span class="block h-1.5 rounded-full" :class="index < doneSteps ? 'bg-[#10B981]' : index === doneSteps ? 'bg-[#F59E0B]' : 'bg-[#E2E8F0]'" aria-hidden="true"></span>
+        <span class="mt-1.5 block truncate text-[12px]" :class="index <= doneSteps ? 'font-semibold text-[#334155]' : 'text-[#94A3B8]'">
+          {{ step }}<span class="sr-only">{{ index < doneSteps ? ' (done)' : index === doneSteps ? ' (in progress)' : '' }}</span>
+        </span>
+      </li>
+    </ol>
 
-    <div class="text-sm text-slate-600 flex flex-wrap gap-x-6 gap-y-1">
-      <span>Paid: <strong>{{ booking.currency }} {{ booking.amount.toFixed(2) }}</strong></span>
-      <span v-if="booking.discountAmount">Discount: {{ booking.currency }} {{ booking.discountAmount.toFixed(2) }}</span>
-      <span v-if="booking.refundedAmount">Refunded: {{ booking.currency }} {{ booking.refundedAmount.toFixed(2) }}</span>
-      <span>Booked {{ formatDate(booking.paidAt || booking.createdAt) }}</span>
-    </div>
+    <p class="mx-5 mt-4 text-[14px] leading-[22px] text-[#475569]">{{ badge.detail }}</p>
 
-    <div v-if="booking.state === 'confirmed' && (booking.voucherUrl || booking.voucherNote)" class="rounded-xl bg-emerald-50 border border-emerald-100 p-4 space-y-2">
-      <a
-        v-if="booking.voucherUrl"
-        :href="booking.voucherUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
-      >
+    <div v-if="booking.state === 'confirmed' && (booking.voucherUrl || booking.voucherNote)" class="mx-5 mt-4 space-y-2 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] p-4">
+      <a v-if="booking.voucherUrl" :href="booking.voucherUrl" target="_blank" rel="noopener noreferrer" class="btn-primary w-full sm:w-auto sm:px-6">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z" /></svg>
         Open your tickets
       </a>
-      <p v-if="booking.voucherNote" class="text-sm text-slate-700 whitespace-pre-wrap">{{ booking.voucherNote }}</p>
+      <p v-if="booking.voucherNote" class="whitespace-pre-wrap text-[14px] leading-[22px] text-[#065F46]">{{ booking.voucherNote }}</p>
     </div>
 
-    <p class="text-xs text-slate-500">
-      Need help? <NuxtLink :to="`/contact?ref=${booking.reference}`" class="text-emerald-700 hover:underline">Contact us about this booking</NuxtLink>.
-    </p>
-  </div>
+    <dl class="mx-5 mt-4 grid grid-cols-2 gap-3 border-t border-[#F1F5F9] py-4 text-[13px] sm:grid-cols-4">
+      <div>
+        <dt class="text-[#64748B]">Paid</dt>
+        <dd class="font-semibold tabular-nums text-[#101D3A]">{{ money(booking.amount) }}</dd>
+      </div>
+      <div>
+        <dt class="text-[#64748B]">Booked</dt>
+        <dd class="font-semibold text-[#101D3A]">{{ formatDate(booking.paidAt || booking.createdAt) }}</dd>
+      </div>
+      <div v-if="booking.discountAmount">
+        <dt class="text-[#64748B]">Discount</dt>
+        <dd class="font-semibold tabular-nums text-[#101D3A]">{{ money(booking.discountAmount) }}</dd>
+      </div>
+      <div v-if="booking.refundedAmount">
+        <dt class="text-[#64748B]">Refunded</dt>
+        <dd class="font-semibold tabular-nums text-[#101D3A]">{{ money(booking.refundedAmount) }}</dd>
+      </div>
+    </dl>
+
+    <div class="flex flex-wrap items-center justify-between gap-2 border-t border-[#F1F5F9] bg-[#F8FAFC] px-5 py-3 text-[13px]">
+      <NuxtLink :to="`/contact?ref=${booking.reference}`" class="text-link">Get help with this booking</NuxtLink>
+      <NuxtLink to="/refund-policy" class="text-[#64748B] hover:text-[#101D3A]">Refund policy</NuxtLink>
+    </div>
+  </article>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { CustomerBooking } from '~/types/booking'
 
 const props = defineProps<{ booking: CustomerBooking }>()
 
+const ICON = {
+  check: 'm5 10.5 3 3 7-7',
+  clock: 'M10 6v4l2.5 1.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z',
+  refund: 'M4 8h9a4 4 0 0 1 0 8H8M4 8l3-3M4 8l3 3',
+  cross: 'M6 6l8 8M14 6l-8 8',
+  card: 'M3 7h14v8H3V7Zm0 3h14'
+}
+
 const BADGES = {
-  awaiting_payment: { label: 'Awaiting payment', class: 'bg-slate-100 text-slate-700', detail: 'We have not received payment for this booking.' },
+  awaiting_payment: {
+    label: 'Awaiting payment',
+    pill: 'bg-[#F1F5F9] text-[#475569]',
+    border: 'border-[#E2E8F0]',
+    icon: ICON.card,
+    detail: 'We have not received payment for this booking.'
+  },
   processing: {
     label: 'Confirming tickets',
-    class: 'bg-amber-100 text-amber-800',
+    pill: 'bg-[#FFFBEB] text-[#B45309]',
+    border: 'border-[#FDE68A]',
+    icon: ICON.clock,
     detail: 'Payment received. We are ordering your tickets from our supplier and will email them as soon as they are confirmed.'
   },
-  confirmed: { label: 'Confirmed', class: 'bg-emerald-100 text-emerald-800', detail: 'Your tickets are confirmed. We have also emailed them to you.' },
-  refunded: { label: 'Refunded', class: 'bg-blue-100 text-blue-800', detail: 'This booking was refunded to your original payment method.' },
-  cancelled: { label: 'Cancelled', class: 'bg-slate-100 text-slate-700', detail: 'Checkout was not completed. You were not charged.' },
-  failed: { label: 'Payment failed', class: 'bg-red-100 text-red-700', detail: 'The payment did not go through. You were not charged.' }
+  confirmed: {
+    label: 'Confirmed',
+    pill: 'bg-[#ECFDF5] text-[#047857]',
+    border: 'border-[#E2E8F0]',
+    icon: ICON.check,
+    detail: 'Your tickets are confirmed. We have also emailed them to you.'
+  },
+  refunded: {
+    label: 'Refunded',
+    pill: 'bg-[#E8F7FA] text-[#007789]',
+    border: 'border-[#E2E8F0]',
+    icon: ICON.refund,
+    detail: 'This booking was refunded to your original payment method.'
+  },
+  cancelled: {
+    label: 'Cancelled',
+    pill: 'bg-[#F1F5F9] text-[#475569]',
+    border: 'border-[#E2E8F0]',
+    icon: ICON.cross,
+    detail: 'Checkout was not completed. You were not charged.'
+  },
+  failed: {
+    label: 'Payment failed',
+    pill: 'bg-[#FEF2F2] text-[#B91C1C]',
+    border: 'border-[#FECACA]',
+    icon: ICON.cross,
+    detail: 'The payment did not go through. You were not charged.'
+  }
 } as const
 
 const badge = computed(() => BADGES[props.booking.state])
+
+const steps = ['Payment received', 'Ordering tickets', 'Tickets ready']
+// processing: payment done, ordering in progress; confirmed: all done
+const doneSteps = computed(() => (props.booking.state === 'confirmed' ? 3 : 1))
 
 const guests = computed(() => {
   const parts: string[] = []
@@ -67,5 +146,18 @@ const guests = computed(() => {
   return parts.join(' + ') || `${props.booking.quantity} ticket${props.booking.quantity === 1 ? '' : 's'}`
 })
 
+const money = (value: number) => `${props.booking.currency} ${value.toFixed(2)}`
 const formatDate = (value: string) => new Intl.DateTimeFormat('en-SG', { dateStyle: 'medium' }).format(new Date(value))
+
+const copied = ref(false)
+const copyReference = async () => {
+  if (!props.booking.reference) return
+  try {
+    await navigator.clipboard.writeText(props.booking.reference)
+    copied.value = true
+    setTimeout(() => (copied.value = false), 2000)
+  } catch {
+    // Clipboard blocked; the reference is visible to copy by hand
+  }
+}
 </script>

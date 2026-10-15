@@ -16,7 +16,7 @@
           <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10H4m0 0 5-5m-5 5 5 5" />
           </svg>
-          All comparisons
+          All booking guides
         </NuxtLink>
       </template>
     </PageHero>
@@ -25,7 +25,7 @@
       <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-6">
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div class="min-w-0">
-            <h2 id="compare-title" class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">Compare and book</h2>
+            <h2 id="compare-title" class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">Compare booking options</h2>
             <p class="mt-1 max-w-2xl text-[14px] leading-[22px] text-[#64748B]">{{ bookStripSub }}</p>
           </div>
           <div class="flex flex-wrap gap-1.5 text-[12px] font-medium text-[#475569]">
@@ -86,8 +86,8 @@
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-16">
       <div class="grid gap-4 lg:grid-cols-2">
         <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6" aria-labelledby="why-title">
-          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">Why compare here</p>
-          <h2 id="why-title" class="mt-1 text-[18px] font-bold leading-6 text-[#101D3A]">Two partners, one look</h2>
+          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">Why check both</p>
+          <h2 id="why-title" class="mt-1 text-[18px] font-bold leading-6 text-[#101D3A]">Two partners, one starting point</h2>
           <ul class="mt-4 space-y-3">
             <li v-for="bullet in template.summaryBullets" :key="bullet" class="flex items-start gap-3 text-[14px] leading-[22px] text-[#334155]">
               <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
@@ -193,7 +193,7 @@ const partnerOpenHint = computed(() =>
     : 'Tap a partner to open their site in a new tab.'
 )
 
-const heroTrust = ['Trip.com and Klook side by side', 'Live prices on the partner site', 'No charge from GoTravelNha']
+const heroTrust = ['Links to Trip.com and Klook', 'Live prices on the partner site', 'No charge from GoTravelNha']
 
 const COMPARISONS = [
   {

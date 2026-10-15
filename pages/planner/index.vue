@@ -840,13 +840,27 @@ onMounted(async () => {
     await loadFamily()
   }
 
-  // Trip described on the home page: start the conversation with it instead of restoring the last plan
-  const prompt = typeof route.query.prompt === 'string' ? route.query.prompt.trim().slice(0, 600) : ''
+  // Trip described on the home page or a guide: put it in the message box instead of restoring the
+  // last plan. It is not sent until the visitor presses send, so a stray click or a crawler
+  // following the link never calls the AI.
+  const prompt = typeof route.query.prompt === 'string' ? route.query.prompt.trim().slice(0, 500) : ''
   if (prompt) {
     const { prompt: _drop, ...rest } = route.query
     await router.replace({ query: rest })
+    // Drop the Singapore / 1 adult + 1 child defaults so the brief only shows what the visitor
+    // wrote; anything the agent cannot read from the prompt is then asked for, not assumed
+    if (!rest.destination) form.destination = ''
+    if (!party.value.some((person) => person.fromProfile)) party.value = []
     startSource = 'home_prompt'
-    sendReply(prompt)
+    draft.value = prompt
+    pushNote('assistant', 'I put your trip in the message box below. Change anything you like, then press send and I will start planning.')
+    await nextTick()
+    // Desktop only: on phones focusing opens the keyboard over the brief
+    if (window.matchMedia('(min-width: 1024px)').matches) {
+      const box = document.getElementById('planner-request') as HTMLTextAreaElement | null
+      box?.focus({ preventScroll: true })
+      box?.setSelectionRange(prompt.length, prompt.length)
+    }
     return
   }
 

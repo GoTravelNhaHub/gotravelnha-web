@@ -60,7 +60,7 @@ The AttractionsSG background sync turns itself off on Vercel and Netlify.
 | --- | --- |
 | `/explore` | Home page: AI planner prompt, partner deal search, Trip.com vs Klook guides |
 | `/explore/[slug]` | Comparison guides (`flights`, `hotels`, `attractions`) and deal landing pages |
-| `/planner` | AI travel agent. Accepts `?destination=` and `?prompt=` |
+| `/planner` | AI travel agent. `?destination=` sets the brief; `?prompt=` fills the message box (not sent until the visitor presses send) |
 | `/mytrip`, `/mytrip/[id]` | Saved trips (signed in) |
 | `/share/trip/[shareId]` | Public read-only shared trip |
 | `/destinations`, `/destinations/[slug]` | Destination catalogue |

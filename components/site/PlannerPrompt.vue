@@ -5,11 +5,16 @@
       :id="inputId"
       v-model="prompt"
       rows="3"
-      maxlength="600"
-      :placeholder="examples[0]"
+      maxlength="500"
+      :placeholder="`e.g. ${examples[0]}`"
+      :aria-describedby="needsText ? `${inputId}-hint` : undefined"
       class="mt-2 block w-full resize-none rounded-xl border border-[#CBD5E1] px-4 py-3 text-[16px] leading-6 text-[#101D3A] placeholder:text-[#94A3B8] focus:border-[#008A9B] focus:outline-none focus:ring-2 focus:ring-[#008A9B]/30"
       @keydown.enter.exact.prevent="submit"
+      @input="needsText = false"
     ></textarea>
+    <p v-if="needsText" :id="`${inputId}-hint`" class="mt-2 text-[13px] font-medium text-[#B45309]" role="status">
+      Describe your trip, or pick an example below.
+    </p>
 
     <div class="mt-3 flex flex-wrap gap-2">
       <span class="text-[13px] leading-8 text-[#64748B]">Try:</span>
@@ -18,7 +23,7 @@
         :key="example"
         type="button"
         class="min-h-8 rounded-full border border-[#E2E8F0] px-3 text-left text-[13px] text-[#334155] transition hover:border-[#008A9B] hover:bg-[#E8F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
-        @click="prompt = example"
+        @click="selectExample(example)"
       >
         {{ example }}
       </button>
@@ -58,12 +63,25 @@ const examples = [
 
 const inputId = useId()
 const prompt = ref('')
+const needsText = ref(false)
 const { track } = useFunnel()
 
-// An empty box sends the placeholder example, so the first click always shows a plan
+const selectExample = (example: string) => {
+  prompt.value = example
+  needsText.value = false
+  track('planner_example_selected', { placement: props.placement, example })
+}
+
+// The planner only fills its message box with this text; nothing is sent to the AI until the
+// visitor presses send there. An empty box asks for a trip instead of sending the placeholder.
 const submit = () => {
-  const text = (prompt.value.trim() || examples[0]).slice(0, 600)
-  track('planner_prompt_submitted', { placement: props.placement, example: !prompt.value.trim() })
+  const text = prompt.value.trim().slice(0, 500)
+  if (!text) {
+    needsText.value = true
+    document.getElementById(inputId)?.focus()
+    return
+  }
+  track('planner_prompt_submitted', { placement: props.placement })
   navigateTo({ path: '/planner', query: { prompt: text } })
 }
 </script>

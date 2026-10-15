@@ -70,10 +70,10 @@ export function getBuiltinDealTemplate(
     return {
       slug: 'flights',
       hubOutcome:
-        'Compare fares and routes across partners in one stop — then book where the total works best for you.',
+        'Open flight search on Trip.com and Klook from one page, then book where the total works best for you.',
       title: 'Find your best flight booking option',
       description:
-        'Check Trip.com and Klook side by side, then book where the total fare works best for your trip.',
+        'Open flight search on Trip.com and Klook, check the total fare on each, then book where it works best for your trip.',
       destination: 'Worldwide',
       heroImage:
         'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1600&q=80',
@@ -120,7 +120,7 @@ export function getBuiltinDealTemplate(
 
     return {
       slug: 'hotels',
-      hubOutcome: 'See room types, filters, and promos side by side — pick the stay that fits your trip.',
+      hubOutcome: 'Open hotel search on Trip.com and Klook and check room types and totals on each.',
       title: 'Find your best hotel booking option',
       description:
         'Compare hotel booking pages on Trip.com and Klook to find the right stay and rate.',
@@ -170,7 +170,7 @@ export function getBuiltinDealTemplate(
 
     return {
       slug: 'attractions',
-      hubOutcome: 'Stack up Singapore tickets and bundles fast — fewer tabs, clearer value.',
+      hubOutcome: 'Open Singapore ticket pages on Trip.com and Klook and check what each one includes.',
       title: 'Find your best attraction ticket option',
       description:
         'Compare attraction ticket pages on Trip.com and Klook, then book where value is best.',
@@ -186,7 +186,7 @@ export function getBuiltinDealTemplate(
       primaryBaseUrl: tripA,
       placementKey: 'hub_attractions_comparison',
       summaryBullets: [
-        'Compare attractions across both partners in one quick step.',
+        'Open both partners\' attraction pages from one place.',
         'See price differences and ticket inclusions before checkout.',
         'Pick the option that matches your schedule and budget.'
       ],

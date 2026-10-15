@@ -319,9 +319,9 @@ const hubOgImage = computed(() => resolveAbsoluteOgImage('/og-image.jpg', siteOr
 const hubImageMime = computed(() => inferOgImageMime(hubOgImage.value))
 
 useHead(() => {
-  const title = 'Compare flights, hotels & attractions | GoTravelNha Deals'
+  const title = 'AI Family Trip Planner | GoTravelNha'
   const description =
-    'Search flights and hotels, then continue on Trip.com or Klook. Singapore attraction tickets are sold here only when a current price is listed.'
+    'Plan a family holiday day by day with an AI travel agent, then compare flights, hotels and activities on Trip.com and Klook before you book.'
   const canonical = `${siteOrigin}/explore`
   const img = hubOgImage.value
   const secure = img.startsWith('https://') ? img : img.replace(/^http:\/\//i, 'https://')

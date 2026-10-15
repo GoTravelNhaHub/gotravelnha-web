@@ -29,38 +29,47 @@ export default defineEventHandler(async (event) => {
   const urls = new Map<string, string>()
   for (const path of staticPaths) urls.set(path, '')
 
-  try {
-    const [events, templates, destinations] = await Promise.all([
-      prisma.attractionsgEvent.findMany({
-        where: { isActive: true, isPublished: true },
-        select: { slug: true, id: true, updatedAt: true }
-      }),
-      prisma.dealTemplate.findMany({
-        where: { isActive: true },
-        select: { slug: true, updatedAt: true }
-      }),
-      prisma.affiliateEntity.findMany({
-        where: { status: 'active', location: { not: null } },
-        select: { location: true }
-      })
-    ])
+  // Each lookup is independent so one failing table cannot drop every dynamic URL.
+  const [events, templates, destinations] = await Promise.allSettled([
+    prisma.attractionsgEvent.findMany({
+      where: { isActive: true, isPublished: true },
+      select: { slug: true, id: true, updatedAt: true }
+    }),
+    prisma.dealTemplate.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true }
+    }),
+    prisma.affiliateEntity.findMany({
+      where: { status: 'active', location: { not: null } },
+      select: { location: true }
+    })
+  ])
 
-    for (const item of events) {
+  if (events.status === 'fulfilled') {
+    for (const item of events.value) {
       const slug = item.slug || item.id
       if (slug) urls.set(`/attractionsg/${encodeURIComponent(slug)}`, item.updatedAt.toISOString())
     }
-    for (const item of templates) {
+  } else {
+    console.error('Sitemap attractionsgEvent lookup failed:', events.reason)
+  }
+  if (templates.status === 'fulfilled') {
+    for (const item of templates.value) {
       if (item.slug) urls.set(`/explore/${encodeURIComponent(item.slug)}`, item.updatedAt.toISOString())
     }
-    for (const item of destinations) {
+  } else {
+    console.error('Sitemap dealTemplate lookup failed:', templates.reason)
+  }
+  if (destinations.status === 'fulfilled') {
+    for (const item of destinations.value) {
       if (!item.location) continue
       const slug = destinationSlug(item.location)
       if (slug) urls.set(`/destinations/${encodeURIComponent(slug)}`, '')
     }
-    urls.set('/destinations/singapore', '')
-  } catch (error) {
-    console.error('Sitemap database lookup failed:', error)
+  } else {
+    console.error('Sitemap affiliateEntity lookup failed:', destinations.reason)
   }
+  urls.set('/destinations/singapore', '')
 
   const body = [...urls.entries()]
     .map(([path, lastmod]) => {

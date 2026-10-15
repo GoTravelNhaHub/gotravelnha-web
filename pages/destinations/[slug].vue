@@ -6,6 +6,9 @@
           <NuxtLink to="/destinations" class="text-sm font-semibold text-slate-600 hover:text-slate-900">← All destinations</NuxtLink>
           <h1 class="mt-2 text-3xl font-bold text-slate-900">Things to do in {{ name }}</h1>
           <p class="mt-1 text-slate-600">Activities you can book with us. Prices come from our partners and can change.</p>
+          <NuxtLink v-if="guide" :to="`/guides/${guide.slug}`" class="mt-2 inline-block text-sm font-semibold text-emerald-700 hover:underline">
+            Read our guide: {{ guide.title }} →
+          </NuxtLink>
         </div>
         <NuxtLink
           :to="`/planner?destination=${encodeURIComponent(name)}`"
@@ -70,6 +73,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ActivityCard from '~/components/planner/ActivityCard.vue'
 import { destinationFromSlug } from '~/utils/destination-slug'
+import { guideForDestination } from '~/utils/destination-guides'
 import type { RecommendedActivity } from '~/types/trip'
 
 const route = useRoute()
@@ -103,6 +107,7 @@ if (initialDestination.value) {
 }
 const loading = ref(false)
 const error = ref<string | null>(null)
+const guide = computed(() => guideForDestination(name.value))
 
 const load = async () => {
   try {

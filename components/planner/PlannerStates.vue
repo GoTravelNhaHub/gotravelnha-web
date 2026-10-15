@@ -6,6 +6,15 @@
     </span>
     <h2 class="mt-4 text-[22px] font-bold leading-[30px] tracking-[-0.025em] text-[#101D3A]">{{ title }}</h2>
     <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/70" :role="kind === 'error' ? 'alert' : undefined">{{ message }}</p>
+    <button
+      v-if="kind === 'error'"
+      type="button"
+      class="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#008A9B] px-5 text-[14px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
+      @click="$emit('retry')"
+    >
+      <PlannerIcon name="refresh" class="h-4 w-4" />
+      Try again
+    </button>
 
     <ol v-if="kind === 'loading'" class="mt-8 w-full max-w-md space-y-2 text-left" aria-label="Agent progress">
       <li
@@ -44,6 +53,8 @@ const props = defineProps<{
   revising?: boolean
 }>()
 
+defineEmits<{ retry: [] }>()
+
 const steps = ['Describe the trip in your own words', 'The agent fills in the brief and asks for gaps', 'Review the days and refine in chat']
 
 // One request does all of this, so the steps advance on a timer and the last one
@@ -67,7 +78,7 @@ onBeforeUnmount(() => clearInterval(timer))
 
 const title = computed(() => {
   if (props.kind === 'loading') return props.revising ? 'Revising your plan' : 'Planning the days'
-  if (props.kind === 'error') return 'Check the request'
+  if (props.kind === 'error') return 'The plan did not finish'
   return 'Your itinerary will appear here'
 })
 

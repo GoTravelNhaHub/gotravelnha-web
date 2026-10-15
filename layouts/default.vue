@@ -29,7 +29,6 @@ const isFeatureEnabled = (value) => {
 };
 
 const showBestDealsNav = computed(() => isFeatureEnabled(runtimeConfig.public?.enableBestDealsNav));
-const showCompareNav = computed(() => isFeatureEnabled(runtimeConfig.public?.enableCompareNav));
 
 const isActive = (path) => {
   if (route.path === path || route.path.startsWith(`${path}/`)) return 'active-link'
@@ -43,7 +42,6 @@ const navItems = computed(() => {
     { to: '/klook', label: 'Klook' },
     { to: '/planner', label: 'AI Travel Agent', footerLabel: 'Planner', badge: 'New' }
   ]
-  if (showCompareNav.value) items.push({ to: '/compare', label: 'Compare' })
   return items
 })
 

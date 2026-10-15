@@ -91,6 +91,10 @@ export default defineNuxtConfig({
       '/': { redirect: { to: '/explore', statusCode: 301 } },
       '/deals': { redirect: { to: '/explore', statusCode: 301 } },
       '/deals/**': { redirect: { to: '/explore/**', statusCode: 301 } },
+      // Price comparison had no fresh data once the crawlers stopped; the partner guides on /explore replace it
+      '/compare': { redirect: { to: '/explore', statusCode: 301 } },
+      // Partner shortcuts hub; the deals search on /explore covers it
+      '/search': { redirect: { to: '/explore#deals', statusCode: 301 } },
       '/privacy': { prerender: true },
       '/terms': { prerender: true },
       '/refund-policy': { prerender: true },
@@ -166,7 +170,6 @@ export default defineNuxtConfig({
              /** Customer support address shown on contact, help and booking pages. Hidden when unset. */
              supportEmail: process.env.NUXT_PUBLIC_SUPPORT_EMAIL || '',
              enableBestDealsNav: process.env.NUXT_PUBLIC_ENABLE_BEST_DEALS_NAV ?? 'true',
-             enableCompareNav: process.env.NUXT_PUBLIC_ENABLE_COMPARE_NAV ?? 'true',
              stripeFeePercent: process.env.NUXT_PUBLIC_STRIPE_FEE_PERCENT || '0.034',
              stripeFeeFixed: process.env.NUXT_PUBLIC_STRIPE_FEE_FIXED || '0.5'
       }

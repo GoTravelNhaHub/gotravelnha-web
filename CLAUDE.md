@@ -65,10 +65,10 @@ export default defineEventHandler(async (event) => {
 - **Crawlers:** `server/api/attractionsg/crawl.ts` (`runAttractionsgCrawl`), `scripts/run-attractionsg-crawl.ts`, `server/plugins/attractionsg-sync.ts`, `server/api/scraper.ts`, `server/api/scrape-simple.ts`, `pages/admin/scrapers/`. Background sync turns itself off when `VERCEL` or `NETLIFY` is set.
 - **Auth:** `pages/login.vue`, `register.vue`, `forgot-password.vue`, `reset-password.vue`, `pages/user/`. API: `server/api/auth/`. Session for the UI is `useAuthState` → localStorage `gotravelnha_user`. `composables/useAuth.ts` (Auth0) is barely used; do not route new login through it.
 - **Blog:** API only (`server/api/blog/`, `server/api/admin/blog/`). No public blog pages.
-- **Search / compare:** `pages/search.vue`, `pages/compare.vue`, `server/api/search/global.post.ts`, `server/api/activities/compare.ts`.
+- **Search / compare:** `pages/search.vue` and `pages/compare.vue` (both redirected to `/explore`), `server/api/search/global.post.ts`, `server/api/activities/compare.ts`.
 - **Analytics:** `useActivityTracker` → `server/api/track-activity.ts` → `UserActivity`.
 
-Feature flags for nav: `NUXT_PUBLIC_ENABLE_BEST_DEALS_NAV`, `NUXT_PUBLIC_ENABLE_COMPARE_NAV` (`runtimeConfig.public`).
+Feature flag for nav: `NUXT_PUBLIC_ENABLE_BEST_DEALS_NAV` (`runtimeConfig.public`). `/compare` and `/search` 301 to `/explore`; their page files are unreachable.
 
 ## Auth boundary
 

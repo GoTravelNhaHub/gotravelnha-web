@@ -724,73 +724,9 @@ const openPartner = (partner: CuratedPartnerAttraction) => {
 }
 const notFound = ref<boolean>(false)
 
-// Smart back navigation based on referrer
-const backUrl = computed(() => {
-  const from = route.query.from as string | undefined
-  
-  if (from === 'search') {
-    // Build search URL with preserved query params
-    const searchParams = new URLSearchParams()
-    if (route.query.searchQuery) searchParams.set('q', route.query.searchQuery as string)
-    if (route.query.searchLocation) searchParams.set('location', route.query.searchLocation as string)
-    if (route.query.searchCategory) searchParams.set('category', route.query.searchCategory as string)
-    if (route.query.searchPlatforms) {
-      const platforms = Array.isArray(route.query.searchPlatforms) 
-        ? route.query.searchPlatforms 
-        : [route.query.searchPlatforms]
-      platforms.forEach(p => searchParams.append('platforms', p as string))
-    }
-    
-    const queryString = searchParams.toString()
-    return `/search${queryString ? `?${queryString}` : ''}`
-  }
-  
-  // Fallback: check document.referrer if available (for browser back button cases)
-  if (process.client && typeof document !== 'undefined') {
-    const referrer = document.referrer
-    if (referrer) {
-      try {
-        const referrerUrl = new URL(referrer)
-        // If referrer is from search page
-        if (referrerUrl.pathname === '/search' || referrerUrl.pathname.includes('/search')) {
-          // Extract search params from referrer
-          const searchQuery = referrerUrl.searchParams.get('q')
-          if (searchQuery) {
-            const searchParams = new URLSearchParams()
-            searchParams.set('q', searchQuery)
-            referrerUrl.searchParams.forEach((value, key) => {
-              if (['location', 'category', 'platforms'].includes(key)) {
-                searchParams.append(key, value)
-              }
-            })
-            return `/search?${searchParams.toString()}`
-          }
-          return '/search'
-        }
-      } catch (e) {
-        // Invalid URL, ignore
-      }
-    }
-  }
-  
-  // Default: go back to attractions listing page
-  return '/attractionsg'
-})
-
-const backLabel = computed(() => {
-  const from = route.query.from as string | undefined
-  if (from === 'search') return 'Back to Search'
-  
-  // Check referrer as fallback
-  if (process.client && typeof document !== 'undefined') {
-    const referrer = document.referrer
-    if (referrer && referrer.includes('/search')) {
-      return 'Back to Search'
-    }
-  }
-  
-  return 'Back to Attractions'
-})
+// /search now redirects to /explore, so the attractions listing is the only way back
+const backUrl = '/attractionsg'
+const backLabel = 'Back to Attractions'
 const selectedOption = ref<Record<string, any> | null>(null)
 const bookingFormRef = ref<HTMLElement | null>(null)
 const copyMessage = ref<string>('')

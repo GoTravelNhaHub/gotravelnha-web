@@ -41,8 +41,8 @@ const PROMOTION_CAMPAIGNS: PromotionCampaign[] = [
     params: {
       trip_sub3: 'P104257'
     },
-    title: '🔥 Popular Flight Deals',
-    description: 'Save more on your bookings! Get rebates on popular flights, powered by Trip.com.',
+    title: 'Popular flight deals',
+    description: 'Rebates on popular routes from Trip.com. The final fare is shown on Trip.com before you pay.',
     icon: '🔥',
     active: false,  // Disabled - Promotion expired. Check Trip.com affiliate portal for new widget codes
     priority: 10

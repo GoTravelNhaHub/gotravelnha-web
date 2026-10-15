@@ -2,8 +2,8 @@
   <div class="min-h-screen bg-white">
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div class="text-center">
-        <h1 class="text-3xl sm:text-4xl font-black text-slate-900">Travel Comparison Hub</h1>
-        <p class="mt-2 text-slate-600">Pick a destination, then jump into tracked flights, hotels, and activities.</p>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900">Browse partner deals</h1>
+        <p class="mt-2 text-slate-600">Pick a destination, then open flights, hotels and activities on Trip.com and Klook.</p>
       </div>
 
       <div v-if="destinationOptions.length > 0" class="flex flex-wrap items-center gap-2">
@@ -268,10 +268,10 @@ onMounted(() => {
 })
 
 useHead({
-  title: 'Travel Comparison Hub | GoTravelNha',
+  title: 'Browse partner deals | GoTravelNha',
   meta: [
-    { name: 'description', content: 'Shortcut-first affiliate comparison hub for Trip.com and Klook.' },
-    { property: 'og:title', content: 'Travel Comparison Hub | GoTravelNha' }
+    { name: 'description', content: 'Pick a destination and go straight to flights, hotels and activities on Trip.com and Klook.' },
+    { property: 'og:title', content: 'Browse partner deals | GoTravelNha' }
   ]
 })
 </script>

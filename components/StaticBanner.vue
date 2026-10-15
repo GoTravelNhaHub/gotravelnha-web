@@ -5,6 +5,8 @@
         style="width:100%; min-width:320px; height:90px;"
         frameborder="0"
         scrolling="no"
+        loading="lazy"
+        title="Trip.com offer banner"
         id="SB553583"
       />
     </div>

@@ -170,7 +170,7 @@
             />
           </template>
           <PlannerStates v-else-if="loading" kind="loading" :destination="form.destination" :revising="revising" />
-          <PlannerStates v-else-if="error" kind="error" :message="error" />
+          <PlannerStates v-else-if="error" kind="error" :message="error" @retry="retry" />
           <div v-else class="mx-auto max-w-5xl py-2 sm:py-4">
             <p class="text-[12px] font-semibold uppercase leading-[18px] tracking-[0.06em] text-[#008A9B]">Start here</p>
             <h2 class="mt-1 text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px] sm:leading-9">Where should the family go next?</h2>
@@ -277,6 +277,9 @@ const adjustments = [
 type AdjustmentId = (typeof adjustments)[number]['id']
 
 const PENDING_KEY = 'gotravelnha_pending_trip'
+
+// Where the first message came from, for the planner_started funnel event
+let startSource: 'chat' | 'home_prompt' | 'example' | 'shared_trip' = 'chat'
 
 const route = useRoute()
 const router = useRouter()
@@ -506,6 +509,7 @@ const applyPrompt = (prompt: PlannerPrompt) => {
   form.interests = prompt.interests
   if (prompt.budget !== undefined) form.budget = prompt.budget
   draft.value = `${prompt.label}: ${prompt.caption.toLowerCase()}`
+  startSource = 'example'
   preferencesOpen.value = false
   pushNote('assistant', prompt.note)
 }
@@ -641,11 +645,13 @@ const ask = async () => {
   // Empty box: plan from the brief as it stands
   if (!spoken) {
     const when = form.startDate && form.endDate ? `${shortDate(form.startDate)} – ${shortDate(form.endDate)}` : 'dates not set yet'
+    track('planner_started', { source: startSource }, true)
     pushNote('user', `Plan ${form.destination || 'my trip'}, ${when}`)
     await planFromBrief()
     return
   }
 
+  track('planner_started', { source: startSource }, true)
   pushNote('user', spoken)
   draft.value = ''
   thinking.value = true
@@ -747,6 +753,7 @@ const generate = async (revision?: { change: string }) => {
     )
   } catch (err: any) {
     const message = err?.data?.message || 'The trip planner could not finish. Please try again.'
+    track('ai_itinerary_failed', { revise: !!revise, status: err?.statusCode ?? err?.status ?? null })
     error.value = message
     pushNote('assistant', message)
     tab.value = 'talk'
@@ -754,6 +761,14 @@ const generate = async (revision?: { change: string }) => {
     loading.value = false
     revising.value = false
   }
+}
+
+// The error screen only shows before a plan exists, so retry re-runs the first plan,
+// checking the brief again in case the error was a missing detail
+const retry = () => {
+  if (busy.value) return
+  track('ai_itinerary_retried')
+  planFromBrief()
 }
 
 const useRequest = (request: PlannerResult['request']) => {
@@ -778,6 +793,7 @@ const saveTrip = async () => {
       body: { generationId: result.value.generationId }
     })
     localStorage.removeItem(PENDING_KEY)
+    track('trip_saved', { destination: result.value.request.destination })
     router.push(`/mytrip/${response.data.id}`)
   } catch (err: any) {
     const message = err?.data?.message || 'Could not save this trip.'
@@ -818,9 +834,20 @@ onMounted(async () => {
   if (typeof route.query.destination === 'string' && route.query.destination.trim()) {
     form.destination = route.query.destination.trim().slice(0, 80)
   }
+  if (route.query.from === 'shared_trip') startSource = 'shared_trip'
 
   if (isAuthenticated.value) {
     await loadFamily()
+  }
+
+  // Trip described on the home page: start the conversation with it instead of restoring the last plan
+  const prompt = typeof route.query.prompt === 'string' ? route.query.prompt.trim().slice(0, 600) : ''
+  if (prompt) {
+    const { prompt: _drop, ...rest } = route.query
+    await router.replace({ query: rest })
+    startSource = 'home_prompt'
+    sendReply(prompt)
+    return
   }
 
   const pendingId = localStorage.getItem(PENDING_KEY)

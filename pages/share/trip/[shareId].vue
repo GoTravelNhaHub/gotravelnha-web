@@ -3,7 +3,7 @@
     <div v-if="!trip" class="rounded-2xl border border-[#E2E8F0] bg-white px-6 py-14 text-center">
       <p class="text-[18px] font-bold text-[#101D3A]">This plan isn't shared any more</p>
       <p class="mx-auto mt-1 max-w-sm text-[14px] leading-[22px] text-[#64748B]">The link may have been turned off by the person who shared it. You can make your own plan in a minute.</p>
-      <NuxtLink to="/planner" class="btn-primary mx-auto mt-5 w-auto px-6">Plan a family trip</NuxtLink>
+      <NuxtLink :to="planOwnLink" class="btn-primary mx-auto mt-5 w-auto px-6">Plan a family trip</NuxtLink>
     </div>
 
     <template v-else>
@@ -84,7 +84,9 @@ const ages = computed(() => {
   const children = (trip.value?.party ?? []).filter((person) => person.age < 18).map((person) => person.age)
   return children.length ? `kids ${children.join(' and ')}` : ''
 })
-const planOwnLink = computed(() => (trip.value ? `/planner?destination=${encodeURIComponent(trip.value.destination)}` : '/planner'))
+const planOwnLink = computed(() =>
+  trip.value ? `/planner?destination=${encodeURIComponent(trip.value.destination)}&from=shared_trip` : '/planner?from=shared_trip'
+)
 
 const trackCta = (placement: string) =>
   track('shared_trip_plan_own_clicked', { placement, destination: trip.value?.destination ?? null })

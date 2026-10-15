@@ -1,29 +1,27 @@
 <template>
   <div class="pb-16 font-brand sm:pb-20">
     <PageHero
-      eyebrow="Family travel, planned and compared"
-      title="Plan the trip. Compare where to book."
-      subtitle="Search flights and hotels on Trip.com, compare Trip.com and Klook side by side before you book, or let the AI agent plan each day for the family."
+      eyebrow="AI trip planner for families"
+      title="Your family holiday, planned in minutes."
+      subtitle="Tell us where you're going and who's coming. Get a day-by-day itinerary, then find flights, hotels and activities on Trip.com and Klook."
       :image="heroImage"
       image-position="center 45%"
-      :trust="['Prices shown by the partner before you pay', 'No charge from GoTravelNha on partner bookings', 'Day-by-day plans with AI']"
+      :trust="['Personalised day-by-day plan', 'Share it with the family', 'Compare booking options before you pay']"
       overlap
-    >
-      <template #badge>
-        <span class="inline-flex flex-wrap items-center gap-2 text-[13px] font-semibold text-white/80">
-          <span class="inline-flex items-center rounded-full bg-white px-3 py-1.5 shadow-sm"><TripWordmark /></span>
-          <span aria-hidden="true">+</span>
-          <span class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[#101D3A] shadow-sm"><KlookIcon :size="16" />Klook</span>
-          <span class="ml-1">Compared side by side</span>
-        </span>
-      </template>
-    </PageHero>
+    />
 
     <div class="site-shell relative z-20 -mt-20 sm:-mt-24">
-      <TravelSearch placement="deals_hub" />
+      <PlannerPrompt placement="explore_hero" class="mx-auto max-w-3xl" />
     </div>
 
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
+      <section id="deals" class="scroll-mt-24 space-y-4" aria-labelledby="deals-title">
+        <h2 id="deals-title" class="text-[22px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A] sm:text-[26px] sm:leading-8">
+          Already know where you're going? Find travel deals
+        </h2>
+        <TravelSearch placement="deals_hub" />
+      </section>
+
       <!-- The side-by-side comparison lives on /explore/[slug]; this band is the way in -->
       <section class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white" aria-labelledby="compare-title">
         <div class="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:p-10">
@@ -236,6 +234,7 @@ import TripWordmark from '~/components/TripWordmark.vue'
 import BookingNote from '~/components/site/BookingNote.vue'
 import CityTile from '~/components/site/CityTile.vue'
 import PageHero from '~/components/site/PageHero.vue'
+import PlannerPrompt from '~/components/site/PlannerPrompt.vue'
 import SectionHeading from '~/components/site/SectionHeading.vue'
 import { destinationPhoto } from '~/utils/destination-photos'
 import { DESTINATIONS } from '~/utils/destination-catalog'

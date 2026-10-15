@@ -1,54 +1,30 @@
 <template>
-  <div v-if="showWidget" class="bg-white p-6 rounded-xl shadow border space-y-4">
-    <div>
-      <h2 class="text-2xl font-bold text-gray-800">{{ displayTitle }}</h2>
-      <p class="text-gray-600">
-        {{ displayDescription }}
-      </p>
-    </div>
-
-    <div class="overflow-x-auto rounded border">
+  <section v-if="widget && active" class="space-y-6">
+    <SectionHeading eyebrow="Trip.com promotion" :title="widget.title" :subtitle="widget.description" />
+    <div class="overflow-x-auto rounded-2xl border border-[#E2E8F0] bg-white">
+      <!-- Lazy: this sits near the bottom of the page and pulls in Trip.com's scripts -->
       <iframe
-        :src="widget?.url"
-        class="w-full min-w-[320px] h-[600px] max-w-[1024px] mx-auto"
+        :src="widget.url"
+        :title="widget.title"
+        loading="lazy"
+        class="mx-auto h-[600px] w-full min-w-[320px] max-w-[1024px]"
         frameborder="0"
-        style="border: none;"
+        style="border: none"
       ></iframe>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed } from 'vue'
+import SectionHeading from '~/components/site/SectionHeading.vue'
 import { useTripPromotions } from '~/composables/useTripPromotions'
 
-// Accept campaignId as prop, default to 'popular-flight-deals'
-const props = withDefaults(defineProps<{
-  campaignId?: string
-}>(), {
-  campaignId: 'popular-flight-deals'
-})
+const props = withDefaults(defineProps<{ campaignId?: string }>(), { campaignId: 'popular-flight-deals' })
 
 const { getPromotionWidget, isCampaignActive } = useTripPromotions()
-const showWidget = ref(true)
 
-const widget = computed(() => {
-  return getPromotionWidget(props.campaignId)
-})
-
-const displayTitle = computed(() => {
-  return widget.value?.title || '🔥 Popular Deals'
-})
-
-const displayDescription = computed(() => {
-  return widget.value?.description || 'Save more on your bookings! Get exclusive deals, powered by Trip.com.'
-})
-
-onMounted(() => {
-  // Check if campaign is active
-  if (!isCampaignActive(props.campaignId)) {
-    // Hide widget if campaign not active
-    showWidget.value = false
-  }
-})
+const widget = computed(() => getPromotionWidget(props.campaignId))
+// Decided during server render too, so an inactive campaign never loads the iframe or collapses the page
+const active = computed(() => isCampaignActive(props.campaignId))
 </script>

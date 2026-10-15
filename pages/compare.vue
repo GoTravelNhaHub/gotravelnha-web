@@ -5,15 +5,14 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-            🔍 Compare & Save
+            Compare partner prices
           </h1>
           <p class="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-4">
-            Find the best deals across Trip.com, Klook, and Singapore Attractions
+            Listings from Trip.com, Klook and Singapore Attractions with similar names, side by side
           </p>
-          <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
-            <span class="text-green-300">✅</span>
-            <span class="text-sm font-semibold">Exclusive feature for registered users</span>
-          </div>
+          <p class="text-sm text-blue-100/90 max-w-2xl mx-auto">
+            We match listings by name, so dates, room types and what's included can differ. Check the details on the partner site before you book.
+          </p>
         </div>
       </div>
     </section>
@@ -76,7 +75,7 @@
             :disabled="loading"
             class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:bg-gray-400 transition-all transform hover:scale-105"
           >
-            {{ loading ? '🔄 Searching...' : '🔍 Compare' }}
+            {{ loading ? 'Searching...' : 'Compare' }}
           </button>
         </div>
       </div>
@@ -88,8 +87,8 @@
           <div class="text-gray-600 text-sm">Comparisons Found</div>
         </div>
         <div class="bg-white rounded-xl shadow-lg p-6 text-center">
-          <div class="text-3xl font-bold text-green-600">{{ averageSavings }}%</div>
-          <div class="text-gray-600 text-sm">Avg Savings</div>
+          <div class="text-3xl font-bold text-green-600">7 days</div>
+          <div class="text-gray-600 text-sm">Max price age</div>
         </div>
         <div class="bg-white rounded-xl shadow-lg p-6 text-center">
           <div class="text-3xl font-bold text-purple-600">{{ totalPlatforms }}</div>
@@ -103,7 +102,7 @@
       <!-- Loading -->
       <div v-if="loading" class="text-center py-16">
         <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <p class="mt-4 text-gray-600">Finding best deals...</p>
+        <p class="mt-4 text-gray-600">Loading listings...</p>
       </div>
 
       <!-- No Results -->
@@ -150,7 +149,7 @@
                 v-if="comparison.savings > 0"
                 class="ml-4 px-4 py-2 bg-green-100 text-green-800 rounded-full font-bold text-lg"
               >
-                Save {{ comparison.savings }}%
+                Prices differ by up to {{ comparison.savings }}%
               </div>
             </div>
           </div>
@@ -174,7 +173,7 @@
                   class="mb-3"
                 >
                   <span class="inline-block px-3 py-1 bg-green-500 text-white rounded-full text-xs font-bold">
-                    🏆 Lowest of {{ comparison.platformCount }}
+                    Lowest listed price
                   </span>
                 </div>
 
@@ -227,7 +226,7 @@
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
                   ]"
                 >
-                  {{ isBest(deal, comparison) ? 'View lowest price →' : 'View deal →' }}
+                  View on {{ getPlatformLabel(deal.platform) }} →
                 </button>
               </div>
             </div>
@@ -250,6 +249,16 @@ definePageMeta({
 
 const route = useRoute()
 const { trackClick } = useActivityTracker()
+
+useHead({
+  title: 'Compare partner prices | GoTravelNha',
+  meta: [
+    {
+      name: 'description',
+      content: 'Recently checked prices from Trip.com, Klook and Singapore Attractions for listings with similar names. Check dates and inclusions on the partner site before booking.'
+    }
+  ]
+})
 
 // State
 const searchKeyword = ref('')
@@ -289,12 +298,6 @@ function clearSearch() {
 }
 
 // Stats
-const averageSavings = computed(() => {
-  if (!comparisons.value.length) return 0
-  const total = comparisons.value.reduce((sum, c) => sum + (c.savings || 0), 0)
-  return Math.round(total / comparisons.value.length)
-})
-
 const totalPlatforms = computed(() => {
   const platforms = new Set()
   comparisons.value.forEach(c => {
@@ -316,6 +319,11 @@ function formatPrice(price: string | number): string {
   if (!price) return '0'
   const num = typeof price === 'string' ? parseFloat(price) : price
   return num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+}
+
+function getPlatformLabel(platform: string): string {
+  const labels: Record<string, string> = { trip: 'Trip.com', klook: 'Klook', attractionsg: 'Singapore Attractions' }
+  return labels[platform] || 'partner site'
 }
 
 function getPlatformIcon(platform: string): string {

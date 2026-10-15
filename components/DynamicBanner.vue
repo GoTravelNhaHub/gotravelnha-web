@@ -5,6 +5,8 @@
         style="width:100%; min-width:320px; height:90px;"
         frameborder="0"
         scrolling="no"
+        loading="lazy"
+        title="Trip.com deals banner"
         id="DB552995"
       />
     </div>

@@ -1,6 +1,7 @@
 import prisma from '~/server/utils/prisma'
 import { destinationSlug } from '~/utils/destination-slug'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
+import { publishedGuides } from '~/utils/destination-guides'
 
 const staticPaths = [
   '/explore',
@@ -11,7 +12,6 @@ const staticPaths = [
   '/destinations',
   '/klook',
   '/trip',
-  '/compare',
   '/planner',
   '/contact',
   '/help',
@@ -28,6 +28,10 @@ export default defineEventHandler(async (event) => {
   const site = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
   const urls = new Map<string, string>()
   for (const path of staticPaths) urls.set(path, '')
+
+  const guides = publishedGuides()
+  if (guides.length) urls.set('/guides', '')
+  for (const guide of guides) urls.set(`/guides/${guide.slug}`, guide.updated)
 
   // Each lookup is independent so one failing table cannot drop every dynamic URL.
   const [events, templates, destinations] = await Promise.allSettled([

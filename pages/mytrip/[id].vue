@@ -194,7 +194,10 @@ const copied = ref(false)
 const canNativeShare = ref(false)
 const shareUrl = computed(() => (trip.value?.shareId ? `${siteOrigin}/share/trip/${trip.value.shareId}` : ''))
 const shareText = computed(() => (trip.value ? `Our ${trip.value.destination} family plan: ${trip.value.title}` : ''))
-const whatsAppLink = computed(() => `https://wa.me/?text=${encodeURIComponent(`${shareText.value} ${shareUrl.value}`)}`)
+// Sent links carry UTM tags; plugins/attribution.client.ts stores them, so clicks and
+// bookings by people who open the link are credited to the share
+const taggedShareUrl = (medium: string) => (shareUrl.value ? `${shareUrl.value}?utm_source=shared_trip&utm_medium=${medium}` : '')
+const whatsAppLink = computed(() => `https://wa.me/?text=${encodeURIComponent(`${shareText.value} ${taggedShareUrl('whatsapp')}`)}`)
 
 const trackShare = (channel: string) => track('trip_shared', { channel, destination: trip.value?.destination ?? null })
 
@@ -215,7 +218,7 @@ const setSharing = async (enabled: boolean) => {
 
 const copyLink = async () => {
   try {
-    await navigator.clipboard.writeText(shareUrl.value)
+    await navigator.clipboard.writeText(taggedShareUrl('copy'))
     copied.value = true
     trackShare('copy')
     setTimeout(() => (copied.value = false), 2000)
@@ -226,7 +229,7 @@ const copyLink = async () => {
 
 const nativeShare = async () => {
   try {
-    await navigator.share({ title: trip.value?.title, text: shareText.value, url: shareUrl.value })
+    await navigator.share({ title: trip.value?.title, text: shareText.value, url: taggedShareUrl('native') })
     trackShare('native')
   } catch {
     // Cancelled by the user

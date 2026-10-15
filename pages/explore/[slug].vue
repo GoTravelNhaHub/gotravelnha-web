@@ -6,40 +6,40 @@
       <p v-if="legacyDeal.description" class="mt-3 text-slate-600">{{ legacyDeal.description }}</p>
       <div class="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
         <div class="rounded-lg bg-slate-100 px-3 py-2">
-          <div class="text-slate-500">Platform</div>
+          <div class="text-slate-500">{{ t('partners.legacy.platform') }}</div>
           <div class="font-semibold text-slate-800 uppercase">{{ legacyDeal.platform }}</div>
         </div>
         <div class="rounded-lg bg-slate-100 px-3 py-2">
-          <div class="text-slate-500">Category</div>
-          <div class="font-semibold text-slate-800 capitalize">{{ legacyDeal.category || 'deal' }}</div>
+          <div class="text-slate-500">{{ t('partners.legacy.category') }}</div>
+          <div class="font-semibold text-slate-800 capitalize">{{ legacyDeal.category || t('partners.legacy.deal') }}</div>
         </div>
         <div class="rounded-lg bg-slate-100 px-3 py-2">
-          <div class="text-slate-500">Price</div>
+          <div class="text-slate-500">{{ t('partners.legacy.price') }}</div>
           <div class="font-semibold text-slate-800">
-            {{ legacyDeal.discountedPrice ? `${legacyDeal.currency} ${Number(legacyDeal.discountedPrice).toFixed(2)}` : 'See partner' }}
+            {{ legacyDeal.discountedPrice ? `${legacyDeal.currency} ${Number(legacyDeal.discountedPrice).toFixed(2)}` : t('partners.legacy.seePartner') }}
           </div>
-          <div v-if="legacyDeal.priceCheckedAt" class="text-xs text-slate-500">Price checked {{ formatSeenDate(legacyDeal.priceCheckedAt) }}</div>
-          <div v-else-if="legacyDeal.discountedPrice" class="text-xs text-slate-500">Confirm the price with the partner</div>
+          <div v-if="legacyDeal.priceCheckedAt" class="text-xs text-slate-500">{{ t('partners.legacy.priceChecked', { date: formatSeenDate(legacyDeal.priceCheckedAt) }) }}</div>
+          <div v-else-if="legacyDeal.discountedPrice" class="text-xs text-slate-500">{{ t('partners.legacy.confirmPrice') }}</div>
         </div>
         <div class="rounded-lg bg-slate-100 px-3 py-2">
-          <div class="text-slate-500">Discount</div>
-          <div class="font-semibold text-slate-800">{{ legacyDeal.discountPercent ? `${legacyDeal.discountPercent}% off` : '—' }}</div>
+          <div class="text-slate-500">{{ t('partners.legacy.discount') }}</div>
+          <div class="font-semibold text-slate-800">{{ legacyDeal.discountPercent ? t('partners.legacy.off', { percent: legacyDeal.discountPercent }) : '—' }}</div>
         </div>
       </div>
       <button
         @click="openLegacyDeal"
         class="mt-6 w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold hover:from-emerald-700 hover:to-teal-700"
       >
-        Check Live Price
+        {{ t('partners.legacy.checkPrice') }}
       </button>
     </div>
   </div>
   <div v-else class="site-shell py-16">
     <div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl p-10 text-center">
-      <h1 class="text-3xl font-bold text-slate-900 mb-3">Deal Page Not Found</h1>
-      <p class="text-slate-600 mb-6">This slug does not match a configured template or existing deal.</p>
+      <h1 class="text-3xl font-bold text-slate-900 mb-3">{{ t('partners.legacy.notFoundTitle') }}</h1>
+      <p class="text-slate-600 mb-6">{{ t('partners.legacy.notFoundText') }}</p>
       <NuxtLink to="/explore" class="inline-flex px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
-        Back to deals
+        {{ t('partners.legacy.back') }}
       </NuxtLink>
     </div>
   </div>
@@ -61,6 +61,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const { t, localeTag } = useI18n()
 const slug = computed(() => String(route.params.slug || ''))
 const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
@@ -79,7 +80,7 @@ const slugify = (value: string) =>
     .replace(/(^-|-$)/g, '')
 
 const formatSeenDate = (value: string) =>
-  new Intl.DateTimeFormat('en-SG', { dateStyle: 'medium' }).format(new Date(value))
+  new Intl.DateTimeFormat(localeTag.value, { dateStyle: 'medium' }).format(new Date(value))
 
 const extractShortId = (value: string): string => {
   const match = value.match(/-([a-f0-9]{12})$/i)

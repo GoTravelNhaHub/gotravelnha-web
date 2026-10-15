@@ -24,7 +24,7 @@
         {{ price }}
         <span v-if="originalPrice" class="ml-2 font-normal text-ink/70 line-through">{{ originalPrice }}</span>
       </p>
-      <p v-if="bookable" class="mt-2 text-sm text-ink/70">Buy on GoTravelNha</p>
+      <p v-if="bookable" class="mt-2 text-sm text-ink/70">{{ t('attractions.card.buyHere') }}</p>
       <span class="mt-auto inline-flex items-center pt-4 text-sm font-semibold text-sea">{{ action }}</span>
     </div>
   </NuxtLink>
@@ -77,5 +77,6 @@ const emit = defineEmits<{
   open: []
 }>()
 
+const { t } = useI18n()
 const meta = computed(() => [props.destination, props.category].filter(Boolean).join(' · '))
 </script>

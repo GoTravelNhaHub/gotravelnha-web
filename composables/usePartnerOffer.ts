@@ -8,6 +8,7 @@ import { getVisitorSessionId } from '~/utils/visitor-session'
 export const usePartnerOffer = (placementKey: string) => {
   const route = useRoute()
   const config = useRuntimeConfig().public
+  const { t } = useI18n()
 
   const fallbackFor = (activity: LiveActivity) => {
     const url = activity.partnerUrl
@@ -44,8 +45,8 @@ export const usePartnerOffer = (placementKey: string) => {
 
   const priceLabel = (activity: LiveActivity) =>
     activity.priceFrom
-      ? `From ${activity.currency} ${activity.priceFrom.toFixed(2)} per person`
-      : activity.priceText || 'See partner for price'
+      ? t('planner.offer.from', { currency: activity.currency || '', price: activity.priceFrom.toFixed(2) })
+      : activity.priceText || t('planner.offer.seePartner')
 
   return { openOffer, priceLabel }
 }

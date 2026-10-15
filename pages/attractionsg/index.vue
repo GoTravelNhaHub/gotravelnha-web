@@ -11,10 +11,10 @@
         />
         <div class="absolute inset-0 bg-ink/75"></div>
         <div class="relative px-5 py-8 sm:px-8 sm:py-12">
-          <p class="text-sm font-semibold text-white">Attractions and experiences</p>
-          <h1 class="mt-2 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Find a ticket, then choose where to book</h1>
+          <p class="text-sm font-semibold text-white">{{ t('attractions.list.eyebrow') }}</p>
+          <h1 class="mt-2 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">{{ t('attractions.list.title') }}</h1>
           <p class="mt-3 max-w-2xl text-base leading-relaxed text-white/90">
-            Singapore tickets sold here are paid on GoTravelNha. A partner link appears only after someone has checked it, and that price is shown on the partner site.
+            {{ t('attractions.list.text') }}
           </p>
         </div>
       </div>
@@ -22,8 +22,8 @@
 
     <section id="categories" class="space-y-4">
       <div>
-        <h2 class="font-display text-2xl text-ink sm:text-3xl">Browse</h2>
-        <p class="mt-1 text-sm text-ink/70">Filter by place or type. One card per attraction.</p>
+        <h2 class="font-display text-2xl text-ink sm:text-3xl">{{ t('attractions.list.browse') }}</h2>
+        <p class="mt-1 text-sm text-ink/70">{{ t('attractions.list.browseText') }}</p>
       </div>
       
       <!-- Loading State -->
@@ -38,27 +38,27 @@
       </div>
 
       <div v-else-if="error" class="rounded-2xl border border-line bg-white px-6 py-10 text-center">
-        <h3 class="font-semibold text-ink">Tickets didn't load</h3>
+        <h3 class="font-semibold text-ink">{{ t('attractions.list.loadFailedTitle') }}</h3>
         <p class="mt-1 text-sm text-ink/70">{{ error }}</p>
         <button
           type="button"
           class="mt-4 inline-flex min-h-11 items-center rounded-xl bg-ink px-5 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
           @click="loadTickets"
         >
-          Try again
+          {{ t('attractions.list.tryAgain') }}
         </button>
       </div>
 
       <div v-if="!loading && !error && hasCatalogue" class="space-y-4">
-        <label class="sr-only" for="search">Search attractions</label>
+        <label class="sr-only" for="search">{{ t('attractions.list.searchLabel') }}</label>
         <input
           id="search"
           v-model="searchTerm"
           type="search"
-          placeholder="Search by name or place"
+          :placeholder="t('attractions.list.searchPlaceholder')"
           class="w-full rounded-xl border border-line bg-white px-4 py-3 text-base text-ink focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea"
         />
-        <div v-if="destinations.length > 1" class="flex flex-wrap gap-2" role="group" aria-label="Destination">
+        <div v-if="destinations.length > 1" class="flex flex-wrap gap-2" role="group" :aria-label="t('attractions.list.destination')">
           <button
             v-for="place in destinationChoices"
             :key="place"
@@ -67,10 +67,10 @@
             :class="destinationFilter === place ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'"
             @click="destinationFilter = place"
           >
-            {{ place === 'all' ? 'All places' : place }}
+            {{ place === 'all' ? t('attractions.list.allPlaces') : place }}
           </button>
         </div>
-        <div v-if="categories.length > 1" class="flex flex-wrap gap-2" role="group" aria-label="Category">
+        <div v-if="categories.length > 1" class="flex flex-wrap gap-2" role="group" :aria-label="t('attractions.list.category')">
           <button
             v-for="kind in categoryChoices"
             :key="kind"
@@ -79,16 +79,16 @@
             :class="categoryFilter === kind ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'"
             @click="categoryFilter = kind"
           >
-            {{ kind === 'all' ? 'All types' : kind }}
+            {{ kind === 'all' ? t('attractions.list.allTypes') : kind }}
           </button>
         </div>
         <label class="block max-w-xs text-sm font-semibold text-ink" for="sort">
-          Sort
+          {{ t('attractions.list.sort') }}
           <select id="sort" v-model="sortOption" class="mt-1 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-base font-normal text-ink" @change="loadTickets">
-            <option value="alpha">Name: A to Z</option>
-            <option value="latest">Latest updates</option>
-            <option value="priceAsc">Price: low to high</option>
-            <option value="priceDesc">Price: high to low</option>
+            <option value="alpha">{{ t('attractions.list.sortAlpha') }}</option>
+            <option value="latest">{{ t('attractions.list.sortLatest') }}</option>
+            <option value="priceAsc">{{ t('attractions.list.sortPriceAsc') }}</option>
+            <option value="priceDesc">{{ t('attractions.list.sortPriceDesc') }}</option>
           </select>
         </label>
       </div>
@@ -106,7 +106,7 @@
             :price="item.ticket.price || undefined"
             :original-price="item.ticket.originalPrice || undefined"
             :bookable="!!item.ticket.forSale"
-            action="View ticket"
+            :action="t('attractions.list.viewTicket')"
             @navigate="rememberScrollPosition"
           />
           <AttractionCard
@@ -116,8 +116,8 @@
             :image="item.partner.image"
             :destination="item.partner.destination"
             :category="item.partner.category"
-            :provider-label="item.partner.provider === 'klook' ? 'Book on Klook. The price is shown there.' : 'Book on Trip.com. The price is shown there.'"
-            action="Open partner"
+            :provider-label="t(item.partner.provider === 'klook' ? 'attractions.list.bookKlook' : 'attractions.list.bookTrip')"
+            :action="t('attractions.list.openPartner')"
             @open="openPartner(item.partner)"
           />
         </template>
@@ -133,25 +133,25 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <span>Loading more attractions…</span>
+          <span>{{ t('attractions.list.loadingMore') }}</span>
         </div>
       </div>
 
       <div v-if="!loading && !error && hasCatalogue && listingItems.length === 0" class="rounded-2xl border border-line bg-white px-6 py-10 text-center">
-        <h3 class="font-semibold text-ink">Nothing matches</h3>
-        <p class="mt-1 text-sm text-ink/70">Try another place, type, or search.</p>
+        <h3 class="font-semibold text-ink">{{ t('attractions.list.noMatchTitle') }}</h3>
+        <p class="mt-1 text-sm text-ink/70">{{ t('attractions.list.noMatchText') }}</p>
         <button
           type="button"
           class="mt-4 inline-flex min-h-11 items-center rounded-xl bg-ink px-5 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
           @click="resetFilters"
         >
-          Clear filters
+          {{ t('attractions.list.clearFilters') }}
         </button>
       </div>
 
       <div v-if="!loading && !error && !hasCatalogue" class="rounded-2xl border border-dashed border-line bg-white px-6 py-10 text-center">
-        <h3 class="font-semibold text-ink">No attractions published yet</h3>
-        <p class="mt-1 text-sm text-ink/70">Singapore tickets show up here when they are published. Partner links are added only after a URL is checked.</p>
+        <h3 class="font-semibold text-ink">{{ t('attractions.list.emptyTitle') }}</h3>
+        <p class="mt-1 text-sm text-ink/70">{{ t('attractions.list.emptyText') }}</p>
       </div>
     </section>
   </div>
@@ -219,13 +219,15 @@ const searchTerm = ref('')
 const destinationFilter = ref('all')
 const categoryFilter = ref('all')
 const route = useRoute()
+const { t } = useI18n()
 
 const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
-const listingTitle = 'Singapore Attractions & Tickets | GoTravelNha'
-const listingDescription = 'Singapore attraction tickets on GoTravelNha. A ticket is sold here only when a current price is listed.'
 const listingImage = computed(() => `${baseUrl}/sg-attractions-logo.svg`)
 
-useHead(() => ({
+useHead(() => {
+  const listingTitle = t('attractions.list.metaTitle')
+  const listingDescription = t('attractions.list.metaDescription')
+  return {
   title: listingTitle,
   meta: [
     { name: 'description', content: listingDescription },
@@ -243,7 +245,8 @@ useHead(() => ({
   link: [
     { rel: 'canonical', href: `${baseUrl}/attractionsg`, key: 'canonical' }
   ]
-}))
+  }
+})
 
 const API_PAGE_LIMIT = 100
 
@@ -285,7 +288,7 @@ const loadTickets = async () => {
     tickets.value = aggregated
   } catch (err) {
     console.error('❌ loadTickets: API error:', err)
-    error.value = 'Unable to fetch tickets. Please try again later.'
+    error.value = t('attractions.list.loadFailed')
     
   } finally {
     loading.value = false

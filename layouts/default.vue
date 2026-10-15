@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAuthState } from '~/composables/useAuthState';
 import Logo from '~/components/Logo.vue';
 import { FAMILY_HUB_URL } from '~/utils/family-hub';
+import LanguageSwitcher from '~/components/site/LanguageSwitcher.vue';
 
 const isMenuOpen = ref(false);
 const isProfileDropdownOpen = ref(false);
@@ -12,6 +13,7 @@ const wide = computed(() => route.meta.wide === true);
 // Full-width pages draw their own hero and use .site-shell for content
 const bleed = computed(() => route.meta.bleed === true);
 const router = useRouter();
+const { t } = useI18n();
 
 // Auth state
 const { user, setUser, clearUser, isAuthenticated, isAdmin } = useAuthState();
@@ -35,22 +37,19 @@ const isActive = (path) => {
   return ''
 }
 
-const navItems = computed(() => {
-  const items = [
-    { to: '/explore', label: 'Explore' },
-    { to: '/trip', label: 'Trip.com' },
-    { to: '/klook', label: 'Klook' },
-    { to: '/planner', label: 'AI Travel Agent', footerLabel: 'Planner', badge: 'New' }
-  ]
-  return items
-})
+const navItems = computed(() => [
+  { to: '/explore', label: t('common.nav.explore') },
+  { to: '/trip', label: 'Trip.com' },
+  { to: '/klook', label: 'Klook' },
+  { to: '/planner', label: t('common.nav.planner'), footerLabel: t('common.nav.plannerShort'), badge: t('common.nav.new') }
+])
 
-const footerHelp = [
-  { to: '/help', label: 'Help' },
-  { to: '/bookings', label: 'My bookings' },
-  { to: '/contact', label: 'Contact' },
-  { to: '/refund-policy', label: 'Refunds' }
-]
+const footerHelp = computed(() => [
+  { to: '/help', label: t('common.footer.helpLink') },
+  { to: '/bookings', label: t('common.footer.bookings') },
+  { to: '/contact', label: t('common.footer.contact') },
+  { to: '/refund-policy', label: t('common.footer.refunds') }
+])
 
 const familyHubUrl = FAMILY_HUB_URL
 const { track } = useFunnel()
@@ -124,7 +123,7 @@ onBeforeUnmount(() => {
           <button
             @click="isMenuOpen = !isMenuOpen"
             class="text-slate-700 block lg:hidden focus:outline-none p-2.5 touch-manipulation active:bg-slate-100 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-            aria-label="Toggle menu"
+            :aria-label="t('common.nav.toggleMenu')"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
@@ -165,12 +164,14 @@ onBeforeUnmount(() => {
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
                 </svg>
-                <span class="sr-only">opens in a new tab</span>
+                <span class="sr-only">{{ t('common.nav.opensNewTab') }}</span>
               </a>
             </li>
           </ul>
         </div>
 
+        <div class="flex flex-shrink-0 items-center gap-2 sm:gap-3">
+        <LanguageSwitcher />
         <ClientOnly>
           <div class="flex items-center gap-3 flex-shrink-0">
             <!-- Login or Profile Dropdown -->
@@ -180,7 +181,7 @@ onBeforeUnmount(() => {
                 @click="navigate('/login')" 
                 class="inline-flex h-10 items-center justify-center rounded-lg bg-[#101D3A] px-4 text-[14px] font-semibold leading-none text-white hover:bg-[#1E2D4F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
               >
-                Log in
+                {{ t('common.nav.login') }}
               </NuxtLink>
             </div>
             
@@ -212,7 +213,7 @@ onBeforeUnmount(() => {
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
-                My Profile
+                {{ t('common.nav.profile') }}
               </NuxtLink>
               <div v-if="isAdmin">
                 <NuxtLink
@@ -223,7 +224,7 @@ onBeforeUnmount(() => {
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                   </svg>
-                  Admin Portal
+                  {{ t('common.nav.admin') }}
                 </NuxtLink>
               </div>
               <hr class="my-2 border-slate-200">
@@ -234,7 +235,7 @@ onBeforeUnmount(() => {
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                 </svg>
-                Logout
+                {{ t('common.nav.logout') }}
               </button>
             </div>
           </div>
@@ -246,6 +247,7 @@ onBeforeUnmount(() => {
             </div>
           </template>
         </ClientOnly>
+        </div>
       </nav>
 
       <!-- Mobile: Native Style Side Drawer with Backdrop -->
@@ -289,7 +291,7 @@ onBeforeUnmount(() => {
               <button
                 @click="closeMenu"
                 class="p-2 rounded-full hover:bg-white/80 active:bg-white transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-                aria-label="Close menu"
+                :aria-label="t('common.nav.closeMenu')"
               >
                 <svg class="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -324,7 +326,7 @@ onBeforeUnmount(() => {
                     <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
                     </svg>
-                    <span class="sr-only">opens in a new tab</span>
+                    <span class="sr-only">{{ t('common.nav.opensNewTab') }}</span>
                   </a>
                 </li>
               </ul>
@@ -367,19 +369,19 @@ onBeforeUnmount(() => {
               <p class="text-lg font-bold tracking-[-0.02em] text-white">GoTravel<span class="text-[#5EEAD4]">Nha</span></p>
             </div>
             <p class="mt-2 text-[13px] leading-5 text-white/70 sm:mt-3 sm:text-[14px] sm:leading-[22px]">
-              Plan family trips and compare where to book. Flight and hotel bookings open on Trip.com or Klook. Singapore attraction tickets that we sell are paid for here.
+              {{ t('common.footer.tagline') }}
             </p>
           </div>
-          <nav aria-label="Plan">
-            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">Plan</h3>
+          <nav :aria-label="t('common.footer.plan')">
+            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">{{ t('common.footer.plan') }}</h3>
             <ul class="mt-1.5 sm:mt-3 sm:space-y-1">
               <li v-for="item in navItems" :key="item.to">
                 <NuxtLink :to="item.to" class="inline-flex min-h-9 items-center text-[13px] font-medium text-white/85 hover:text-white sm:text-[14px]">{{ item.footerLabel || item.label }}</NuxtLink>
               </li>
             </ul>
           </nav>
-          <nav aria-label="Help">
-            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">Help</h3>
+          <nav :aria-label="t('common.footer.help')">
+            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">{{ t('common.footer.help') }}</h3>
             <ul class="mt-1.5 sm:mt-3 sm:space-y-1">
               <li v-for="item in footerHelp" :key="item.to">
                 <NuxtLink :to="item.to" class="inline-flex min-h-9 items-center text-[13px] font-medium text-white/85 hover:text-white sm:text-[14px]">{{ item.label }}</NuxtLink>
@@ -387,7 +389,7 @@ onBeforeUnmount(() => {
             </ul>
           </nav>
           <div class="col-span-2 flex items-center gap-4 md:col-span-1 md:block">
-            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">Our products</h3>
+            <h3 class="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/50">{{ t('common.footer.products') }}</h3>
             <a
               :href="familyHubUrl"
               target="_blank"
@@ -399,16 +401,17 @@ onBeforeUnmount(() => {
               <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 5H5.5A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16h8a1.5 1.5 0 0 0 1.5-1.5V12M11 4h5m0 0v5m0-5L9 11" />
               </svg>
-              <span class="sr-only">opens in a new tab</span>
+              <span class="sr-only">{{ t('common.nav.opensNewTab') }}</span>
             </a>
           </div>
         </div>
 
         <div class="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-white/10 pt-3 md:mt-10 md:pt-5">
-          <p class="text-[12px] text-white/55 sm:text-[13px]">© {{ new Date().getFullYear() }} GoTravelNha. All rights reserved.</p>
+          <p class="text-[12px] text-white/55 sm:text-[13px]">{{ t('common.footer.rights', { year: new Date().getFullYear() }) }}</p>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-white/60 sm:text-[13px]">
-            <NuxtLink to="/privacy" class="py-1 hover:text-white">Privacy Policy</NuxtLink>
-            <NuxtLink to="/terms" class="py-1 hover:text-white">Terms of Service</NuxtLink>
+            <LanguageSwitcher variant="footer" />
+            <NuxtLink to="/privacy" class="py-1 hover:text-white">{{ t('common.footer.privacy') }}</NuxtLink>
+            <NuxtLink to="/terms" class="py-1 hover:text-white">{{ t('common.footer.terms') }}</NuxtLink>
           </div>
         </div>
       </div>

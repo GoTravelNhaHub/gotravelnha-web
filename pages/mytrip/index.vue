@@ -2,18 +2,18 @@
   <div class="mx-auto max-w-[1200px] space-y-6 pb-12 font-brand">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 class="text-[26px] font-bold leading-9 tracking-[-0.025em] text-[#101D3A]">My trips</h1>
-        <p class="text-[15px] text-[#64748B]">Day-by-day plans you saved from the AI Travel Agent.</p>
+        <h1 class="text-[26px] font-bold leading-9 tracking-[-0.025em] text-[#101D3A]">{{ t('trips.list.title') }}</h1>
+        <p class="text-[15px] text-[#64748B]">{{ t('trips.list.subtitle') }}</p>
       </div>
       <NuxtLink to="/planner" class="btn-primary w-auto px-5">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14" /></svg>
-        Plan a new trip
+        {{ t('trips.list.planNew') }}
       </NuxtLink>
     </div>
 
     <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
 
-    <div v-if="trips.length" class="inline-grid grid-cols-2 gap-1 rounded-xl bg-[#E2E8F0]/70 p-1" role="tablist" aria-label="Trips to show">
+    <div v-if="trips.length" class="inline-grid grid-cols-2 gap-1 rounded-xl bg-[#E2E8F0]/70 p-1" role="tablist" :aria-label="t('trips.list.tabsLabel')">
       <button
         v-for="option in tabs"
         :key="option.id"
@@ -62,7 +62,7 @@
             </span>
             <span class="absolute inset-0 bg-gradient-to-t from-[#101D3A]/60 to-transparent"></span>
             <span class="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[12px] font-semibold" :class="status(trip).classes">{{ status(trip).label }}</span>
-            <span class="absolute bottom-3 left-4 text-[13px] font-semibold text-white">{{ trip.destination }}</span>
+            <span class="absolute bottom-3 left-4 text-[13px] font-semibold text-white">{{ placeName(trip.destination) }}</span>
           </div>
           <div class="flex flex-1 flex-col p-4">
             <h2 class="text-[17px] font-bold leading-6 tracking-[-0.01em] text-[#101D3A] group-hover:text-[#007789]">{{ trip.title }}</h2>
@@ -79,17 +79,17 @@
         <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-9 0h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" /></svg>
       </span>
       <template v-if="trips.length">
-        <p class="mt-4 text-[17px] font-semibold text-[#101D3A]">No {{ tab === 'upcoming' ? 'upcoming' : 'past' }} trips</p>
+        <p class="mt-4 text-[17px] font-semibold text-[#101D3A]">{{ t(tab === 'upcoming' ? 'trips.list.noUpcoming' : 'trips.list.noPast') }}</p>
         <button type="button" class="text-link mt-1 text-[14px]" @click="tab = tab === 'upcoming' ? 'past' : 'upcoming'">
-          Show {{ tab === 'upcoming' ? 'past' : 'upcoming' }} trips
+          {{ t(tab === 'upcoming' ? 'trips.list.showPast' : 'trips.list.showUpcoming') }}
         </button>
       </template>
       <template v-else>
-        <p class="mt-4 text-[17px] font-semibold text-[#101D3A]">No saved trips yet</p>
+        <p class="mt-4 text-[17px] font-semibold text-[#101D3A]">{{ t('trips.list.emptyTitle') }}</p>
         <p class="mx-auto mt-1 max-w-sm text-[14px] leading-[22px] text-[#64748B]">
-          Tell the AI Travel Agent where you're going and who's coming. Save the plan and it will be here.
+          {{ t('trips.list.emptyText') }}
         </p>
-        <NuxtLink to="/planner" class="btn-primary mx-auto mt-5 w-auto px-6">Plan with the AI agent</NuxtLink>
+        <NuxtLink to="/planner" class="btn-primary mx-auto mt-5 w-auto px-6">{{ t('trips.list.planWithAgent') }}</NuxtLink>
       </template>
     </div>
   </div>
@@ -99,7 +99,6 @@
 import { computed, onMounted, ref } from 'vue'
 import type { TripPartyMember } from '~/types/trip'
 import { destinationPhoto } from '~/utils/destination-photos'
-import { tripDateRange, tripDayCount, tripPartyLabel, tripStatus } from '~/utils/trip-display'
 
 definePageMeta({
   layout: 'default',
@@ -115,6 +114,8 @@ interface TripSummary {
   party: TripPartyMember[]
 }
 
+const { t, placeName } = useI18n()
+const { tripDateRange, tripDayCount, tripPartyLabel, tripStatus } = useTripDisplay()
 const trips = ref<TripSummary[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -128,8 +129,8 @@ const past = computed(() => trips.value.filter(isPast).reverse())
 const shownTrips = computed(() => (tab.value === 'upcoming' ? upcoming.value : past.value))
 
 const tabs = computed(() => [
-  { id: 'upcoming' as const, label: 'Upcoming', count: upcoming.value.length },
-  { id: 'past' as const, label: 'Past', count: past.value.length }
+  { id: 'upcoming' as const, label: t('trips.list.upcoming'), count: upcoming.value.length },
+  { id: 'past' as const, label: t('trips.list.past'), count: past.value.length }
 ])
 
 const dateRange = tripDateRange
@@ -144,11 +145,11 @@ onMounted(async () => {
     // Open on past trips when there is nothing coming up
     if (!upcoming.value.length && past.value.length) tab.value = 'past'
   } catch (err: any) {
-    error.value = err?.data?.message || 'Could not load your trips. Please sign in again.'
+    error.value = t('trips.list.loadFailed')
   } finally {
     loading.value = false
   }
 })
 
-useHead({ title: 'My Trips | GoTravelNha' })
+useHead(() => ({ title: t('trips.list.metaTitle') }))
 </script>

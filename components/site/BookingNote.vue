@@ -7,7 +7,7 @@
       </svg>
     </span>
     <div class="min-w-0">
-      <h2 class="text-[16px] font-bold leading-6 text-[#101D3A]">{{ title }}</h2>
+      <h2 class="text-[16px] font-bold leading-6 text-[#101D3A]">{{ title || t('common.bookingNote.title') }}</h2>
       <p class="mt-1 max-w-3xl text-[14px] leading-[22px] text-[#64748B]"><slot /></p>
       <slot name="links" />
     </div>
@@ -15,5 +15,6 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{ title?: string }>(), { title: 'Where you book' })
+defineProps<{ title?: string }>()
+const { t } = useI18n()
 </script>

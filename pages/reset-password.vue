@@ -1,36 +1,36 @@
 <template>
   <AuthShell
-    title="Choose a new password"
-    description="Use 8 or more characters. You'll sign in with it next time."
+    :title="t('auth.reset.title')"
+    :description="t('auth.reset.description')"
     image="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1600&q=80"
-    headline="Back to planning in a minute."
-    subline="Your saved trips and family profile stay as they are."
+    :headline="t('auth.forgot.headline')"
+    :subline="t('auth.forgot.subline')"
   >
     <div v-if="success" class="alert-success" role="status">
-      <p class="font-semibold">Password updated</p>
+      <p class="font-semibold">{{ t('auth.reset.updated') }}</p>
       <p class="mt-1">{{ success }}</p>
     </div>
 
     <form v-else class="space-y-5" @submit.prevent="handleResetPassword">
       <div>
-        <label for="reset-new" class="form-label">New password</label>
-        <input id="reset-new" v-model="newPassword" type="password" autocomplete="new-password" required minlength="8" class="form-input" placeholder="At least 8 characters" />
+        <label for="reset-new" class="form-label">{{ t('auth.reset.newPassword') }}</label>
+        <input id="reset-new" v-model="newPassword" type="password" autocomplete="new-password" required minlength="8" class="form-input" :placeholder="t('auth.reset.newPlaceholder')" />
       </div>
       <div>
-        <label for="reset-confirm" class="form-label">Confirm new password</label>
-        <input id="reset-confirm" v-model="confirmPassword" type="password" autocomplete="new-password" required minlength="8" class="form-input" placeholder="Type it again" />
+        <label for="reset-confirm" class="form-label">{{ t('auth.reset.confirm') }}</label>
+        <input id="reset-confirm" v-model="confirmPassword" type="password" autocomplete="new-password" required minlength="8" class="form-input" :placeholder="t('auth.reset.confirmPlaceholder')" />
       </div>
 
-      <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
+      <p v-if="error || tokenMissing" class="alert-error" role="alert">{{ error || t('auth.reset.invalidToken') }}</p>
 
       <button type="submit" class="btn-primary" :disabled="loading">
         <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
-        {{ loading ? 'Saving…' : 'Save new password' }}
+        {{ loading ? t('auth.reset.saving') : t('auth.reset.save') }}
       </button>
     </form>
 
     <div class="mt-8 text-center text-[14px]">
-      <NuxtLink to="/login" class="text-link">{{ success ? 'Continue to sign in' : 'Back to sign in' }}</NuxtLink>
+      <NuxtLink to="/login" class="text-link">{{ success ? t('auth.reset.continue') : t('auth.reset.back') }}</NuxtLink>
     </div>
   </AuthShell>
 </template>
@@ -46,6 +46,7 @@ definePageMeta({
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const token = ref('')
 const newPassword = ref('')
@@ -53,6 +54,8 @@ const confirmPassword = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
 const success = ref<string | null>(null)
+// A flag, not text: onMounted runs before the visitor's language is applied
+const tokenMissing = ref(false)
 
 onMounted(() => {
   // Get token from URL query
@@ -60,7 +63,7 @@ onMounted(() => {
   if (tokenParam && typeof tokenParam === 'string') {
     token.value = tokenParam
   } else {
-    error.value = 'Invalid or missing reset token. Please request a new password reset.'
+    tokenMissing.value = true
   }
 })
 
@@ -71,7 +74,7 @@ const handleResetPassword = async () => {
 
   // Validate passwords match
   if (newPassword.value !== confirmPassword.value) {
-    error.value = 'Passwords do not match'
+    error.value = t('auth.reset.mismatch')
     loading.value = false
     return
   }
@@ -85,14 +88,14 @@ const handleResetPassword = async () => {
       }
     })
     
-    success.value = 'Your password has been reset successfully. You can now sign in with your new password.'
+    success.value = t('auth.reset.success')
     
     // Auto-redirect after 3 seconds
     setTimeout(() => {
       router.push('/login')
     }, 3000)
   } catch (err: any) {
-    error.value = err.data?.message || 'Failed to reset password. The link may be invalid or expired.'
+    error.value = err.data?.message || t('auth.reset.failed')
     console.error('Reset password error:', err)
   } finally {
     loading.value = false

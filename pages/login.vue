@@ -1,11 +1,11 @@
 <template>
   <AuthShell
-    title="Sign in"
-    description="Welcome back. Pick up your saved trips and bookings."
+    :title="t('auth.login.title')"
+    :description="t('auth.login.description')"
     image="https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=1600&q=80"
-    headline="Your family trips, all in one place."
-    subline="Sign in to see saved AI trip plans, your family profile and your bookings."
-    :points="['Saved trip plans from the AI Travel Agent', 'Family ages and needs ready for every plan', 'Bookings tracked in one place']"
+    :headline="t('auth.login.headline')"
+    :subline="t('auth.login.subline')"
+    :points="tm<string[]>('auth.login.points')"
   >
     <button type="button" class="btn-secondary" :disabled="loadingGoogle" @click="handleGoogleSignIn">
       <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -14,14 +14,14 @@
         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
       </svg>
-      {{ loadingGoogle ? 'Opening Google…' : 'Continue with Google' }}
+      {{ loadingGoogle ? t('auth.google.opening') : t('auth.google.continue') }}
     </button>
 
-    <div class="form-divider">or sign in with email</div>
+    <div class="form-divider">{{ t('auth.login.divider') }}</div>
 
     <form class="space-y-5" @submit.prevent="handleLogin">
       <div>
-        <label for="login-username" class="form-label">Username or email</label>
+        <label for="login-username" class="form-label">{{ t('auth.login.username') }}</label>
         <input
           id="login-username"
           v-model="loginForm.username"
@@ -35,8 +35,8 @@
 
       <div>
         <div class="flex items-center justify-between gap-2">
-          <label for="login-password" class="form-label">Password</label>
-          <NuxtLink to="/forgot-password" class="text-link mb-1.5 text-[13px]">Forgot password?</NuxtLink>
+          <label for="login-password" class="form-label">{{ t('auth.login.password') }}</label>
+          <NuxtLink to="/forgot-password" class="text-link mb-1.5 text-[13px]">{{ t('auth.login.forgot') }}</NuxtLink>
         </div>
         <div class="relative">
           <input
@@ -46,12 +46,12 @@
             autocomplete="current-password"
             required
             class="form-input pr-12"
-            placeholder="Your password"
+            :placeholder="t('auth.login.passwordPlaceholder')"
           />
           <button
             type="button"
             class="absolute inset-y-0 right-0 inline-flex w-12 items-center justify-center rounded-r-xl text-[#64748B] hover:text-[#101D3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
-            :aria-label="showPassword ? 'Hide password' : 'Show password'"
+            :aria-label="showPassword ? t('auth.password.hide') : t('auth.password.show')"
             :aria-pressed="showPassword"
             @click="showPassword = !showPassword"
           >
@@ -68,20 +68,20 @@
 
       <label class="flex items-center gap-2.5 text-[14px] text-[#334155]">
         <input v-model="loginForm.rememberMe" type="checkbox" class="h-4 w-4 rounded accent-[#008A9B]" />
-        Remember me
+        {{ t('auth.login.remember') }}
       </label>
 
       <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
 
       <button type="submit" class="btn-primary" :disabled="loading">
         <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
-        {{ loading ? 'Signing in…' : 'Sign in' }}
+        {{ loading ? t('auth.login.submitting') : t('auth.login.submit') }}
       </button>
     </form>
 
     <p class="mt-8 text-center text-[14px] text-[#64748B]">
-      New to GoTravelNha?
-      <NuxtLink to="/register" class="text-link">Create an account</NuxtLink>
+      {{ t('auth.login.newHere') }}
+      <NuxtLink to="/register" class="text-link">{{ t('auth.login.create') }}</NuxtLink>
     </p>
   </AuthShell>
 </template>
@@ -97,6 +97,7 @@ definePageMeta({
 })
 
 const router = useRouter()
+const { t, tm } = useI18n()
 
 // Only same-site paths, so ?redirect= can't send users to another domain
 const safeRedirect = () => {
@@ -124,7 +125,7 @@ const handleGoogleSignIn = async () => {
     // Redirect to Google OAuth
     window.location.href = '/api/auth/google'
   } catch (err: any) {
-    error.value = 'Failed to sign in with Google'
+    error.value = t('auth.google.failedIn')
     console.error('Google sign-in error:', err)
     loadingGoogle.value = false
   }
@@ -161,10 +162,10 @@ const loadUserAndRedirect = async () => {
         router.push('/user')
       }
     } else {
-      error.value = 'Failed to complete login'
+      error.value = t('auth.login.completeFailed')
     }
   } catch (err) {
-    error.value = 'Failed to complete login'
+    error.value = t('auth.login.completeFailed')
     console.error('Failed to load user:', err)
   }
 }
@@ -195,7 +196,7 @@ const handleLogin = async () => {
       router.push('/user')
     }
   } catch (err: any) {
-    error.value = err.data?.message || 'Invalid username or password'
+    error.value = err.data?.message || t('auth.login.invalid')
     console.error('Login error:', err)
   } finally {
     loading.value = false

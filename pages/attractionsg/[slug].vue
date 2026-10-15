@@ -54,7 +54,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
               </svg>
               <span class="hidden sm:inline">{{ backLabel }}</span>
-              <span class="sm:hidden">Back</span>
+              <span class="sm:hidden">{{ t('attractions.detail.back') }}</span>
             </NuxtLink>
           </div>
         </div>
@@ -118,7 +118,7 @@
             >
               <img
                 :src="image"
-                :alt="`${event.title} photo ${index + 1}`"
+                :alt="t('attractions.detail.photo', { title: event.title, n: index + 1 })"
                 width="160"
                 height="112"
                 loading="lazy"
@@ -129,7 +129,7 @@
                 v-if="index === activeImageIndex"
                 class="absolute inset-x-0 bottom-0 z-10 bg-emerald-600/80 py-0.5 sm:py-1 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-white"
               >
-                Active
+                {{ t('attractions.detail.active') }}
               </span>
             </button>
           </div>
@@ -145,20 +145,19 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
                 <div v-if="checkoutResult?.paymentConfirmed">
-                  <p class="font-semibold">Payment received – booking {{ checkoutResult.booking.reference }}</p>
+                  <p class="font-semibold">{{ t('attractions.detail.paidTitle', { reference: checkoutResult.booking.reference }) }}</p>
                   <p>
-                    We've emailed a confirmation{{ checkoutResult.email ? ` to ${checkoutResult.email}` : '' }}. Your booking isn't confirmed yet:
-                    we're ordering your tickets from our supplier and will email them as soon as they're confirmed.
+                    {{ t('attractions.detail.paidTextBefore') }}{{ checkoutResult.email ? t('attractions.detail.paidTo', { email: checkoutResult.email }) : '' }}{{ t('attractions.detail.paidTextAfter') }}
                   </p>
-                  <NuxtLink :to="`/bookings?ref=${checkoutResult.booking.reference}`" class="font-semibold underline">Track this booking</NuxtLink>
+                  <NuxtLink :to="`/bookings?ref=${checkoutResult.booking.reference}`" class="font-semibold underline">{{ t('attractions.detail.track') }}</NuxtLink>
                 </div>
                 <div v-else-if="checkoutResult">
-                  <p class="font-semibold">Waiting for payment confirmation – booking {{ checkoutResult.booking.reference }}</p>
-                  <p>Some payment methods take a few minutes. We'll email you as soon as the payment is confirmed.</p>
+                  <p class="font-semibold">{{ t('attractions.detail.waitingTitle', { reference: checkoutResult.booking.reference }) }}</p>
+                  <p>{{ t('attractions.detail.waitingText') }}</p>
                 </div>
                 <div v-else>
-                  <p class="font-semibold">{{ checkoutLookupPending ? 'Checking your payment…' : 'Back from checkout' }}</p>
-                  <p v-if="!checkoutLookupPending">If your payment went through, you'll get an email with your booking reference shortly.</p>
+                  <p class="font-semibold">{{ checkoutLookupPending ? t('attractions.detail.checking') : t('attractions.detail.backFromCheckout') }}</p>
+                  <p v-if="!checkoutLookupPending">{{ t('attractions.detail.backFromCheckoutText') }}</p>
                 </div>
               </div>
               <div v-else-if="checkoutStatus === 'cancel'" class="flex items-start gap-3 rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
@@ -166,8 +165,8 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <p class="font-semibold">Checkout cancelled.</p>
-                  <p>No charges were made. You can restart the booking whenever you’re ready.</p>
+                  <p class="font-semibold">{{ t('attractions.detail.cancelledTitle') }}</p>
+                  <p>{{ t('attractions.detail.cancelledText') }}</p>
                 </div>
               </div>
 
@@ -204,8 +203,8 @@
               </div>
 
               <div v-if="partnerLinks.length" class="rounded-2xl border border-line bg-sand px-4 py-4 sm:px-5">
-                <h2 class="font-display text-xl text-ink">Also available with a partner</h2>
-                <p class="mt-1 text-sm text-ink/70">The partner shows the price and availability. Paying here is unchanged.</p>
+                <h2 class="font-display text-xl text-ink">{{ t('attractions.detail.partnerTitle') }}</h2>
+                <p class="mt-1 text-sm text-ink/70">{{ t('attractions.detail.partnerText') }}</p>
                 <div class="mt-3 flex flex-wrap gap-2">
                   <button
                     v-for="partner in partnerLinks"
@@ -214,7 +213,7 @@
                     class="inline-flex min-h-11 items-center rounded-xl bg-ink px-4 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
                     @click="openPartner(partner)"
                   >
-                    {{ partner.provider === 'klook' ? 'Book on Klook' : 'Book on Trip.com' }}
+                    {{ t(partner.provider === 'klook' ? 'attractions.detail.bookKlook' : 'attractions.detail.bookTrip') }}
                   </button>
                 </div>
               </div>
@@ -234,7 +233,7 @@
                 class="flex flex-wrap items-center gap-3 sm:gap-4 rounded-none sm:rounded-2xl border-0 sm:border border-emerald-100 bg-gradient-to-r from-emerald-50/50 via-teal-50/30 to-emerald-50/50 sm:from-emerald-500/15 sm:via-teal-500/10 sm:to-emerald-500/15 px-4 sm:px-6 py-4 sm:py-5 text-slate-800 shadow-none sm:shadow-inner"
               >
                 <div class="space-y-1">
-                  <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-emerald-600">From</span>
+                  <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-emerald-600">{{ t('attractions.detail.from') }}</span>
                   <div class="flex items-baseline gap-2 sm:gap-3">
                     <span class="text-2xl sm:text-3xl md:text-4xl font-bold text-emerald-600">
                       {{ event.publicPrice ? formatCurrency(event.publicPrice) : event.price }}
@@ -260,7 +259,7 @@
             </div>
 
             <div v-if="event.description" class="prose max-w-none">
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">About</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">{{ t('attractions.detail.about') }}</h2>
               <p class="text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-wrap">{{ event.description }}</p>
             </div>
 
@@ -277,9 +276,9 @@
             <!-- Ticket Options -->
             <div v-if="hasOptions" ref="optionsSectionRef" class="space-y-4 sm:space-y-5 pt-6 sm:pt-10 border-t border-gray-200">
               <div class="px-0 sm:px-0">
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Available Ticket Options</h2>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">{{ t('attractions.detail.optionsTitle') }}</h2>
                 <p class="text-gray-600 text-xs sm:text-sm mt-1">
-                  Compare packages, promo codes and validity before you book.
+                  {{ t('attractions.detail.optionsText') }}
                 </p>
               </div>
 
@@ -306,13 +305,13 @@
                     <div class="space-y-2 flex-1">
                       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                         <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
-                          {{ option.name || 'Ticket Option' }}
+                          {{ option.name || t('attractions.detail.optionFallback') }}
                         </h3>
                         <span
                           v-if="isSelectedOption(option)"
                           class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-xs font-semibold text-emerald-700"
                         >
-                          Selected
+                          {{ t('attractions.detail.selected') }}
                         </span>
                       </div>
                       <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
@@ -360,7 +359,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8a2 2 0 002-2V7a2 2 0 00-2-2h-5l-3 3v6a2 2 0 002 2z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 16v2a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2h1" />
                       </svg>
-                      Copy Code
+                      {{ t('attractions.detail.copyCode') }}
                     </button>
                     <button
                       @click="handleRequestOption(option)"
@@ -370,7 +369,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.57-3 3.5S10.343 15 12 15s3-1.57 3-3.5S13.657 8 12 8z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 11.5c0 7-7.5 9.5-7.5 9.5s-7.5-2.5-7.5-9.5a7.5 7.5 0 1115 0z" />
                       </svg>
-                      Request via GoTravelNha
+                      {{ t('attractions.detail.request') }}
                     </button>
                   </div>
                 </div>
@@ -385,7 +384,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.57-3 3.5S10.343 15 12 15s3-1.57 3-3.5S13.657 8 12 8z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 11.5c0 7-7.5 9.5-7.5 9.5s-7.5-2.5-7.5-9.5a7.5 7.5 0 1115 0z" />
                 </svg>
-                Request via GoTravelNha
+                {{ t('attractions.detail.request') }}
               </button>
             </div>
 
@@ -402,7 +401,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500">Location</h3>
+                  <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500">{{ t('attractions.detail.location') }}</h3>
                   <p class="mt-1 text-sm sm:text-base font-medium text-slate-800">{{ event.location }}</p>
                 </div>
               </div>
@@ -417,7 +416,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500">Duration</h3>
+                  <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500">{{ t('attractions.detail.duration') }}</h3>
                   <p class="mt-1 text-sm sm:text-base font-medium text-slate-800">{{ event.duration }}</p>
                 </div>
               </div>
@@ -432,7 +431,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500">Age Restriction</h3>
+                  <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500">{{ t('attractions.detail.ageRestriction') }}</h3>
                   <p class="mt-1 text-sm sm:text-base font-medium text-slate-800">{{ event.ageRestriction }}</p>
                 </div>
               </div>
@@ -447,7 +446,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500">Cancellation</h3>
+                  <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500">{{ t('attractions.detail.cancellation') }}</h3>
                   <p class="mt-1 text-sm sm:text-base font-medium text-slate-800">{{ event.cancellation }}</p>
                 </div>
               </div>
@@ -462,19 +461,19 @@
             >
               <div class="mb-4 sm:mb-6 flex items-center justify-between">
                 <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-                  {{ canSelfBook ? 'Book Your Ticket' : salePaused ? 'Not for sale' : 'Request a Booking' }}
+                  {{ canSelfBook ? t('attractions.detail.bookTitle') : salePaused ? t('attractions.detail.notForSale') : t('attractions.detail.requestTitle') }}
                 </h2>
               </div>
 
               <template v-if="canSelfBook">
                 <p class="mb-4 text-xs sm:text-sm text-slate-500">
-                  Secure payment by Stripe. You'll get a payment confirmation by email, then your tickets as soon as our supplier confirms them.
+                  {{ t('attractions.detail.stripeNote') }}
                 </p>
 
                 <div class="mb-4 sm:mb-6 space-y-3 sm:space-y-4 rounded-none sm:rounded-2xl border-0 sm:border border-b sm:border-emerald-100/80 border-slate-200 bg-transparent sm:bg-white/90 p-0 sm:p-5">
                   <div class="flex items-start justify-between gap-3">
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Selected option</p>
+                      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">{{ t('attractions.detail.selectedOption') }}</p>
                       <p class="mt-1 text-base font-semibold text-slate-900">{{ selectedOptionLabel }}</p>
                     </div>
                     <button
@@ -482,12 +481,12 @@
                       class="text-xs font-semibold text-emerald-600 underline-offset-4 transition hover:underline"
                       @click="scrollToOptions"
                     >
-                      Change
+                      {{ t('attractions.detail.change') }}
                     </button>
                   </div>
                   <div class="grid grid-cols-2 gap-3 text-sm">
                     <label class="flex flex-col gap-1">
-                      <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Adults</span>
+                      <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">{{ t('attractions.detail.adults') }}</span>
                       <input
                         v-model.number="quantityAdults"
                         type="number"
@@ -497,7 +496,7 @@
                       />
                     </label>
                     <label class="flex flex-col gap-1">
-                      <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Children</span>
+                      <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">{{ t('attractions.detail.children') }}</span>
                       <input
                         v-model.number="quantityChildren"
                         type="number"
@@ -511,13 +510,13 @@
 
                 <div class="space-y-2 rounded-none sm:rounded-2xl border-0 sm:border border-t sm:border-emerald-100/80 border-slate-200 bg-gray-50/50 sm:bg-white/95 p-4 sm:p-5 text-xs sm:text-sm shadow-none sm:shadow-inner">
                   <div class="flex items-center justify-between text-slate-500">
-                    <span>Tickets ({{ totalQuantity }} total)</span>
+                    <span>{{ t('attractions.detail.ticketsTotal', { count: totalQuantity }) }}</span>
                     <span class="font-semibold text-slate-900">
-                      {{ totalQuantity > 0 && unitPublicPrice > 0 ? formatCurrency(unitPublicPrice) + ' each' : '—' }}
+                      {{ totalQuantity > 0 && unitPublicPrice > 0 ? t('attractions.detail.each', { price: formatCurrency(unitPublicPrice) }) : '—' }}
                     </span>
                   </div>
                   <div class="flex items-center justify-between text-base font-semibold text-slate-900">
-                    <span>Total due today</span>
+                    <span>{{ t('attractions.detail.totalDue') }}</span>
                     <span>{{ totalDue > 0 ? formatCurrency(totalDue) : '—' }}</span>
                   </div>
                 </div>
@@ -531,7 +530,7 @@
                     @click="addToCart"
                     class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200/80 bg-white px-4 py-3.5 sm:py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 touch-manipulation min-h-[48px]"
                   >
-                    Add to cart
+                    {{ t('attractions.detail.addToCart') }}
                   </button>
                   <button
                     type="button"
@@ -540,7 +539,7 @@
                     class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3.5 sm:py-3 text-sm font-semibold text-white shadow-[0_18px_38px_-18px_rgba(16,185,129,0.65)] transition active:scale-[0.98] hover:from-emerald-600 hover:to-teal-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-40 disabled:transform-none touch-manipulation min-h-[48px]"
                   >
                     <span v-if="checkoutLoading" class="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    <span>{{ checkoutLoading ? 'Redirecting…' : 'Checkout' }}</span>
+                    <span>{{ checkoutLoading ? t('attractions.detail.redirecting') : t('attractions.detail.checkout') }}</span>
                   </button>
                 </div>
                 
@@ -548,27 +547,27 @@
                   v-if="cartConfirmed && !checkoutLoading"
                   class="mt-3 rounded-xl sm:rounded-2xl border border-emerald-200/80 bg-emerald-50 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-emerald-700 shadow-none sm:shadow-inner"
                 >
-                  <p class="font-semibold">Cart ready for checkout</p>
-                  <p class="mt-1">Review the summary above, then click "Checkout" to pay securely via Stripe.</p>
+                  <p class="font-semibold">{{ t('attractions.detail.cartReady') }}</p>
+                  <p class="mt-1">{{ t('attractions.detail.cartReadyText') }}</p>
                 </div>
 
                 <p class="mt-4 text-[10px] sm:text-xs text-slate-500">
-                  After payment, our team will place the order using our reseller credentials and email you the e-ticket.
+                  {{ t('attractions.detail.resellerNote') }}
                 </p>
                 <p v-if="checkoutError" class="text-xs sm:text-sm font-medium text-red-600 mt-2">{{ checkoutError }}</p>
                 <p class="text-xs text-slate-500 mt-3">
-                  Questions before you book?
-                  <NuxtLink to="/help" class="text-emerald-700 hover:underline">Help</NuxtLink> ·
-                  <NuxtLink to="/refund-policy" class="text-emerald-700 hover:underline">Refund policy</NuxtLink> ·
-                  <NuxtLink to="/contact" class="text-emerald-700 hover:underline">Contact us</NuxtLink>
+                  {{ t('attractions.detail.questions') }}
+                  <NuxtLink to="/help" class="text-emerald-700 hover:underline">{{ t('attractions.detail.help') }}</NuxtLink> ·
+                  <NuxtLink to="/refund-policy" class="text-emerald-700 hover:underline">{{ t('attractions.detail.refund') }}</NuxtLink> ·
+                  <NuxtLink to="/contact" class="text-emerald-700 hover:underline">{{ t('attractions.detail.contact') }}</NuxtLink>
                 </p>
               </template>
               <template v-else-if="salePaused">
                 <p class="text-sm leading-relaxed text-slate-600">
-                  This ticket is not currently for sale. We only take payment when the supplier price was checked in the last 7 days.
+                  {{ t('attractions.detail.pausedText') }}
                 </p>
                 <NuxtLink to="/attractionsg" class="mt-4 inline-flex text-sm font-semibold text-emerald-700 hover:underline">
-                  Browse other attractions
+                  {{ t('attractions.detail.browseOthers') }}
                 </NuxtLink>
               </template>
               <template v-else>
@@ -579,9 +578,9 @@
                         ✉️
                       </div>
                       <div>
-                        <p class="text-sm font-semibold text-slate-800">Ready to book?</p>
+                        <p class="text-sm font-semibold text-slate-800">{{ t('attractions.detail.readyTitle') }}</p>
                         <p class="text-xs text-slate-500">
-                          Leave your details and our experts will confirm availability and pricing.
+                          {{ t('attractions.detail.readyText') }}
                         </p>
                       </div>
                     </div>
@@ -609,21 +608,17 @@
           </div>
           <div class="space-y-3">
             <h3 class="text-3xl font-bold text-slate-900">
-              {{ notFound ? 'This attraction is unavailable right now' : 'Event not found' }}
+              {{ notFound ? t('attractions.detail.unavailableTitle') : t('attractions.detail.notFoundTitle') }}
             </h3>
             <p class="max-w-xl text-base text-slate-500">
-              {{
-                notFound
-                  ? 'This experience has been unpublished or is temporarily unavailable. Please browse our other Singapore attractions.'
-                  : 'The requested attraction could not be found. It may have expired or the link is incorrect.'
-              }}
+              {{ notFound ? t('attractions.detail.unavailableText') : t('attractions.detail.notFoundText') }}
             </p>
           </div>
           <NuxtLink
             to="/attractionsg"
             class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_18px_38px_-18px_rgba(16,185,129,0.6)] transition hover:from-emerald-600 hover:to-teal-600"
           >
-            Browse all attractions
+            {{ t('attractions.detail.browseAll') }}
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
             </svg>
@@ -640,7 +635,7 @@
             type="button"
             class="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/80 transition hover:text-white active:scale-90 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
             @click="closeLightbox"
-            aria-label="Close lightbox"
+            :aria-label="t('attractions.detail.closeLightbox')"
           >
             <svg class="h-6 w-6 sm:h-8 sm:w-8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -650,7 +645,7 @@
             <div class="relative">
               <img
                 :src="galleryImages[lightboxIndex]"
-                :alt="`${event?.title} enlarged photo ${lightboxIndex + 1}`"
+                :alt="t('attractions.detail.enlarged', { title: event?.title || '', n: lightboxIndex + 1 })"
                 width="1200"
                 height="800"
                 decoding="async"
@@ -665,9 +660,9 @@
                   class="transition hover:text-white active:scale-90 disabled:cursor-not-allowed disabled:opacity-40 touch-manipulation px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg bg-black/30 backdrop-blur-sm min-h-[44px]"
                   @click.stop="prevLightboxImage"
                   :disabled="galleryImages.length <= 1"
-                  aria-label="Previous image"
+                  :aria-label="t('attractions.detail.previous')"
                 >
-                  ‹ Prev
+                  {{ t('attractions.detail.prev') }}
                 </button>
                 <span class="px-3 py-1.5 rounded-lg bg-black/30 backdrop-blur-sm">{{ lightboxIndex + 1 }} / {{ galleryImages.length }}</span>
                 <button
@@ -675,9 +670,9 @@
                   class="transition hover:text-white active:scale-90 disabled:cursor-not-allowed disabled:opacity-40 touch-manipulation px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg bg-black/30 backdrop-blur-sm min-h-[44px]"
                   @click.stop="nextLightboxImage"
                   :disabled="galleryImages.length <= 1"
-                  aria-label="Next image"
+                  :aria-label="t('attractions.detail.nextImage')"
                 >
-                  Next ›
+                  {{ t('attractions.detail.next') }}
                 </button>
               </div>
             </div>
@@ -723,10 +718,11 @@ const openPartner = (partner: CuratedPartnerAttraction) => {
   }, partner.url)
 }
 const notFound = ref<boolean>(false)
+const { t } = useI18n()
 
 // /search now redirects to /explore, so the attractions listing is the only way back
 const backUrl = '/attractionsg'
-const backLabel = 'Back to Attractions'
+const backLabel = computed(() => t('attractions.detail.backToList'))
 const selectedOption = ref<Record<string, any> | null>(null)
 const bookingFormRef = ref<HTMLElement | null>(null)
 const copyMessage = ref<string>('')
@@ -902,8 +898,8 @@ const cartReady = computed(() => !!selectedOption.value && totalQuantity.value >
 const checkoutDisabled = computed(() => checkoutLoading.value || !cartConfirmed.value || !cartReady.value)
 
 const selectedOptionLabel = computed<string>(() => {
-  if (!selectedOption.value) return 'Select a ticket option'
-  return selectedOption.value.name || selectedOption.value.code || 'Selected option'
+  if (!selectedOption.value) return t('attractions.detail.selectOption')
+  return selectedOption.value.name || selectedOption.value.code || t('attractions.detail.selectedFallback')
 })
 
 const selectedOptionForForm = computed<Record<string, any> | null>(() => {
@@ -982,7 +978,7 @@ const savingsText = (option: Record<string, any>) => {
   if (!option?.originalPriceAmount || !option?.priceAmount) return ''
   const diff = option.originalPriceAmount - option.priceAmount
   if (diff <= 0) return ''
-  return `Save ${formatCurrency(diff)}`
+  return t('attractions.detail.save', { amount: formatCurrency(diff) })
 }
 
 const handleRequestOption = (option: Record<string, any>) => {
@@ -1003,10 +999,10 @@ const copyCode = async (code: string) => {
   if (!code) return
   try {
     await navigator.clipboard.writeText(code)
-    copyMessage.value = `Copied ${code} to clipboard`
+    copyMessage.value = t('attractions.detail.copied', { code })
   } catch (err) {
     console.error('Clipboard error:', err)
-    copyMessage.value = 'Copy failed, please copy manually.'
+    copyMessage.value = t('attractions.detail.copyFailed')
   } finally {
     if (copyTimeout) clearTimeout(copyTimeout)
     copyTimeout = setTimeout(() => {
@@ -1048,15 +1044,15 @@ const startCheckout = async () => {
   if (!event.value) return
   cartError.value = ''
   if (!cartReady.value) {
-    cartError.value = 'Select a ticket option and quantity before checkout.'
+    cartError.value = t('attractions.detail.selectBeforeCheckout')
     return
   }
   if (!cartConfirmed.value) {
-    cartError.value = 'Please add the ticket to your cart before checkout.'
+    cartError.value = t('attractions.detail.addBeforeCheckout')
     return
   }
   if (!cartConfirmed.value) {
-    cartError.value = 'Please add the ticket to your cart before checkout.'
+    cartError.value = t('attractions.detail.addBeforeCheckout')
     return
   }
   checkoutError.value = ''
@@ -1099,10 +1095,10 @@ const startCheckout = async () => {
     if (response?.url) {
       window.location.href = response.url
     } else {
-      checkoutError.value = response?.message || 'Unable to start checkout. Please try again.'
+      checkoutError.value = response?.message || t('attractions.detail.checkoutFailed')
     }
   } catch (err: any) {
-    checkoutError.value = err?.data?.message || err?.message || 'Unable to start checkout. Please try again.'
+    checkoutError.value = err?.data?.message || t('attractions.detail.checkoutFailed')
   } finally {
     checkoutLoading.value = false
   }
@@ -1131,7 +1127,7 @@ const addToCart = () => {
   cartError.value = ''
   checkoutError.value = ''
   if (!cartReady.value) {
-    cartError.value = 'Select a ticket option and quantity before adding to cart.'
+    cartError.value = t('attractions.detail.selectBeforeCart')
     return
   }
   cartConfirmed.value = true
@@ -1144,10 +1140,10 @@ const scrollToOptions = () => {
 
 const shareImage = computed(() => resolveImageUrl(activeImage.value || event.value?.image))
 const pageTitle = computed(() =>
-  event.value ? `${event.value.title} | Singapore Attractions | GoTravelNha` : 'Attraction Details | GoTravelNha'
+  event.value ? `${event.value.title} | Singapore Attractions | GoTravelNha` : t('attractions.detail.metaFallbackTitle')
 )
 const pageDescription = computed(() =>
-  event.value?.description || 'Singapore attraction details on GoTravelNha. Tickets are sold here only when a current price is listed.'
+  event.value?.description || t('attractions.detail.metaFallbackDescription')
 )
 const canonicalUrl = computed(() =>
   `${siteOrigin}/attractionsg/${event.value?.slug || event.value?.id || currentSlug.value || ''}`

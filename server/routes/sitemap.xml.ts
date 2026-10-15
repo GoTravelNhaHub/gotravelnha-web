@@ -2,6 +2,7 @@ import prisma from '~/server/utils/prisma'
 import { destinationSlug } from '~/utils/destination-slug'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { publishedGuides } from '~/utils/destination-guides'
+import { DESTINATIONS, catalogSlug } from '~/utils/destination-catalog'
 
 const staticPaths = [
   '/explore',
@@ -73,7 +74,8 @@ export default defineEventHandler(async (event) => {
   } else {
     console.error('Sitemap affiliateEntity lookup failed:', destinations.reason)
   }
-  urls.set('/destinations/singapore', '')
+  // Every catalogue city has a page, whether or not an affiliate entity lists it yet
+  for (const destination of DESTINATIONS) urls.set(`/destinations/${encodeURIComponent(catalogSlug(destination))}`, '')
 
   const body = [...urls.entries()]
     .map(([path, lastmod]) => {

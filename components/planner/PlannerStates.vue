@@ -13,10 +13,10 @@
       @click="$emit('retry')"
     >
       <PlannerIcon name="refresh" class="h-4 w-4" />
-      Try again
+      {{ t('planner.states.tryAgain') }}
     </button>
 
-    <ol v-if="kind === 'loading'" class="mt-8 w-full max-w-md space-y-2 text-left" aria-label="Agent progress">
+    <ol v-if="kind === 'loading'" class="mt-8 w-full max-w-md space-y-2 text-left" :aria-label="t('planner.states.progress')">
       <li
         v-for="(step, index) in workSteps"
         :key="step"
@@ -34,8 +34,8 @@
     </ol>
 
     <ol v-else-if="kind === 'empty'" class="mt-8 grid w-full max-w-lg gap-3 text-left sm:grid-cols-3">
-      <li v-for="(step, index) in steps" :key="step" class="rounded-xl border border-line bg-white p-3 text-sm text-ink">
-        <span class="block text-xs font-semibold text-sea">Step {{ index + 1 }}</span>
+      <li v-for="(step, index) in tm<string[]>('planner.states.steps')" :key="step" class="rounded-xl border border-line bg-white p-3 text-sm text-ink">
+        <span class="block text-xs font-semibold text-sea">{{ t('planner.states.step', { n: index + 1 }) }}</span>
         {{ step }}
       </li>
     </ol>
@@ -55,15 +55,15 @@ const props = defineProps<{
 
 defineEmits<{ retry: [] }>()
 
-const steps = ['Describe the trip in your own words', 'The agent fills in the brief and asks for gaps', 'Review the days and refine in chat']
+const { t, tm, placeName } = useI18n()
 
 // One request does all of this, so the steps advance on a timer and the last one
 // stays open until the plan arrives
 const workSteps = computed(() => [
-  props.revising ? 'Reading your change' : 'Reading your brief',
-  `Checking partner activities${props.destination ? ` in ${props.destination}` : ''}`,
-  props.revising ? 'Rewriting the affected days' : 'Drafting each day around ages and pace',
-  'Matching checked partner prices'
+  t(props.revising ? 'planner.states.readingChange' : 'planner.states.readingBrief'),
+  props.destination ? t('planner.states.checkingActivitiesIn', { destination: placeName(props.destination) }) : t('planner.states.checkingActivities'),
+  t(props.revising ? 'planner.states.rewriting' : 'planner.states.drafting'),
+  t('planner.states.matching')
 ])
 const activeStep = ref(0)
 let timer: ReturnType<typeof setInterval> | undefined
@@ -77,14 +77,14 @@ onMounted(() => {
 onBeforeUnmount(() => clearInterval(timer))
 
 const title = computed(() => {
-  if (props.kind === 'loading') return props.revising ? 'Revising your plan' : 'Planning the days'
-  if (props.kind === 'error') return 'The plan did not finish'
-  return 'Your itinerary will appear here'
+  if (props.kind === 'loading') return t(props.revising ? 'planner.states.revisingTitle' : 'planner.states.planningTitle')
+  if (props.kind === 'error') return t('planner.states.errorTitle')
+  return t('planner.states.emptyTitle')
 })
 
 const message = computed(() => {
   if (props.message) return props.message
-  if (props.kind === 'loading') return 'This can take up to a minute. The days will replace this note when they are ready.'
-  return 'Tell the agent where you are going, when, and who is coming. A suggestion is not a booking, and a price appears only when a partner has checked it.'
+  if (props.kind === 'loading') return t('planner.states.loadingText')
+  return t('planner.states.emptyText')
 })
 </script>

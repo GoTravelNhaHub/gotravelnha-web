@@ -1,14 +1,14 @@
 <template>
   <AuthShell
-    title="Create your account"
-    description="Free to join. Save trip plans and keep the family's details in one place."
+    :title="t('auth.register.title')"
+    :description="t('auth.register.description')"
     image="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1600&q=80"
-    headline="Plan family trips with less back-and-forth."
-    subline="An account keeps your plans, travellers and bookings together."
-    :points="['Save trip plans from the AI Travel Agent', 'Up to 10 AI trip plans a day (guests get 3)', 'One family profile with ages and needs', 'Bookings tracked in one place']"
+    :headline="t('auth.register.headline')"
+    :subline="t('auth.register.subline')"
+    :points="tm<string[]>('auth.register.points')"
   >
     <p v-if="referralCode" class="mb-5 rounded-xl border border-[#99E3EC] bg-[#E8F7FA] px-3.5 py-3 text-[14px] leading-5 text-[#005F6B]">
-      You're joining with a referral code. The friend who invited you earns points when you sign up.
+      {{ t('auth.register.referral') }}
     </p>
 
     <button type="button" class="btn-secondary" :disabled="loadingGoogle" @click="handleGoogleSignUp">
@@ -18,35 +18,35 @@
         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
       </svg>
-      {{ loadingGoogle ? 'Opening Google…' : 'Sign up with Google' }}
+      {{ loadingGoogle ? t('auth.google.opening') : t('auth.google.signUp') }}
     </button>
 
-    <div class="form-divider">or use your email</div>
+    <div class="form-divider">{{ t('auth.register.divider') }}</div>
 
     <form class="space-y-4" @submit.prevent="handleRegister">
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="register-first" class="form-label">First name</label>
+          <label for="register-first" class="form-label">{{ t('auth.register.firstName') }}</label>
           <input id="register-first" v-model="registerForm.firstName" type="text" autocomplete="given-name" required class="form-input" placeholder="Mai" />
         </div>
         <div>
-          <label for="register-last" class="form-label">Last name</label>
+          <label for="register-last" class="form-label">{{ t('auth.register.lastName') }}</label>
           <input id="register-last" v-model="registerForm.lastName" type="text" autocomplete="family-name" required class="form-input" placeholder="Nguyen" />
         </div>
       </div>
 
       <div>
-        <label for="register-username" class="form-label">Username</label>
+        <label for="register-username" class="form-label">{{ t('auth.register.username') }}</label>
         <input id="register-username" v-model="registerForm.username" type="text" autocomplete="username" required class="form-input" placeholder="mainguyen" />
       </div>
 
       <div>
-        <label for="register-email" class="form-label">Email</label>
+        <label for="register-email" class="form-label">{{ t('auth.register.email') }}</label>
         <input id="register-email" v-model="registerForm.email" type="email" autocomplete="email" required class="form-input" placeholder="you@example.com" />
       </div>
 
       <div>
-        <label for="register-password" class="form-label">Password</label>
+        <label for="register-password" class="form-label">{{ t('auth.register.password') }}</label>
         <div class="relative">
           <input
             id="register-password"
@@ -57,12 +57,12 @@
             minlength="8"
             aria-describedby="register-password-hint"
             class="form-input pr-12"
-            placeholder="At least 8 characters"
+            :placeholder="t('auth.register.passwordPlaceholder')"
           />
           <button
             type="button"
             class="absolute inset-y-0 right-0 inline-flex w-12 items-center justify-center rounded-r-xl text-[#64748B] hover:text-[#101D3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
-            :aria-label="showPassword ? 'Hide password' : 'Show password'"
+            :aria-label="showPassword ? t('auth.password.hide') : t('auth.password.show')"
             :aria-pressed="showPassword"
             @click="showPassword = !showPassword"
           >
@@ -75,16 +75,16 @@
             </svg>
           </button>
         </div>
-        <p id="register-password-hint" class="mt-1.5 text-[12px] text-[#64748B]">Use 8 or more characters.</p>
+        <p id="register-password-hint" class="mt-1.5 text-[12px] text-[#64748B]">{{ t('auth.register.passwordHint') }}</p>
       </div>
 
       <label class="flex items-start gap-2.5 text-[14px] leading-5 text-[#334155]">
         <input v-model="registerForm.agreedToTerms" type="checkbox" required class="mt-0.5 h-4 w-4 shrink-0 rounded accent-[#008A9B]" />
         <span>
-          I agree to the
-          <NuxtLink to="/terms" target="_blank" class="text-link">Terms of Service</NuxtLink>
-          and
-          <NuxtLink to="/privacy" target="_blank" class="text-link">Privacy Policy</NuxtLink>
+          {{ t('auth.register.agreeBefore') }}
+          <NuxtLink to="/terms" target="_blank" class="text-link">{{ t('auth.register.terms') }}</NuxtLink>
+          {{ t('auth.register.and') }}
+          <NuxtLink to="/privacy" target="_blank" class="text-link">{{ t('auth.register.privacy') }}</NuxtLink>
         </span>
       </label>
 
@@ -93,13 +93,13 @@
 
       <button type="submit" class="btn-primary" :disabled="loading">
         <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
-        {{ loading ? 'Creating account…' : 'Create account' }}
+        {{ loading ? t('auth.register.submitting') : t('auth.register.submit') }}
       </button>
     </form>
 
     <p class="mt-8 text-center text-[14px] text-[#64748B]">
-      Already have an account?
-      <NuxtLink to="/login" class="text-link">Sign in</NuxtLink>
+      {{ t('auth.register.haveAccount') }}
+      <NuxtLink to="/login" class="text-link">{{ t('auth.register.signIn') }}</NuxtLink>
     </p>
   </AuthShell>
 </template>
@@ -117,6 +117,7 @@ definePageMeta({
 
 const router = useRouter()
 const route = useRoute()
+const { t, tm } = useI18n()
 const { setUser } = useAuthState()
 const { trackReferralClick } = useReferral()
 const rawReferral = route.query.ref
@@ -146,7 +147,7 @@ const handleGoogleSignUp = async () => {
     // Redirect to Google OAuth (same endpoint as sign-in)
     window.location.href = '/api/auth/google?redirect=' + encodeURIComponent('/user')
   } catch (err: any) {
-    error.value = 'Failed to sign up with Google'
+    error.value = t('auth.google.failedUp')
     console.error('Google sign-up error:', err)
     loadingGoogle.value = false
   }
@@ -179,14 +180,14 @@ const handleRegister = async () => {
     // Set user in auth state
     setUser(response.user)
     
-    success.value = 'Account created successfully! Redirecting...'
+    success.value = t('auth.register.success')
     
     // Redirect after 2 seconds
     setTimeout(() => {
       router.push('/user')
     }, 2000)
   } catch (err: any) {
-    error.value = err.data?.message || 'Registration failed. Please try again.'
+    error.value = err.data?.message || t('auth.register.failed')
     console.error('Registration error:', err)
   } finally {
     loading.value = false

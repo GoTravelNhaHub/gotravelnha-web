@@ -3,40 +3,40 @@
     <div class="max-w-6xl mx-auto px-4 pt-8 space-y-6">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <NuxtLink to="/destinations" class="text-sm font-semibold text-slate-600 hover:text-slate-900">← All destinations</NuxtLink>
-          <h1 class="mt-2 text-3xl font-bold text-slate-900">Things to do in {{ name }}</h1>
-          <p class="mt-1 text-slate-600">Activities you can book with us. Prices come from our partners and can change.</p>
+          <NuxtLink to="/destinations" class="text-sm font-semibold text-slate-600 hover:text-slate-900">{{ t('places.detail.all') }}</NuxtLink>
+          <h1 class="mt-2 text-3xl font-bold text-slate-900">{{ t('places.detail.title', { city: placeName(name) }) }}</h1>
+          <p class="mt-1 text-slate-600">{{ t('places.detail.subtitle') }}</p>
           <NuxtLink v-if="guide" :to="`/guides/${guide.slug}`" class="mt-2 inline-block text-sm font-semibold text-emerald-700 hover:underline">
-            Read our guide: {{ guide.title }} →
+            {{ t('places.detail.guide', { title: guide.title }) }}
           </NuxtLink>
         </div>
         <NuxtLink
           :to="`/planner?destination=${encodeURIComponent(name)}`"
           class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
         >
-          🧭 Plan a trip here
+          🧭 {{ t('places.detail.planHere') }}
         </NuxtLink>
       </div>
 
       <form @submit.prevent="load" class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-end gap-4">
         <label v-if="isAuthenticated" class="flex items-center gap-2 text-sm text-slate-700 py-2">
           <input v-model="useFamily" type="checkbox" class="h-4 w-4 text-emerald-600 rounded" />
-          Suit my saved family
+          {{ t('places.detail.suitFamily') }}
         </label>
         <label v-if="!useFamily || !isAuthenticated" class="block">
-          <span class="text-sm font-semibold text-slate-700">Ages</span>
+          <span class="text-sm font-semibold text-slate-700">{{ t('places.detail.ages') }}</span>
           <input
             v-model.trim="ages"
-            placeholder="e.g. 38, 36, 7, 3"
+            :placeholder="t('places.detail.agesPlaceholder')"
             maxlength="40"
             class="mt-1 w-44 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           />
         </label>
         <label class="block flex-1 min-w-[12rem]">
-          <span class="text-sm font-semibold text-slate-700">Interests</span>
+          <span class="text-sm font-semibold text-slate-700">{{ t('places.detail.interests') }}</span>
           <input
             v-model.trim="interests"
-            placeholder="e.g. animals, water play, science"
+            :placeholder="t('places.detail.interestsPlaceholder')"
             maxlength="300"
             class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           />
@@ -46,12 +46,12 @@
           :disabled="loading"
           class="px-5 py-2 rounded-lg bg-slate-900 text-white font-semibold hover:bg-slate-700 disabled:opacity-60"
         >
-          {{ loading ? 'Loading…' : 'Show best matches' }}
+          {{ loading ? t('places.detail.loading') : t('places.detail.showMatches') }}
         </button>
       </form>
 
       <p v-if="personalised && !loading" class="text-sm text-slate-600">
-        Sorted for {{ usedFamily ? 'your saved family' : 'your family' }}. Activities outside the listed age limits are hidden.
+        {{ t(usedFamily ? 'places.detail.sortedSaved' : 'places.detail.sortedFamily') }}
       </p>
       <div v-if="error" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">{{ error }}</div>
 
@@ -62,7 +62,7 @@
         v-if="!loading && !error && activities.length === 0"
         class="bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center text-slate-500"
       >
-        No bookable activities for {{ name }} yet.
+        {{ t('places.detail.empty', { city: placeName(name) }) }}
       </div>
     </div>
   </div>
@@ -78,6 +78,7 @@ import type { RecommendedActivity } from '~/types/trip'
 
 const route = useRoute()
 const { isAuthenticated } = useAuthState()
+const { t, placeName } = useI18n()
 
 const slug = computed(() => String(route.params.slug || ''))
 const name = ref(destinationFromSlug(slug.value))
@@ -130,7 +131,7 @@ const load = async () => {
     personalised.value = response.personalised
     usedFamily.value = response.usedFamily
   } catch (err: any) {
-    error.value = err?.data?.message || 'Could not load activities.'
+    error.value = t('places.detail.loadFailed')
   } finally {
     loading.value = false
   }
@@ -142,11 +143,11 @@ onMounted(() => {
 })
 
 useHead(() => ({
-  title: `Family Things to Do in ${name.value} | GoTravelNha`,
+  title: t('places.detail.metaTitle', { city: placeName(name.value) }),
   meta: [
     {
       name: 'description',
-      content: `Family-friendly activities in ${name.value}, matched to your children's ages, with live partner prices.`
+      content: t('places.detail.metaDescription', { city: placeName(name.value) })
     }
   ]
 }))

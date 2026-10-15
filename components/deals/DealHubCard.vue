@@ -33,7 +33,7 @@
           </span>
         </div>
         <span class="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-[#008A9B]">
-          Compare
+          {{ t('common.partners.compare') }}
           <svg class="h-3.5 w-3.5 transition group-hover:translate-x-0.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" />
           </svg>
@@ -52,4 +52,6 @@ defineProps<{
   template: DealPageTemplate
   outcome: string
 }>()
+
+const { t } = useI18n()
 </script>

@@ -6,7 +6,7 @@
         frameborder="0"
         scrolling="no"
         loading="lazy"
-        title="Trip.com offer banner"
+        :title="t('partners.trip.bannerOffer')"
         id="SB553583"
       />
     </div>
@@ -17,6 +17,7 @@ import { computed } from 'vue'
 import { useTripDeeplink } from '~/composables/useTripDeeplink'
 
 const { generateDeeplink } = useTripDeeplink()
+const { t } = useI18n()
 
 // Generate banner URL with campaign tracking
 const bannerSrc = computed(() => {

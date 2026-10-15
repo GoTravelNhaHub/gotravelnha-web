@@ -85,6 +85,10 @@ The AttractionsSG background sync turns itself off on Vercel and Netlify.
 | `scripts/` | One-off CLIs, run with `tsx` |
 | `docs/` | Historical notes. Where they disagree with the code, the code is right |
 
+## Languages
+
+English, Vietnamese and Simplified Chinese. Strings are in `locales/{en,vi,zh}/`, read with the `useI18n` composable. The server renders English; the browser switches to the visitor's saved or browser language after load (choice stored in `localStorage` `gotravelnha_lang`). The AI planner replies and writes plans in the chosen language. Vietnamese and Chinese text was machine-drafted and should be reviewed by a native speaker; translated legal pages state that the English version applies.
+
 ## Analytics
 
 Funnel events go through `useFunnel().track()` to `/api/track-activity` and land in the `UserActivity` table:

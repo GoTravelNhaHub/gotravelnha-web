@@ -12,7 +12,7 @@
           </svg>
         </div>
         <div class="flex-1 min-w-0">
-          <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700 mb-1.5">Selected Package</p>
+          <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700 mb-1.5">{{ t('attractions.request.selectedPackage') }}</p>
           <p class="text-sm font-medium text-slate-800 leading-relaxed">{{ selectedOptionSummary }}</p>
         </div>
       </div>
@@ -25,13 +25,13 @@
           <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
           </svg>
-          Your Name <span class="text-red-500">*</span>
+          {{ t('attractions.request.name') }} <span class="text-red-500">*</span>
         </label>
         <input
           v-model="form.name"
           type="text"
           required
-          placeholder="Enter your full name"
+          :placeholder="t('attractions.request.namePlaceholder')"
           class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none"
         />
       </div>
@@ -43,7 +43,7 @@
             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
             </svg>
-            Adults
+            {{ t('attractions.request.adults') }}
           </span>
           <input
             v-model.number="form.adults"
@@ -58,7 +58,7 @@
             <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
             </svg>
-            Children
+            {{ t('attractions.request.children') }}
           </span>
           <input
             v-model.number="form.children"
@@ -76,7 +76,7 @@
           <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
           </svg>
-          Contact Email <span class="text-red-500">*</span>
+          {{ t('attractions.request.email') }} <span class="text-red-500">*</span>
         </label>
         <input
           v-model="form.email"
@@ -93,7 +93,7 @@
           <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
           </svg>
-          Contact Phone <span class="text-red-500">*</span>
+          {{ t('attractions.request.phone') }} <span class="text-red-500">*</span>
         </label>
         <input
           v-model="form.phone"
@@ -110,12 +110,12 @@
           <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
           </svg>
-          Additional Notes
+          {{ t('attractions.request.notes') }}
         </label>
         <textarea
           v-model="form.notes"
           rows="4"
-          placeholder="Any special requirements or requests..."
+          :placeholder="t('attractions.request.notesPlaceholder')"
           class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all resize-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none"
         ></textarea>
       </div>
@@ -140,8 +140,8 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
         <div class="flex-1">
-          <p class="font-semibold mb-1">Booking request submitted successfully!</p>
-          <p class="text-emerald-600/80">We'll contact you shortly via email or phone.</p>
+          <p class="font-semibold mb-1">{{ t('attractions.request.successTitle') }}</p>
+          <p class="text-emerald-600/80">{{ t('attractions.request.successText') }}</p>
         </div>
       </div>
 
@@ -156,13 +156,13 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          Sending Request...
+          {{ t('attractions.request.sending') }}
         </span>
         <span v-else class="flex items-center justify-center gap-2.5">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
           </svg>
-          Request Booking
+          {{ t('attractions.request.submit') }}
         </span>
       </button>
     </form>
@@ -176,8 +176,8 @@
           </svg>
         </div>
         <div>
-          <p class="font-semibold text-slate-900">Secure & Confidential</p>
-          <p class="text-xs text-slate-500">Your information is protected</p>
+          <p class="font-semibold text-slate-900">{{ t('attractions.request.secure') }}</p>
+          <p class="text-xs text-slate-500">{{ t('attractions.request.secureText') }}</p>
         </div>
       </div>
       <div class="flex items-center gap-3 text-sm">
@@ -187,8 +187,8 @@
           </svg>
         </div>
         <div>
-          <p class="font-semibold text-slate-900">Quick Response</p>
-          <p class="text-xs text-slate-500">We'll get back to you within 24 hours</p>
+          <p class="font-semibold text-slate-900">{{ t('attractions.request.quick') }}</p>
+          <p class="text-xs text-slate-500">{{ t('attractions.request.quickText') }}</p>
         </div>
       </div>
     </div>
@@ -213,6 +213,9 @@ const props = defineProps({
   }
 })
 
+const { t } = useI18n()
+
+// The summary goes to our team with the request, so it stays in English
 const form = ref({
   name: '',
   email: '',
@@ -347,7 +350,7 @@ const submitBooking = async () => {
       }
     }
   } catch (err) {
-    error.value = 'Failed to submit booking request. Please try again or contact us directly.'
+    error.value = t('attractions.request.failed')
     console.error('Booking error:', err)
   } finally {
     submitting.value = false

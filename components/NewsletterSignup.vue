@@ -8,9 +8,9 @@
     <div class="relative" :class="variant === 'band' ? 'grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]' : ''">
       <div>
         <h2 :id="titleId" :class="variant === 'band' ? 'text-[24px] font-bold leading-8 tracking-[-0.02em] sm:text-[28px] sm:leading-9' : 'text-[15px] font-bold leading-5 text-[#101D3A]'">
-          {{ title }}
+          {{ title || t('common.newsletter.title') }}
         </h2>
-        <p :class="variant === 'band' ? 'mt-2 text-[15px] leading-6 text-white/80' : 'mt-1 text-[13px] leading-5 text-[#64748B]'">{{ text }}</p>
+        <p :class="variant === 'band' ? 'mt-2 text-[15px] leading-6 text-white/80' : 'mt-1 text-[13px] leading-5 text-[#64748B]'">{{ text || t('common.newsletter.text') }}</p>
       </div>
 
       <div :class="variant === 'band' ? '' : 'mt-3'">
@@ -18,7 +18,7 @@
           {{ success }}
         </p>
         <form v-else class="flex flex-col gap-2 sm:flex-row" @submit.prevent="handleSubscribe">
-          <label :for="inputId" class="sr-only">Email address</label>
+          <label :for="inputId" class="sr-only">{{ t('common.newsletter.emailLabel') }}</label>
           <input
             :id="inputId"
             v-model.trim="email"
@@ -31,12 +31,12 @@
             :disabled="loading"
           />
           <button type="submit" class="btn-primary sm:w-auto sm:px-6" :disabled="loading || !email">
-            {{ loading ? 'Subscribing…' : buttonLabel }}
+            {{ loading ? t('common.newsletter.subscribing') : buttonLabel || t('common.newsletter.button') }}
           </button>
         </form>
         <p v-if="error" class="alert-error mt-2" role="alert">{{ error }}</p>
         <p class="mt-2 text-[12px] leading-[18px]" :class="variant === 'band' ? 'text-white/60' : 'text-[#94A3B8]'">
-          Unsubscribe any time. See our <NuxtLink to="/privacy" class="underline underline-offset-2">Privacy Policy</NuxtLink>.
+          {{ t('common.newsletter.unsubscribeBefore') }} <NuxtLink to="/privacy" class="underline underline-offset-2">{{ t('common.newsletter.privacy') }}</NuxtLink>.
         </p>
       </div>
     </div>
@@ -56,14 +56,12 @@ const props = withDefaults(
   }>(),
   {
     source: 'newsletter_component',
-    variant: 'compact',
-    title: 'Family trip ideas by email',
-    text: 'School-holiday ideas, family itineraries and the occasional partner offer.',
-    buttonLabel: 'Subscribe'
+    variant: 'compact'
   }
 )
 
 const { track } = useFunnel()
+const { t } = useI18n()
 const titleId = useId()
 const inputId = useId()
 
@@ -82,14 +80,14 @@ const handleSubscribe = async () => {
       body: { email: email.value, source: props.source }
     })
     if (response.success) {
-      success.value = response.message || "You're subscribed."
+      success.value = t('common.newsletter.success')
       email.value = ''
       track('newsletter_subscribed', { source: props.source })
     } else {
-      error.value = response.error || 'Could not subscribe. Please try again.'
+      error.value = t('common.newsletter.error')
     }
   } catch (err: any) {
-    error.value = err?.data?.message || err?.data?.error || 'Could not subscribe. Please try again.'
+    error.value = t('common.newsletter.error')
   } finally {
     loading.value = false
   }

@@ -7,6 +7,8 @@
           <Logo :size="'30'" />
           <span>GoTravel<span class="text-[#008A9B]">Nha</span></span>
         </NuxtLink>
+        <div class="flex items-center gap-1">
+        <LanguageSwitcher />
         <NuxtLink
           to="/"
           class="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-semibold text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#101D3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
@@ -14,8 +16,9 @@
           <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10H4m0 0 5-5m-5 5 5 5" />
           </svg>
-          Back to site
+          {{ t('auth.shell.back') }}
         </NuxtLink>
+        </div>
       </div>
 
       <div class="flex flex-1 items-center justify-center py-8 sm:py-10">
@@ -30,8 +33,8 @@
 
       <p class="text-center text-[12px] leading-[18px] text-[#94A3B8]">
         © {{ new Date().getFullYear() }} GoTravelNha ·
-        <NuxtLink to="/privacy" class="hover:text-[#64748B]">Privacy</NuxtLink> ·
-        <NuxtLink to="/terms" class="hover:text-[#64748B]">Terms</NuxtLink>
+        <NuxtLink to="/privacy" class="hover:text-[#64748B]">{{ t('auth.shell.privacy') }}</NuxtLink> ·
+        <NuxtLink to="/terms" class="hover:text-[#64748B]">{{ t('auth.shell.terms') }}</NuxtLink>
       </p>
     </main>
 
@@ -64,6 +67,7 @@
 
 <script setup lang="ts">
 import Logo from '~/components/Logo.vue'
+import LanguageSwitcher from '~/components/site/LanguageSwitcher.vue'
 
 // Split sign-in frame: travel photo on the left (desktop), form on the right
 defineProps<{
@@ -74,4 +78,6 @@ defineProps<{
   subline?: string
   points?: string[]
 }>()
+
+const { t } = useI18n()
 </script>

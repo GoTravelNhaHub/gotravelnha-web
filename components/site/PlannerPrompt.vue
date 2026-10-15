@@ -1,23 +1,23 @@
 <template>
   <form class="rounded-3xl border border-[#E2E8F0] bg-white p-5 shadow-xl sm:p-6" @submit.prevent="submit">
-    <label :for="inputId" class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">Describe your trip</label>
+    <label :for="inputId" class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">{{ t('explore.prompt.label') }}</label>
     <textarea
       :id="inputId"
       v-model="prompt"
       rows="3"
       maxlength="500"
-      :placeholder="`e.g. ${examples[0]}`"
+      :placeholder="`${t('explore.prompt.placeholderPrefix')} ${examples[0]}`"
       :aria-describedby="needsText ? `${inputId}-hint` : undefined"
       class="mt-2 block w-full resize-none rounded-xl border border-[#CBD5E1] px-4 py-3 text-[16px] leading-6 text-[#101D3A] placeholder:text-[#94A3B8] focus:border-[#008A9B] focus:outline-none focus:ring-2 focus:ring-[#008A9B]/30"
       @keydown.enter.exact.prevent="submit"
       @input="needsText = false"
     ></textarea>
     <p v-if="needsText" :id="`${inputId}-hint`" class="mt-2 text-[13px] font-medium text-[#B45309]" role="status">
-      Describe your trip, or pick an example below.
+      {{ t('explore.prompt.needsText') }}
     </p>
 
     <div class="mt-3 flex flex-wrap gap-2">
-      <span class="text-[13px] leading-8 text-[#64748B]">Try:</span>
+      <span class="text-[13px] leading-8 text-[#64748B]">{{ t('explore.prompt.try') }}</span>
       <button
         v-for="example in examples.slice(1)"
         :key="example"
@@ -34,7 +34,7 @@
         type="submit"
         class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#008A9B] px-6 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
       >
-        Plan my trip
+        {{ t('explore.prompt.submit') }}
         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" />
         </svg>
@@ -43,23 +43,20 @@
         :href="secondaryHref"
         class="inline-flex min-h-12 items-center justify-center rounded-xl px-4 text-[15px] font-semibold text-[#101D3A] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
       >
-        Or find travel deals
+        {{ t('explore.prompt.secondary') }}
       </a>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { ref, useId } from 'vue'
+import { computed, ref, useId } from 'vue'
 
 const props = withDefaults(defineProps<{ placement: string; secondaryHref?: string }>(), { secondaryHref: '#deals' })
 
-const examples = [
-  '5 days in Tokyo with 2 adults and 2 kids aged 4 and 9, relaxed pace',
-  '4 days in Seoul with a toddler',
-  'Weekend in Bangkok with teens',
-  'A week in Bali for the school holidays'
-]
+const { t, tm } = useI18n()
+// In the visitor's language, so the planner receives the prompt the way they would write it
+const examples = computed(() => tm<string[]>('explore.prompt.examples'))
 
 const inputId = useId()
 const prompt = ref('')

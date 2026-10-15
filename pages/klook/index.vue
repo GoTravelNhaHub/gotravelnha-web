@@ -1,18 +1,18 @@
 <template>
   <div class="pb-16 font-brand sm:pb-20">
     <PageHero
-      eyebrow="Activities and experiences"
-      title="Find something to do, then book it on Klook"
-      subtitle="Search activities here. Klook shows the ticket, the time, and the price before you pay."
+      :eyebrow="t('partners.klook.eyebrow')"
+      :title="t('partners.klook.title')"
+      :subtitle="t('partners.klook.subtitle')"
       image="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=2400&q=80"
       image-position="center 60%"
-      :trust="['Checkout on Klook', 'No charge from GoTravelNha', 'Attractions, tours and transport']"
+      :trust="tm<string[]>('partners.klook.trust')"
       overlap
     >
       <template #badge>
         <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[#101D3A] shadow-sm">
           <KlookIcon :size="18" />
-          Klook booking partner
+          {{ t('partners.klook.badge') }}
         </span>
       </template>
     </PageHero>
@@ -20,8 +20,8 @@
     <section id="klook-search" class="site-shell relative z-20 -mt-20 scroll-mt-24 sm:-mt-24" aria-labelledby="klook-search-title">
       <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-6">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="klook-search-title" class="text-[16px] font-bold leading-6 text-[#101D3A]">Search Klook</h2>
-          <p class="text-[13px] leading-5 text-[#64748B]">Results open on Klook, which confirms the ticket, the time, and the price.</p>
+          <h2 id="klook-search-title" class="text-[16px] font-bold leading-6 text-[#101D3A]">{{ t('partners.klook.searchTitle') }}</h2>
+          <p class="text-[13px] leading-5 text-[#64748B]">{{ t('partners.klook.searchNote') }}</p>
         </div>
         <ClientOnly>
           <div class="klook-search-widget-container mt-4 overflow-hidden rounded-xl">
@@ -30,7 +30,7 @@
               :data-wid="searchWidgetId"
               data-height="340px"
               :data-adid="klookAdId"
-              data-lang=""
+              :data-lang="klookLang"
               data-prod="search_vertical"
               data-currency=""
             >
@@ -49,23 +49,23 @@
 
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
       <section class="space-y-6">
-        <SectionHeading eyebrow="Places to explore" title="Things to do by city" subtitle="Opens a Klook search for that city. A city card is a starting point, not a confirmed ticket." />
+        <SectionHeading :eyebrow="t('partners.klook.placesEyebrow')" :title="t('partners.klook.placesTitle')" :subtitle="t('partners.klook.placesSubtitle')" />
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
           <CityTile
             v-for="place in places"
             :key="place.name"
-            :name="place.name"
+            :name="placeName(place.name)"
             :image="place.image"
-            cta="Search on Klook"
+            :cta="t('partners.klook.searchOnKlook')"
             @select="openKlookCity(place.name)"
           />
         </div>
       </section>
 
       <section id="klook-widget" class="scroll-mt-24 space-y-6">
-        <SectionHeading eyebrow="Collections" title="Browse by category" subtitle="Browse what Klook is showing through GoTravelNha.">
+        <SectionHeading :eyebrow="t('partners.klook.collectionsEyebrow')" :title="t('partners.klook.collectionsTitle')" :subtitle="t('partners.klook.collectionsSubtitle')">
           <template #action>
-            <div class="inline-grid grid-cols-2 gap-1 rounded-xl bg-[#E2E8F0]/70 p-1" role="tablist" aria-label="Klook collections">
+            <div class="inline-grid grid-cols-2 gap-1 rounded-xl bg-[#E2E8F0]/70 p-1" role="tablist" :aria-label="t('partners.klook.collectionsLabel')">
               <button
                 v-for="tab in collectionTabs"
                 :key="tab.id"
@@ -76,7 +76,7 @@
                 :class="selectedTab === tab.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
                 @click="selectedTab = tab.id"
               >
-                {{ tab.label }}
+                {{ t(tab.label) }}
               </button>
             </div>
           </template>
@@ -96,8 +96,8 @@
               </svg>
             </span>
             <span class="min-w-0">
-              <span class="block text-[15px] font-semibold leading-6 text-[#101D3A]">{{ category.name }}</span>
-              <span class="mt-0.5 block text-[13px] leading-5 text-[#64748B]">{{ category.description }}</span>
+              <span class="block text-[15px] font-semibold leading-6 text-[#101D3A]">{{ t(`partners.klook.categories.${category.slug}.name`) }}</span>
+              <span class="mt-0.5 block text-[13px] leading-5 text-[#64748B]">{{ t(`partners.klook.categories.${category.slug}.description`) }}</span>
             </span>
           </button>
         </div>
@@ -138,22 +138,22 @@
             </article>
           </div>
           <template #fallback>
-            <div class="rounded-2xl border border-[#E2E8F0] bg-white px-6 py-8 text-sm text-[#64748B]">Loading Klook collections…</div>
+            <div class="rounded-2xl border border-[#E2E8F0] bg-white px-6 py-8 text-sm text-[#64748B]">{{ t('partners.klook.loadingCollections') }}</div>
           </template>
         </ClientOnly>
 
         <div v-if="!loadingWidgets && widgetsFailed" class="rounded-2xl border border-[#E2E8F0] bg-white px-6 py-10 text-center">
-          <p class="font-semibold text-[#101D3A]">Klook's collections didn't load</p>
-          <p class="mt-1 text-sm text-[#64748B]">Refresh the page to try again. You can still search above.</p>
+          <p class="font-semibold text-[#101D3A]">{{ t('partners.klook.failedTitle') }}</p>
+          <p class="mt-1 text-sm text-[#64748B]">{{ t('partners.klook.failedText') }}</p>
         </div>
         <div v-else-if="!loadingWidgets && !filteredWidgets.length" class="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-10 text-center">
-          <p class="font-semibold text-[#101D3A]">No {{ selectedTab === 'hotels' ? 'hotel' : 'activity' }} collections yet</p>
-          <p class="mt-1 text-sm text-[#64748B]">Use the search above. Collections show up here when they are published.</p>
+          <p class="font-semibold text-[#101D3A]">{{ t(selectedTab === 'hotels' ? 'partners.klook.emptyHotels' : 'partners.klook.emptyActivities') }}</p>
+          <p class="mt-1 text-sm text-[#64748B]">{{ t('partners.klook.emptyText') }}</p>
         </div>
       </section>
 
       <BookingNote>
-        Activity checkout opens on Klook. GoTravelNha does not charge you for these bookings.
+        {{ t('partners.klook.bookingNote') }}
       </BookingNote>
     </div>
   </div>
@@ -175,13 +175,17 @@ definePageMeta({ bleed: true })
 
 const { startTracking, trackPageView, trackClick } = useActivityTracker()
 const { track } = useFunnel()
+const { t, tm, locale, placeName } = useI18n()
+// Klook's own language codes; empty lets the widget choose
+const klookLang = computed(() => ({ en: '', vi: 'vi', zh: 'zh-CN' })[locale.value])
+const klookPath = computed(() => ({ en: 'en-SG', vi: 'vi', zh: 'zh-CN' })[locale.value])
 const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
 const categories = KLOOK_CATEGORIES
 
 const collectionTabs = [
-  { id: 'things_to_do' as const, label: 'Things to do' },
-  { id: 'hotels' as const, label: 'Hotels' }
+  { id: 'things_to_do' as const, label: 'partners.klook.thingsToDo' },
+  { id: 'hotels' as const, label: 'partners.klook.hotels' }
 ]
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -221,7 +225,7 @@ const places = [
 ]
 
 const openKlookCity = (name: string) => {
-  const url = `https://www.klook.com/en-SG/search/result/?query=${encodeURIComponent(name)}`
+  const url = `https://www.klook.com/${klookPath.value}/search/result/?query=${encodeURIComponent(name)}`
   const sessionId = getVisitorSessionId()
   track('travel_search_submitted', {
     provider: 'klook',
@@ -245,11 +249,12 @@ const openKlookCity = (name: string) => {
   }, appendKlookAffiliateId(url, klookAdId.value))
 }
 
-const klookTitle = 'Klook Activities, Tours & Deals | GoTravelNha'
-const klookDescription = 'Search activities here, then open them on Klook. The ticket, time, and price are confirmed there.'
 const klookOgImage = computed(() => `${baseUrl}/klook-logo.png`)
 
-useHead(() => ({
+useHead(() => {
+  const klookTitle = t('partners.klook.metaTitle')
+  const klookDescription = t('partners.klook.metaDescription')
+  return {
   title: klookTitle,
   meta: [
     { name: 'description', content: klookDescription },
@@ -267,7 +272,8 @@ useHead(() => ({
   link: [
     { rel: 'canonical', href: `${baseUrl}/klook`, key: 'canonical' }
   ]
-}))
+  }
+})
 
 const filteredWidgets = computed(() => {
   return activeWidgets.value.filter(widget => widget.widgetType === selectedTab.value)

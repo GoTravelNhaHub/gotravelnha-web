@@ -9,7 +9,7 @@
         <div class="min-w-0">
           <h2 class="text-[22px] font-bold leading-[30px] tracking-[-0.025em] text-[#101D3A]">{{ itinerary.title }}</h2>
           <ul class="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[12px] font-medium leading-[18px] text-[#64748B]">
-            <li class="inline-flex items-center gap-1.5"><PlannerIcon name="pin" class="h-3.5 w-3.5 text-[#008A9B]" />{{ request.destination }}</li>
+            <li class="inline-flex items-center gap-1.5"><PlannerIcon name="pin" class="h-3.5 w-3.5 text-[#008A9B]" />{{ placeName(request.destination) }}</li>
             <li class="inline-flex items-center gap-1.5"><PlannerIcon name="calendar" class="h-3.5 w-3.5 text-[#008A9B]" />{{ stayLabel }}</li>
             <li class="inline-flex items-center gap-1.5"><PlannerIcon name="users" class="h-3.5 w-3.5 text-[#008A9B]" />{{ partyLabel }}</li>
             <li v-if="budgetLabel" class="inline-flex items-center gap-1.5"><PlannerIcon name="wallet" class="h-3.5 w-3.5 text-[#008A9B]" />{{ budgetLabel }}</li>
@@ -25,7 +25,7 @@
           @click="$emit('save')"
         >
           <PlannerIcon name="bookmark" class="h-4 w-4" />
-          {{ saving ? 'Saving…' : 'Save Trip' }}
+          {{ saving ? t('planner.board.saving') : t('planner.board.save') }}
         </button>
         <NuxtLink
           v-else
@@ -33,7 +33,7 @@
           class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] sm:min-h-9"
         >
           <PlannerIcon name="bookmark" class="h-4 w-4" />
-          Sign in to save
+          {{ t('planner.board.signInToSave') }}
         </NuxtLink>
         <button
           type="button"
@@ -41,7 +41,7 @@
           @click="copy(tripSummary(), 'trip')"
         >
           <PlannerIcon :name="copied === 'trip' ? 'check' : 'copy'" class="h-4 w-4" />
-          {{ copied === 'trip' ? 'Copied' : 'Copy Trip Summary' }}
+          {{ copied === 'trip' ? t('planner.board.copied') : t('planner.board.copyTrip') }}
         </button>
         <button
           type="button"
@@ -49,13 +49,13 @@
           @click="$emit('refine')"
         >
           <PlannerIcon name="spark" class="h-4 w-4" />
-          Refine Full Trip with AI
+          {{ t('planner.board.refine') }}
         </button>
       </div>
     </header>
     <p v-if="copyError" class="text-sm text-coral" role="status">{{ copyError }}</p>
 
-    <nav class="-mx-1 flex gap-1 overflow-x-auto border-b border-[#E2E8F0] px-1" role="tablist" aria-label="Plan views">
+    <nav class="-mx-1 flex gap-1 overflow-x-auto border-b border-[#E2E8F0] px-1" role="tablist" :aria-label="t('planner.board.viewsLabel')">
       <button
         v-for="item in views"
         :key="item.id"
@@ -67,12 +67,12 @@
         @click="view = item.id"
       >
         <PlannerIcon :name="item.icon" class="h-4 w-4" />
-        {{ item.label }}
+        {{ t(`planner.board.views.${item.id}`) }}
       </button>
     </nav>
 
     <template v-if="view === 'itinerary'">
-      <div class="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1" role="tablist" aria-label="Days">
+      <div class="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1" role="tablist" :aria-label="t('planner.board.daysLabel')">
         <button
           v-for="(entry, index) in itinerary.days"
           :key="entry.date"
@@ -83,7 +83,7 @@
           :class="selected === index ? 'border-[#008A9B] bg-[#E8F7FA]' : 'border-[#E2E8F0] bg-white hover:border-[#008A9B]/40'"
           @click="selected = index"
         >
-          <span class="block text-[13px] font-semibold leading-5" :class="selected === index ? 'text-[#008A9B]' : 'text-[#101D3A]'">Day {{ index + 1 }}</span>
+          <span class="block text-[13px] font-semibold leading-5" :class="selected === index ? 'text-[#008A9B]' : 'text-[#101D3A]'">{{ t('planner.board.day', { n: index + 1 }) }}</span>
           <span class="block truncate text-[12px] leading-[18px] text-[#64748B]">{{ entry.theme }}</span>
         </button>
       </div>
@@ -91,13 +91,13 @@
       <div class="grid gap-4 xl:grid-cols-[minmax(0,1.85fr)_minmax(12rem,1fr)]">
         <section v-if="day" class="min-w-0">
           <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 class="text-[16px] font-bold leading-6 tracking-[-0.025em] text-[#101D3A]">Day {{ selected + 1 }} – {{ day.theme }}</h3>
+            <h3 class="text-[16px] font-bold leading-6 tracking-[-0.025em] text-[#101D3A]">{{ t('planner.board.dayTitle', { n: selected + 1, theme: day.theme }) }}</h3>
             <p class="text-[12px] font-medium leading-[18px] text-[#64748B]">{{ formatDay(day.date) }}</p>
           </div>
 
           <ol class="mt-3 space-y-2.5">
             <li v-for="(item, index) in day.items" :key="index" class="relative grid grid-cols-[56px_44px_minmax(0,1fr)] gap-2.5">
-              <p class="pt-3 text-[11px] font-medium uppercase leading-4 text-[#64748B]">{{ slotLabels[item.slot] }}</p>
+              <p class="pt-3 text-[11px] font-medium uppercase leading-4 text-[#64748B]">{{ t(`planner.slots.${item.slot}`) }}</p>
               <div class="relative flex justify-center">
                 <span
                   v-if="index < day.items.length - 1"
@@ -113,24 +113,24 @@
                   <p class="text-xs font-semibold uppercase tracking-wide" :class="kindTone(item)">{{ itemKind(item) }}</p>
                   <p class="mt-0.5 text-[14px] font-semibold leading-5 text-[#101D3A]">{{ item.title }}</p>
                   <p class="mt-1 text-[12px] leading-[18px] text-[#64748B]">{{ item.description }}</p>
-                  <p v-if="itemKind(item) === 'Suggestion'" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">
-                    Suggestion only. A partner has not confirmed this ticket or its price.
+                  <p v-if="isSuggestion(item)" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">
+                    {{ t('planner.board.suggestionOnly') }}
                   </p>
                   <p v-if="item.familyTip" class="mt-2 rounded-lg bg-sand px-2.5 py-1.5 text-sm text-ink">
-                    <span class="font-semibold">For parents. </span>{{ item.familyTip }}
+                    <span class="font-semibold">{{ t('planner.board.forParents') }} </span>{{ item.familyTip }}
                   </p>
                   <template v-if="activityFor(item)">
                     <div v-if="activityFor(item)!.verified" class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
                       <span class="text-sm font-semibold text-ink">{{ priceLabel(activityFor(item)!) }}</span>
                       <span v-if="activityFor(item)!.checkedAt" class="text-xs text-ink/70">
-                        Checked {{ formatShortDate(activityFor(item)!.checkedAt!) }}
+                        {{ t('planner.board.checked', { date: formatShortDate(activityFor(item)!.checkedAt!) }) }}
                       </span>
                       <NuxtLink
                         v-if="activityFor(item)!.href"
                         :to="activityFor(item)!.href!"
                         class="inline-flex min-h-11 items-center rounded-lg bg-ink px-3 text-sm font-semibold text-white hover:bg-ink/90"
                       >
-                        See tickets
+                        {{ t('planner.board.seeTickets') }}
                       </NuxtLink>
                       <button
                         v-else-if="activityFor(item)!.offerId"
@@ -138,10 +138,10 @@
                         class="inline-flex min-h-11 items-center rounded-lg bg-ink px-3 text-sm font-semibold text-white hover:bg-ink/90"
                         @click="openOffer(activityFor(item)!)"
                       >
-                        Check on {{ providerLabel(activityFor(item)!.provider) }}
+                        {{ t('planner.board.checkOn', { provider: providerLabel(activityFor(item)!.provider) }) }}
                       </button>
                     </div>
-                    <p v-else-if="!activityFor(item)!.available" class="mt-2 text-sm text-ink/70">No longer listed by our partners.</p>
+                    <p v-else-if="!activityFor(item)!.available" class="mt-2 text-sm text-ink/70">{{ t('planner.board.noLongerListed') }}</p>
                   </template>
                 </div>
                 <img
@@ -164,7 +164,7 @@
               @click="view = 'destination'"
             >
               <PlannerIcon name="pin" class="h-4 w-4 text-sea" />
-              Destination overview
+              {{ t('planner.board.destinationOverview') }}
             </button>
             <button
               type="button"
@@ -172,7 +172,7 @@
               @click="copy(daySummary(), 'day')"
             >
               <PlannerIcon :name="copied === 'day' ? 'check' : 'copy'" class="h-4 w-4 text-sea" />
-              {{ copied === 'day' ? 'Copied' : 'Copy day summary' }}
+              {{ copied === 'day' ? t('planner.board.copied') : t('planner.board.copyDay') }}
             </button>
             <button
               type="button"
@@ -180,7 +180,7 @@
               @click="$emit('refine')"
             >
               <PlannerIcon name="refresh" class="h-4 w-4 text-sea" />
-              Refine Full Trip with AI
+              {{ t('planner.board.refine') }}
             </button>
           </div>
         </section>
@@ -191,12 +191,12 @@
               <img v-if="cityPhotoLarge" :src="cityPhotoLarge" alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy" />
               <span class="absolute inset-0 bg-gradient-to-t from-ink/75 to-transparent"></span>
               <div class="absolute inset-x-0 bottom-0 p-3">
-                <p class="text-xs font-semibold uppercase tracking-wide text-white/90">Destination</p>
-                <p class="font-display text-xl text-white">{{ city }}</p>
+                <p class="text-xs font-semibold uppercase tracking-wide text-white/90">{{ t('planner.board.destination') }}</p>
+                <p class="font-display text-xl text-white">{{ placeName(city) }}</p>
               </div>
             </div>
             <div class="p-3 text-sm">
-              <p class="text-ink/70">{{ itinerary.days.length }} days · {{ stopCount }} planned stops</p>
+              <p class="text-ink/70">{{ t('planner.board.daysStops', { days: itinerary.days.length, stops: stopCount }) }}</p>
               <ul v-if="places.length" class="mt-2 space-y-1">
                 <li v-for="place in places.slice(0, 4)" :key="place" class="flex items-start gap-1.5 text-ink">
                   <PlannerIcon name="pin" class="mt-0.5 h-4 w-4 shrink-0 text-sea" />
@@ -204,7 +204,7 @@
                 </li>
               </ul>
               <NuxtLink :to="`/destinations/${slug}`" class="mt-2 inline-flex min-h-11 items-center gap-1 font-semibold text-sea hover:underline">
-                Explore {{ city }}
+                {{ t('planner.board.exploreCity', { city: placeName(city) }) }}
                 <PlannerIcon name="arrow" class="h-4 w-4" />
               </NuxtLink>
             </div>
@@ -212,8 +212,8 @@
 
           <section v-if="partnerPicks.length">
             <div class="flex items-center justify-between gap-2">
-              <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#101D3A]">Recommended activities</h3>
-              <NuxtLink :to="`/destinations/${slug}`" class="text-sm font-semibold text-sea hover:underline">View all</NuxtLink>
+              <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#101D3A]">{{ t('planner.board.recommended') }}</h3>
+              <NuxtLink :to="`/destinations/${slug}`" class="text-sm font-semibold text-sea hover:underline">{{ t('planner.board.viewAll') }}</NuxtLink>
             </div>
             <div class="mt-3 grid grid-cols-2 gap-3 xl:grid-cols-1 2xl:grid-cols-2">
               <article v-for="activity in partnerPicks" :key="activity.id" class="flex flex-col overflow-hidden rounded-xl border border-line bg-white shadow-sm">
@@ -229,7 +229,7 @@
                     class="mt-auto inline-flex min-h-11 items-center justify-center rounded-lg border border-line text-sm font-semibold text-ink hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
                     @click="openOffer(activity)"
                   >
-                    Check on {{ providerLabel(activity.provider) }}
+                    {{ t('planner.board.checkOn', { provider: providerLabel(activity.provider) }) }}
                   </button>
                 </div>
               </article>
@@ -237,9 +237,9 @@
           </section>
 
           <section class="rounded-2xl border border-[#E2E8F0] bg-white p-3">
-            <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#101D3A]">Search this destination</h3>
+            <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#101D3A]">{{ t('planner.board.searchTitle') }}</h3>
             <p class="mt-1 text-[12px] leading-[18px] text-[#64748B]">
-              Live activities and rooms open on Klook or Trip.com. A search is not a confirmed booking.
+              {{ t('planner.board.searchText') }}
             </p>
             <div class="mt-3 flex flex-col gap-2">
               <button
@@ -247,7 +247,7 @@
                 class="inline-flex min-h-11 items-center justify-center rounded-lg border border-line px-3 text-sm font-semibold text-ink hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
                 @click="searchActivities"
               >
-                Search activities on Klook
+                {{ t('planner.board.searchKlook') }}
               </button>
               <button
                 v-if="hotelSearchUrl"
@@ -255,7 +255,7 @@
                 class="inline-flex min-h-11 items-center justify-center rounded-lg border border-line px-3 text-sm font-semibold text-ink hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
                 @click="searchHotels"
               >
-                Search hotels on Trip.com
+                {{ t('planner.board.searchTrip') }}
               </button>
             </div>
           </section>
@@ -275,14 +275,14 @@
             <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sea-50 text-sm font-semibold text-sea">{{ index + 1 }}</span>
             <span class="min-w-0 flex-1">
               <span class="block font-semibold text-ink">{{ entry.theme }}</span>
-              <span class="block text-sm text-ink/70">{{ formatDay(entry.date) }} · {{ entry.items.length }} stops</span>
+              <span class="block text-sm text-ink/70">{{ t('planner.board.stops', { date: formatDay(entry.date), count: entry.items.length }) }}</span>
             </span>
             <PlannerIcon name="arrow" class="h-4 w-4 text-ink/70" />
           </button>
         </li>
       </ol>
       <p class="text-sm leading-6 text-ink/70">
-        Plan suggested by AI. Prices and availability come from our partners and are checked each time you open this plan.
+        {{ t('planner.board.aiNote') }}
       </p>
     </section>
 
@@ -291,16 +291,16 @@
         <img v-if="cityPhotoLarge" :src="cityPhotoLarge" alt="" class="absolute inset-0 h-full w-full object-cover" />
         <span class="absolute inset-0 bg-gradient-to-t from-ink/75 to-transparent"></span>
         <div class="absolute inset-x-0 bottom-0 p-4">
-          <p class="font-display text-2xl text-white">{{ city }}</p>
+          <p class="font-display text-2xl text-white">{{ placeName(city) }}</p>
           <p class="text-sm text-white/90">{{ stayLabel }}</p>
         </div>
       </div>
       <div>
-        <h3 class="font-display text-xl text-ink">Stops by day</h3>
-        <p class="mt-1 text-sm text-ink/70">A place name appears when the partner listing includes one.</p>
+        <h3 class="font-display text-xl text-ink">{{ t('planner.board.stopsByDay') }}</h3>
+        <p class="mt-1 text-sm text-ink/70">{{ t('planner.board.placeNote') }}</p>
         <ol class="mt-3 space-y-3">
           <li v-for="(entry, index) in itinerary.days" :key="entry.date">
-            <p class="text-sm font-semibold text-sea">Day {{ index + 1 }}</p>
+            <p class="text-sm font-semibold text-sea">{{ t('planner.board.day', { n: index + 1 }) }}</p>
             <ul class="mt-1 space-y-1 text-sm">
               <li v-for="(item, itemIndex) in entry.items" :key="itemIndex" class="text-ink">
                 {{ item.title }}
@@ -315,29 +315,29 @@
     <section v-else-if="view === 'cost'" class="space-y-4">
       <div class="grid gap-3 sm:grid-cols-2">
         <div class="rounded-2xl border border-line bg-sand p-4">
-          <p class="text-sm text-ink/70">Your activity budget</p>
-          <p class="mt-1 font-display text-2xl text-ink">{{ budgetAmount || 'Not set' }}</p>
+          <p class="text-sm text-ink/70">{{ t('planner.board.yourBudget') }}</p>
+          <p class="mt-1 font-display text-2xl text-ink">{{ budgetAmount || t('planner.board.notSet') }}</p>
         </div>
         <div class="rounded-2xl border border-line bg-sea-50 p-4">
-          <p class="text-sm text-ink/70">Checked activity prices</p>
+          <p class="text-sm text-ink/70">{{ t('planner.board.checkedPrices') }}</p>
           <p class="mt-1 font-display text-2xl text-ink">{{ costTotal ? formatMoney(costTotal.amount, costTotal.currency) : '—' }}</p>
         </div>
       </div>
       <p class="text-sm leading-6 text-ink/70">
-        Only prices a partner has checked in the last week are counted. Each figure is the lowest listed price for one ticket, not the whole family. Flights, hotels, and meals are not included.
+        {{ t('planner.board.costNote') }}
       </p>
       <ul v-if="costLines.length" class="divide-y divide-line overflow-hidden rounded-2xl border border-line">
         <li v-for="(line, index) in costLines" :key="index" class="flex items-start justify-between gap-3 px-4 py-3 text-sm">
           <span>
             <span class="block font-semibold text-ink">{{ line.title }}</span>
-            <span class="text-ink/70">Day {{ line.day }} · {{ providerLabel(line.provider) }}</span>
+            <span class="text-ink/70">{{ t('planner.board.costLine', { day: line.day, provider: providerLabel(line.provider) }) }}</span>
           </span>
           <span class="shrink-0 font-semibold text-ink">{{ formatMoney(line.priceFrom, line.currency) }}</span>
         </li>
       </ul>
-      <p v-else class="rounded-2xl border border-dashed border-line px-4 py-6 text-center text-sm text-ink">No checked prices on this plan yet.</p>
-      <p v-if="costLines.length && !costTotal" class="text-sm text-ink/70">These prices use more than one currency, so they are not added together.</p>
-      <p v-if="unpricedCount" class="text-sm text-ink/70">{{ unpricedCount }} {{ unpricedCount === 1 ? 'stop has' : 'stops have' }} no checked price.</p>
+      <p v-else class="rounded-2xl border border-dashed border-line px-4 py-6 text-center text-sm text-ink">{{ t('planner.board.noPrices') }}</p>
+      <p v-if="costLines.length && !costTotal" class="text-sm text-ink/70">{{ t('planner.board.mixedCurrency') }}</p>
+      <p v-if="unpricedCount" class="text-sm text-ink/70">{{ t('planner.board.unpriced', { count: unpricedCount }) }}</p>
     </section>
 
     <section v-else class="space-y-3">
@@ -347,7 +347,7 @@
           {{ tip }}
         </li>
       </ul>
-      <p v-else class="text-sm text-ink/70">This plan has no tips yet.</p>
+      <p v-else class="text-sm text-ink/70">{{ t('planner.board.noTips') }}</p>
     </section>
   </div>
 </template>
@@ -386,17 +386,17 @@ defineEmits<{
 
 const { openOffer, priceLabel } = usePartnerOffer('trip_planner')
 const { track } = useFunnel()
+const { t, locale, localeTag, placeName } = useI18n()
 const config = useRuntimeConfig().public
 
-const slotLabels = { morning: 'Morning', afternoon: 'Afternoon', evening: 'Evening' } as const
 const slotIcons: Record<ItineraryItem['slot'], PlannerIconName> = { morning: 'sun', afternoon: 'sunset', evening: 'moon' }
 
-const views: Array<{ id: 'itinerary' | 'overview' | 'destination' | 'cost' | 'tips'; label: string; icon: PlannerIconName }> = [
-  { id: 'itinerary', label: 'Itinerary', icon: 'calendar' },
-  { id: 'overview', label: 'Overview', icon: 'info' },
-  { id: 'destination', label: 'Destinations', icon: 'pin' },
-  { id: 'cost', label: 'Estimated Cost', icon: 'wallet' },
-  { id: 'tips', label: 'Travel tips', icon: 'bulb' }
+const views: Array<{ id: 'itinerary' | 'overview' | 'destination' | 'cost' | 'tips'; icon: PlannerIconName }> = [
+  { id: 'itinerary', icon: 'calendar' },
+  { id: 'overview', icon: 'info' },
+  { id: 'destination', icon: 'pin' },
+  { id: 'cost', icon: 'wallet' },
+  { id: 'tips', icon: 'bulb' }
 ]
 
 const view = ref<(typeof views)[number]['id']>('itinerary')
@@ -461,7 +461,8 @@ const openPartnerSearch = (provider: 'klook' | 'trip', url: string, searchType: 
 }
 
 const searchActivities = () => {
-  const url = `https://www.klook.com/en-SG/search/result/?query=${encodeURIComponent(city.value)}`
+  const path = ({ en: 'en-SG', vi: 'vi', zh: 'zh-CN' } as const)[locale.value]
+  const url = `https://www.klook.com/${path}/search/result/?query=${encodeURIComponent(city.value)}`
   openPartnerSearch('klook', url, 'activity')
 }
 
@@ -477,14 +478,19 @@ const providerLabel = (provider: string | null) => {
   if (name === 'klook') return 'Klook'
   if (name === 'trip' || name === 'trip.com') return 'Trip.com'
   if (name === 'attractionsg') return 'GoTravelNha'
-  return provider || 'partner'
+  return provider || t('planner.board.partner')
 }
 
 const itemKind = (item: ItineraryItem) => {
   const activity = activityFor(item)
-  if (activity?.verified && activity.href) return 'Ticket on GoTravelNha'
-  if (activity?.verified && activity.offerId) return `${providerLabel(activity.provider)} offer`
-  return 'Suggestion'
+  if (activity?.verified && activity.href) return t('planner.board.kindTicket')
+  if (activity?.verified && activity.offerId) return t('planner.board.kindOffer', { provider: providerLabel(activity.provider) })
+  return t('planner.board.kindSuggestion')
+}
+
+const isSuggestion = (item: ItineraryItem) => {
+  const activity = activityFor(item)
+  return !(activity?.verified && (activity.href || activity.offerId))
 }
 
 const kindTone = (item: ItineraryItem) => (activityFor(item)?.verified ? 'text-sea' : 'text-ink/70')
@@ -499,29 +505,29 @@ const stayLabel = computed(() => {
   const end = new Date(`${props.request.endDate}T00:00:00Z`)
   const nights = Math.max(0, Math.round((end.getTime() - start.getTime()) / 86_400_000))
   const days = props.itinerary.days.length
-  const dayText = `${days} ${days === 1 ? 'day' : 'days'}`
-  return nights > 0 ? `${dayText} · ${nights} ${nights === 1 ? 'night' : 'nights'}` : dayText
+  const dayText = t('planner.board.days', { count: days })
+  return nights > 0 ? `${dayText} · ${t('planner.board.nights', { count: nights })}` : dayText
 })
 
 const partyLabel = computed(() => {
   const adults = props.request.party.filter((person) => person.age >= 18).length
   const children = props.request.party.filter((person) => person.age < 18)
   const parts: string[] = []
-  if (adults) parts.push(`${adults} ${adults === 1 ? 'adult' : 'adults'}`)
+  if (adults) parts.push(t('planner.brief.adults', { count: adults }))
   if (children.length) {
     const ages = children.map((person) => person.age).join(', ')
-    parts.push(`${children.length} ${children.length === 1 ? 'child' : 'children'} (${ages})`)
+    parts.push(t('planner.board.childrenAges', { count: children.length, ages }))
   }
-  return parts.join(' · ') || `${props.request.party.length} travellers`
+  return parts.join(' · ') || t('planner.board.travellersCount', { count: props.request.party.length })
 })
 
 const formatMoney = (amount: number, currency: string) => {
-  const whole = Math.round(amount).toLocaleString('en-SG')
+  const whole = Math.round(amount).toLocaleString(localeTag.value)
   return currency === 'SGD' ? `S$${whole}` : `${currency} ${whole}`
 }
 
 const budgetAmount = computed(() => (props.request.budget ? formatMoney(props.request.budget, 'SGD') : ''))
-const budgetLabel = computed(() => (budgetAmount.value ? `${budgetAmount.value} for activities` : ''))
+const budgetLabel = computed(() => (budgetAmount.value ? t('planner.board.forActivities', { amount: budgetAmount.value }) : ''))
 
 const allItems = computed(() =>
   props.itinerary.days.flatMap((entry, index) => entry.items.map((item) => ({ item, day: index + 1 })))
@@ -588,24 +594,24 @@ watch(
 )
 
 const formatDay = (date: string) =>
-  new Intl.DateTimeFormat('en-SG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(
+  new Intl.DateTimeFormat(localeTag.value, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(
     new Date(`${date}T00:00:00Z`)
   )
 
-const formatShortDate = (value: string) => new Intl.DateTimeFormat('en-SG', { dateStyle: 'medium' }).format(new Date(value))
+const formatShortDate = (value: string) => new Intl.DateTimeFormat(localeTag.value, { dateStyle: 'medium' }).format(new Date(value))
 
 const dayLines = (entry: Itinerary['days'][number], index: number) => [
-  `Day ${index + 1} (${formatDay(entry.date)}): ${entry.theme}`,
-  ...entry.items.map((item) => `- ${slotLabels[item.slot]}: ${item.title}`)
+  `${t('planner.board.day', { n: index + 1 })} (${formatDay(entry.date)}): ${entry.theme}`,
+  ...entry.items.map((item) => `- ${t(`planner.slots.${item.slot}`)}: ${item.title}`)
 ]
 
 const tripSummary = () =>
   [
     props.itinerary.title,
-    [props.request.destination, stayLabel.value, partyLabel.value].join(' · '),
+    [placeName(props.request.destination), stayLabel.value, partyLabel.value].join(' · '),
     '',
     ...props.itinerary.days.flatMap((entry, index) => [...dayLines(entry, index), '']),
-    'Planned with GoTravelNha AI Travel Agent'
+    t('planner.board.plannedWith')
   ].join('\n')
 
 const daySummary = () => (day.value ? dayLines(day.value, selected.value).join('\n') : '')
@@ -620,7 +626,7 @@ const copy = async (text: string, kind: 'trip' | 'day') => {
       copied.value = null
     }, 2000)
   } catch {
-    copyError.value = 'Copy did not work in this browser. Select the text and copy it instead.'
+    copyError.value = t('planner.board.copyFailed')
   }
 }
 </script>

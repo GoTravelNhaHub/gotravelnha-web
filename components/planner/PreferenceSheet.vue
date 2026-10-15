@@ -7,14 +7,14 @@
       @click="$emit('update:open', !open)"
     >
       <span>
-        <span class="block text-sm font-semibold text-ink">Dates, budget, and pace</span>
+        <span class="block text-sm font-semibold text-ink">{{ t('planner.prefs.title') }}</span>
         <span class="mt-0.5 block text-sm text-ink/70">{{ summary }}</span>
       </span>
-      <span class="text-sm font-semibold text-sea">{{ open ? 'Hide' : 'Edit' }}</span>
+      <span class="text-sm font-semibold text-sea">{{ open ? t('planner.prefs.hide') : t('planner.prefs.edit') }}</span>
     </button>
     <div v-if="open" class="space-y-4 border-t border-line px-4 py-4">
       <label class="block min-w-0">
-        <span class="text-sm font-semibold text-ink">Destination</span>
+        <span class="text-sm font-semibold text-ink">{{ t('planner.prefs.destination') }}</span>
         <input
           v-model.trim="form.destination"
           list="planner-destinations"
@@ -32,7 +32,7 @@
       </label>
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label class="block min-w-0">
-          <span class="text-sm font-semibold text-ink">From</span>
+          <span class="text-sm font-semibold text-ink">{{ t('planner.prefs.from') }}</span>
           <input
             v-model="form.startDate"
             type="date"
@@ -42,7 +42,7 @@
           />
         </label>
         <label class="block min-w-0">
-          <span class="text-sm font-semibold text-ink">To</span>
+          <span class="text-sm font-semibold text-ink">{{ t('planner.prefs.to') }}</span>
           <input
             v-model="form.endDate"
             type="date"
@@ -54,7 +54,7 @@
       </div>
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label class="block min-w-0">
-          <span class="text-sm font-semibold text-ink">Activity budget (SGD, optional)</span>
+          <span class="text-sm font-semibold text-ink">{{ t('planner.prefs.budget') }}</span>
           <input
             v-model.number="form.budget"
             type="number"
@@ -64,24 +64,24 @@
           />
         </label>
         <label class="block min-w-0">
-          <span class="text-sm font-semibold text-ink">Pace</span>
+          <span class="text-sm font-semibold text-ink">{{ t('planner.prefs.pace') }}</span>
           <select
             v-model="form.pace"
             class="mt-1 w-full min-w-0 rounded-xl border border-line bg-white px-3 text-base text-ink min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
           >
-            <option value="relaxed">Relaxed, one main activity a day</option>
-            <option value="balanced">Balanced, two a day</option>
-            <option value="packed">Packed, three a day</option>
+            <option value="relaxed">{{ t('planner.prefs.relaxed') }}</option>
+            <option value="balanced">{{ t('planner.prefs.balanced') }}</option>
+            <option value="packed">{{ t('planner.prefs.packed') }}</option>
           </select>
         </label>
       </div>
       <label class="block">
-        <span class="text-sm font-semibold text-ink">What the family enjoys</span>
+        <span class="text-sm font-semibold text-ink">{{ t('planner.prefs.interests') }}</span>
         <textarea
           v-model="form.interests"
           rows="3"
           maxlength="500"
-          placeholder="Animals, water play, no long queues"
+          :placeholder="t('planner.prefs.interestsPlaceholder')"
           class="mt-1 w-full rounded-xl border border-line bg-white px-3 py-2 text-base text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
         ></textarea>
       </label>
@@ -110,11 +110,14 @@ defineEmits<{
   'update:open': [open: boolean]
 }>()
 
-const paceLabel = { relaxed: 'Relaxed', balanced: 'Balanced', packed: 'Packed' } as const
+const { t, placeName } = useI18n()
 
 const summary = computed(() => {
-  const place = props.form.destination || 'Add a destination'
-  const dates = props.form.startDate && props.form.endDate ? `${props.form.startDate} to ${props.form.endDate}` : 'Add dates'
-  return `${place} · ${dates} · ${paceLabel[props.form.pace]}`
+  const place = props.form.destination ? placeName(props.form.destination) : t('planner.prefs.addDestination')
+  const dates =
+    props.form.startDate && props.form.endDate
+      ? t('planner.prefs.dateRange', { start: props.form.startDate, end: props.form.endDate })
+      : t('planner.prefs.addDates')
+  return `${place} · ${dates} · ${t(`planner.pace.${props.form.pace}`)}`
 })
 </script>

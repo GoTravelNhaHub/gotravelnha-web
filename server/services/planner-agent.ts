@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod'
 import * as z from 'zod/v4'
 import { createError } from 'h3'
-import { ITINERARY_MODEL, MAX_TRIP_DAYS, tripDates } from '~/server/services/itinerary-generator'
+import { ITINERARY_MODEL, MAX_TRIP_DAYS, languageInstruction, tripDates } from '~/server/services/itinerary-generator'
 import type { TripPace } from '~/types/trip'
 
 // One conversational turn of the trip agent. The model reads the chat and the current
@@ -27,6 +27,7 @@ export const AgentTurnSchema = z.object({
     pace: z.enum(['relaxed', 'balanced', 'packed']).optional(),
     interests: z.string().trim().max(500).optional()
   }),
+  language: z.enum(['en', 'vi', 'zh']).optional(),
   plan: z
     .object({
       title: z.string().max(200),
@@ -211,7 +212,9 @@ export async function runAgentTurn(input: AgentTurnInput): Promise<AgentTurnResu
   ].join('\n')
 
   // The brief rides with the newest message so earlier turns stay unchanged between requests
-  latest.content = `<brief>\n${context}\n</brief>\n\n<message>\n${latest.content}\n</message>`
+  // Destination stays an English city name so it matches the activity catalogue
+  const languageBlock = languageInstruction(input.language, 'reply, quickReplies and interests (but give brief.destination as the English city name)')
+  latest.content = `<brief>\n${context}\n</brief>\n\n<message>\n${latest.content}\n</message>${languageBlock}`
 
   let response
   try {

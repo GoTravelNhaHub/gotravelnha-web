@@ -1,42 +1,42 @@
 <template>
   <div class="pb-16 font-brand sm:pb-20">
     <PageHero
-      eyebrow="Hotels and flights"
-      title="Find a stay, then book it on Trip.com"
-      subtitle="Search hotels and flights here. Trip.com shows the room, the fare, and the total before you pay."
+      :eyebrow="t('partners.trip.eyebrow')"
+      :title="t('partners.trip.title')"
+      :subtitle="t('partners.trip.subtitle')"
       image="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2400&q=80"
-      :trust="['Checkout on Trip.com', 'No charge from GoTravelNha', 'Hotels and flights in one search']"
+      :trust="tm<string[]>('partners.trip.trust')"
       overlap
     >
       <template #badge>
         <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[#101D3A] shadow-sm">
           <TripWordmark />
-          Booking partner
+          {{ t('partners.trip.badge') }}
         </span>
       </template>
     </PageHero>
 
-    <section id="trip-search" class="site-shell relative z-20 -mt-20 scroll-mt-24 sm:-mt-24" aria-label="Search hotels and flights">
+    <section id="trip-search" class="site-shell relative z-20 -mt-20 scroll-mt-24 sm:-mt-24" :aria-label="t('partners.trip.searchLabel')">
       <TravelSearch ref="searchRef" initial-mode="hotel" placement="trip_page" />
     </section>
 
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
       <section class="space-y-6">
-        <SectionHeading eyebrow="Places to stay" title="Popular cities for family stays" subtitle="Choose a city, then add your dates in the search above." />
+        <SectionHeading :eyebrow="t('partners.trip.placesEyebrow')" :title="t('partners.trip.placesTitle')" :subtitle="t('partners.trip.placesSubtitle')" />
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
           <CityTile
             v-for="place in places"
             :key="place.hotelCityId"
-            :name="place.name"
+            :name="placeName(place.name)"
             :image="place.image"
-            cta="Search hotels"
+            :cta="t('partners.trip.searchHotels')"
             @select="chooseCity(place.hotelCityId)"
           />
         </div>
       </section>
 
       <section class="space-y-6">
-        <SectionHeading eyebrow="Offers" title="Current offers from Trip.com" subtitle="These promotions open on Trip.com. The price is confirmed there." />
+        <SectionHeading :eyebrow="t('partners.trip.offersEyebrow')" :title="t('partners.trip.offersTitle')" :subtitle="t('partners.trip.offersSubtitle')" />
         <div class="space-y-4 rounded-2xl border border-[#E2E8F0] bg-white p-3 sm:p-4">
           <StaticBanner />
           <DynamicBanner />
@@ -46,7 +46,7 @@
       <PopularDeals />
 
       <BookingNote>
-        Hotel and flight checkout opens on Trip.com. GoTravelNha does not charge you for these bookings.
+        {{ t('partners.trip.bookingNote') }}
       </BookingNote>
     </div>
   </div>
@@ -69,6 +69,7 @@ import { SEARCH_CITIES } from '~/utils/trip-search'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
 
 const { startTracking, trackPageView } = useActivityTracker()
+const { t, tm, placeName } = useI18n()
 
 const searchRef = ref<{ selectHotelCity: (cityId: number) => void } | null>(null)
 
@@ -92,11 +93,12 @@ const chooseCity = (cityId: number) => {
 }
 
 const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
-const tripTitle = 'Trip.com Hotel Deals & Search | GoTravelNha'
-const tripDescription = 'Search hotels and flights here, then continue on Trip.com. The room, the fare, and the total are confirmed there.'
 const tripOgImage = computed(() => `${baseUrl}/trip-logo.png`)
 
-useHead(() => ({
+useHead(() => {
+  const tripTitle = t('partners.trip.metaTitle')
+  const tripDescription = t('partners.trip.metaDescription')
+  return {
   title: tripTitle,
   meta: [
     { name: 'description', content: tripDescription },
@@ -114,7 +116,8 @@ useHead(() => ({
   link: [
     { rel: 'canonical', href: `${baseUrl}/trip`, key: 'canonical' }
   ]
-}))
+  }
+})
 
 onMounted(() => {
   startTracking()

@@ -1,7 +1,7 @@
 <template>
   <div class="site-gutter flex h-full min-h-0 flex-col pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
     <div class="mb-2 shrink-0 lg:hidden">
-      <div class="grid grid-cols-2 rounded-full bg-[#F1F5F9] p-1" role="tablist" aria-label="Planner">
+      <div class="grid grid-cols-2 rounded-full bg-[#F1F5F9] p-1" role="tablist" :aria-label="t('planner.workspace.label')">
         <button
           type="button"
           role="tab"
@@ -10,7 +10,7 @@
           :class="tab === 'talk' ? 'bg-[#008A9B] text-white' : 'text-[#101D3A]'"
           @click="$emit('update:tab', 'talk')"
         >
-          Chat
+          {{ t('planner.workspace.chat') }}
         </button>
         <button
           type="button"
@@ -20,8 +20,8 @@
           :class="tab === 'plan' ? 'bg-[#008A9B] text-white' : 'text-[#101D3A]'"
           @click="$emit('update:tab', 'plan')"
         >
-          Itinerary
-          <span v-if="hasPlan && tab !== 'plan'" class="h-2 w-2 rounded-full bg-[#059669]" aria-label="Plan ready"></span>
+          {{ t('planner.workspace.itinerary') }}
+          <span v-if="hasPlan && tab !== 'plan'" class="h-2 w-2 rounded-full bg-[#059669]" :aria-label="t('planner.workspace.planReady')"></span>
         </button>
       </div>
     </div>
@@ -52,4 +52,6 @@ defineProps<{
 defineEmits<{
   'update:tab': [tab: 'talk' | 'plan']
 }>()
+
+const { t } = useI18n()
 </script>

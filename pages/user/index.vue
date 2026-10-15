@@ -6,20 +6,20 @@
         <span class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#008A9B] text-[22px] font-bold text-white" aria-hidden="true">{{ profile.initial }}</span>
         <div class="min-w-0">
           <h1 class="truncate text-[22px] font-bold leading-8 tracking-[-0.02em] text-[#101D3A]">{{ profile.name }}</h1>
-          <p class="truncate text-[14px] text-[#64748B]">{{ profile.email }}<span v-if="profile.memberSince"> · Member since {{ profile.memberSince }}</span></p>
+          <p class="truncate text-[14px] text-[#64748B]">{{ profile.email }}<span v-if="profile.memberSince"> · {{ t('account.profile.memberSince', { date: profile.memberSince }) }}</span></p>
         </div>
       </div>
       <div class="flex w-full gap-2 sm:w-auto">
         <NuxtLink to="/planner" class="btn-primary flex-1 sm:w-auto sm:flex-none sm:px-5">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3l1.9 4.8L19 9.5l-4.4 2.9L15.6 18 12 15l-3.6 3 1-5.6L5 9.5l5.1-1.7L12 3Z" /></svg>
-          Plan a trip
+          {{ t('account.profile.planTrip') }}
         </NuxtLink>
-        <NuxtLink v-if="isAdmin" to="/admin" class="btn-secondary flex-1 sm:w-auto sm:flex-none sm:px-5">Admin portal</NuxtLink>
+        <NuxtLink v-if="isAdmin" to="/admin" class="btn-secondary flex-1 sm:w-auto sm:flex-none sm:px-5">{{ t('account.profile.admin') }}</NuxtLink>
       </div>
     </section>
 
     <!-- Summary -->
-    <section class="grid grid-cols-3 gap-3" aria-label="Summary">
+    <section class="grid grid-cols-3 gap-3" :aria-label="t('account.profile.summary')">
       <NuxtLink
         v-for="tile in tiles"
         :key="tile.label"
@@ -37,8 +37,8 @@
         <!-- Upcoming trips -->
         <section class="rounded-2xl border border-[#E2E8F0] bg-white" aria-labelledby="trips-title">
           <header class="flex items-center justify-between gap-3 border-b border-[#F1F5F9] px-5 py-4">
-            <h2 id="trips-title" class="text-[16px] font-bold text-[#101D3A]">Upcoming trips</h2>
-            <NuxtLink to="/mytrip" class="text-link text-[13px]">All trips</NuxtLink>
+            <h2 id="trips-title" class="text-[16px] font-bold text-[#101D3A]">{{ t('account.profile.upcoming') }}</h2>
+            <NuxtLink to="/mytrip" class="text-link text-[13px]">{{ t('account.profile.allTrips') }}</NuxtLink>
           </header>
           <ul v-if="upcomingTrips.length" class="divide-y divide-[#F1F5F9]">
             <li v-for="trip in upcomingTrips" :key="trip.id">
@@ -48,23 +48,23 @@
                 </span>
                 <span class="min-w-0 flex-1">
                   <span class="block truncate text-[15px] font-semibold text-[#101D3A]">{{ trip.title }}</span>
-                  <span class="block text-[13px] text-[#64748B]">{{ trip.destination }} · {{ dateRange(trip.startDate, trip.endDate) }}</span>
+                  <span class="block text-[13px] text-[#64748B]">{{ placeName(trip.destination) }} · {{ dateRange(trip.startDate, trip.endDate) }}</span>
                 </span>
                 <span class="shrink-0 rounded-full bg-[#E8F7FA] px-2.5 py-0.5 text-[12px] font-semibold text-[#007789]">{{ countdown(trip.startDate) }}</span>
               </NuxtLink>
             </li>
           </ul>
           <div v-else class="px-5 py-8 text-center">
-            <p class="text-[14px] text-[#64748B]">{{ loaded ? 'No upcoming trips saved yet.' : 'Loading…' }}</p>
-            <NuxtLink v-if="loaded" to="/planner" class="text-link mt-1 inline-block text-[14px]">Plan one with the AI Travel Agent</NuxtLink>
+            <p class="text-[14px] text-[#64748B]">{{ loaded ? t('account.profile.noUpcoming') : t('account.profile.loading') }}</p>
+            <NuxtLink v-if="loaded" to="/planner" class="text-link mt-1 inline-block text-[14px]">{{ t('account.profile.planOne') }}</NuxtLink>
           </div>
         </section>
 
         <!-- Recent bookings -->
         <section class="rounded-2xl border border-[#E2E8F0] bg-white" aria-labelledby="bookings-title">
           <header class="flex items-center justify-between gap-3 border-b border-[#F1F5F9] px-5 py-4">
-            <h2 id="bookings-title" class="text-[16px] font-bold text-[#101D3A]">Recent bookings</h2>
-            <NuxtLink to="/bookings" class="text-link text-[13px]">All bookings</NuxtLink>
+            <h2 id="bookings-title" class="text-[16px] font-bold text-[#101D3A]">{{ t('account.profile.recentBookings') }}</h2>
+            <NuxtLink to="/bookings" class="text-link text-[13px]">{{ t('account.profile.allBookings') }}</NuxtLink>
           </header>
           <ul v-if="recentBookings.length" class="divide-y divide-[#F1F5F9]">
             <li v-for="booking in recentBookings" :key="booking.reference || booking.createdAt">
@@ -75,13 +75,13 @@
                     <span class="font-mono">{{ booking.reference }}</span> · {{ booking.currency }} {{ booking.amount.toFixed(2) }} · {{ shortDate(booking.paidAt || booking.createdAt) }}
                   </span>
                 </span>
-                <span class="shrink-0 rounded-full border px-2.5 py-0.5 text-[12px] font-semibold" :class="stateBadge(booking.state)">{{ STATE_LABEL[booking.state] }}</span>
+                <span class="shrink-0 rounded-full border px-2.5 py-0.5 text-[12px] font-semibold" :class="stateBadge(booking.state)">{{ t(`account.card.states.${booking.state}.label`) }}</span>
               </NuxtLink>
             </li>
           </ul>
           <div v-else class="px-5 py-8 text-center">
-            <p class="text-[14px] text-[#64748B]">{{ loaded ? 'No bookings yet.' : 'Loading…' }}</p>
-            <NuxtLink v-if="loaded" to="/explore" class="text-link mt-1 inline-block text-[14px]">Find something to book</NuxtLink>
+            <p class="text-[14px] text-[#64748B]">{{ loaded ? t('account.profile.noBookings') : t('account.profile.loading') }}</p>
+            <NuxtLink v-if="loaded" to="/explore" class="text-link mt-1 inline-block text-[14px]">{{ t('account.profile.findSomething') }}</NuxtLink>
           </div>
         </section>
       </div>
@@ -90,23 +90,23 @@
         <!-- Family -->
         <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5" aria-labelledby="family-title">
           <div class="flex items-center justify-between gap-3">
-            <h2 id="family-title" class="text-[16px] font-bold text-[#101D3A]">Family profile</h2>
-            <NuxtLink to="/user/family" class="text-link text-[13px]">{{ travellers.length ? 'Edit' : 'Add' }}</NuxtLink>
+            <h2 id="family-title" class="text-[16px] font-bold text-[#101D3A]">{{ t('account.profile.familyProfile') }}</h2>
+            <NuxtLink to="/user/family" class="text-link text-[13px]">{{ travellers.length ? t('account.profile.edit') : t('account.profile.add') }}</NuxtLink>
           </div>
-          <p class="mt-1 text-[13px] leading-5 text-[#64748B]">The AI Travel Agent uses these ages and notes when it plans.</p>
+          <p class="mt-1 text-[13px] leading-5 text-[#64748B]">{{ t('account.profile.familyNote') }}</p>
           <ul v-if="travellers.length" class="mt-3 flex flex-wrap gap-2">
             <li v-for="person in travellers" :key="person.id" class="inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-[#F8FAFC] py-1 pl-1 pr-3 text-[13px] text-[#101D3A]">
               <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#E8F7FA] text-[11px] font-bold text-[#007789]" aria-hidden="true">{{ person.name.charAt(0).toUpperCase() }}</span>
               {{ person.name }}<span v-if="person.age !== null" class="text-[#64748B]">· {{ person.age }}</span>
             </li>
           </ul>
-          <NuxtLink v-else-if="loaded" to="/user/family" class="btn-secondary mt-3 min-h-10 text-[13px]">Add your family</NuxtLink>
+          <NuxtLink v-else-if="loaded" to="/user/family" class="btn-secondary mt-3 min-h-10 text-[13px]">{{ t('account.profile.addFamily') }}</NuxtLink>
         </section>
 
         <ReferralShare />
 
         <!-- Account links -->
-        <nav class="rounded-2xl border border-[#E2E8F0] bg-white p-2" aria-label="Account">
+        <nav class="rounded-2xl border border-[#E2E8F0] bg-white p-2" :aria-label="t('account.profile.accountLabel')">
           <NuxtLink
             v-for="link in accountLinks"
             :key="link.to"
@@ -116,7 +116,7 @@
             {{ link.label }}
             <svg class="h-4 w-4 text-[#94A3B8]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m8 5 5 5-5 5" /></svg>
           </NuxtLink>
-          <button type="button" class="flex min-h-11 w-full items-center rounded-xl px-3 text-left text-[14px] font-medium text-[#B91C1C] hover:bg-[#FEF2F2]" @click="logout">Log out</button>
+          <button type="button" class="flex min-h-11 w-full items-center rounded-xl px-3 text-left text-[14px] font-medium text-[#B91C1C] hover:bg-[#FEF2F2]" @click="logout">{{ t('account.profile.logout') }}</button>
         </nav>
       </aside>
     </div>
@@ -153,6 +153,7 @@ interface Traveller {
 
 const router = useRouter()
 const { user, isAdmin, clearUser } = useAuthState()
+const { t, localeTag, placeName } = useI18n()
 
 const bookings = ref<CustomerBooking[]>([])
 const trips = ref<SavedTrip[]>([])
@@ -167,19 +168,10 @@ const profile = computed(() => {
     email: value?.email || '',
     initial: (name || '?').charAt(0).toUpperCase(),
     memberSince: value?.createdAt
-      ? new Intl.DateTimeFormat('en-SG', { month: 'short', year: 'numeric' }).format(new Date(value.createdAt))
+      ? new Intl.DateTimeFormat(localeTag.value, { month: 'short', year: 'numeric' }).format(new Date(value.createdAt))
       : ''
   }
 })
-
-const STATE_LABEL: Record<CustomerBooking['state'], string> = {
-  awaiting_payment: 'Awaiting payment',
-  processing: 'Confirming tickets',
-  confirmed: 'Confirmed',
-  refunded: 'Refunded',
-  cancelled: 'Cancelled',
-  failed: 'Payment failed'
-}
 
 const stateBadge = (state: CustomerBooking['state']) => {
   if (state === 'confirmed') return 'border-[#A7F3D0] bg-[#ECFDF5] text-[#047857]'
@@ -193,29 +185,29 @@ const upcomingTrips = computed(() => trips.value.filter((trip) => trip.endDate.s
 const recentBookings = computed(() => bookings.value.slice(0, 3))
 
 const tiles = computed(() => [
-  { label: 'Bookings', value: bookings.value.filter((b) => ['processing', 'confirmed'].includes(b.state)).length, to: '/bookings', cta: 'View bookings' },
-  { label: 'Saved trips', value: trips.value.length, to: '/mytrip', cta: 'View trips' },
-  { label: 'Family', value: travellers.value.length, to: '/user/family', cta: 'Edit family' }
+  { label: t('account.profile.bookings'), value: bookings.value.filter((b) => ['processing', 'confirmed'].includes(b.state)).length, to: '/bookings', cta: t('account.profile.viewBookings') },
+  { label: t('account.profile.savedTrips'), value: trips.value.length, to: '/mytrip', cta: t('account.profile.viewTrips') },
+  { label: t('account.profile.family'), value: travellers.value.length, to: '/user/family', cta: t('account.profile.editFamily') }
 ])
 
-const accountLinks = [
-  { to: '/mytrip', label: 'My trips' },
-  { to: '/bookings', label: 'My bookings' },
-  { to: '/user/family', label: 'Family profile' },
-  { to: '/help', label: 'Help centre' },
-  { to: '/contact', label: 'Contact support' }
-]
+const accountLinks = computed(() => [
+  { to: '/mytrip', label: t('account.profile.links.trips') },
+  { to: '/bookings', label: t('account.profile.links.bookings') },
+  { to: '/user/family', label: t('account.profile.links.family') },
+  { to: '/help', label: t('account.profile.links.help') },
+  { to: '/contact', label: t('account.profile.links.contact') }
+])
 
-const shortDate = (value: string) => new Intl.DateTimeFormat('en-SG', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(value))
+const shortDate = (value: string) => new Intl.DateTimeFormat(localeTag.value, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(value))
 const dateRange = (start: string, end: string) => {
-  const format = new Intl.DateTimeFormat('en-SG', { day: 'numeric', month: 'short', timeZone: 'UTC' })
+  const format = new Intl.DateTimeFormat(localeTag.value, { day: 'numeric', month: 'short', timeZone: 'UTC' })
   return `${format.format(new Date(start))} – ${format.format(new Date(end))}`
 }
 const countdown = (start: string) => {
   const days = Math.round((new Date(`${start.slice(0, 10)}T00:00:00Z`).getTime() - new Date(`${today}T00:00:00Z`).getTime()) / 86400000)
-  if (days <= 0) return 'Happening now'
-  if (days === 1) return 'Tomorrow'
-  return `In ${days} days`
+  if (days <= 0) return t('account.profile.now')
+  if (days === 1) return t('account.profile.tomorrow')
+  return t('account.profile.inDays', { count: days })
 }
 
 const ageOf = (birthDate: string | null) => {

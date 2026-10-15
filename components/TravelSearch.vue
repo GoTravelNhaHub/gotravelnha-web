@@ -16,58 +16,58 @@
         <svg class="h-4 w-4" :class="mode === tab.id ? 'text-[#008A9B]' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="tab.icon" />
         </svg>
-        {{ tab.label }}
+        {{ t(tab.label) }}
       </button>
     </div>
 
     <form v-if="mode === 'flight'" @submit.prevent="searchFlights" @focusin="markStarted" class="space-y-4">
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">
         <label class="block min-w-0">
-          <span class="field-label">From</span>
+          <span class="field-label">{{ t('common.search.from') }}</span>
           <select v-model="flight.from" required class="field-control">
-            <option v-for="city in cities" :key="city.airport" :value="city.airport">{{ city.name }} ({{ city.airport }})</option>
+            <option v-for="city in cities" :key="city.airport" :value="city.airport">{{ placeName(city.name) }} ({{ city.airport }})</option>
           </select>
         </label>
         <label class="block min-w-0">
-          <span class="field-label">To</span>
+          <span class="field-label">{{ t('common.search.to') }}</span>
           <select v-model="flight.to" required class="field-control">
-            <option v-for="city in cities" :key="city.airport" :value="city.airport">{{ city.name }} ({{ city.airport }})</option>
+            <option v-for="city in cities" :key="city.airport" :value="city.airport">{{ placeName(city.name) }} ({{ city.airport }})</option>
           </select>
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Depart</span>
+          <span class="field-label">{{ t('common.search.depart') }}</span>
           <input v-model="flight.departDate" type="date" required :min="today" class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Return (optional)</span>
+          <span class="field-label">{{ t('common.search.returnOptional') }}</span>
           <input v-model="flight.returnDate" type="date" :min="flight.departDate || today" class="field-control" />
         </label>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <label class="block min-w-0">
-          <span class="field-label">Adults</span>
+          <span class="field-label">{{ t('common.search.adults') }}</span>
           <input v-model.number="flight.adults" type="number" min="1" max="9" required class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Children <span class="font-normal text-ink/70">2–11</span></span>
+          <span class="field-label">{{ t('common.search.children') }} <span class="font-normal text-ink/70">{{ t('common.search.childrenAges') }}</span></span>
           <input v-model.number="flight.children" type="number" min="0" max="8" class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Infants <span class="font-normal text-ink/70">&lt;2</span></span>
+          <span class="field-label">{{ t('common.search.infants') }} <span class="font-normal text-ink/70">{{ t('common.search.infantAges') }}</span></span>
           <input v-model.number="flight.infants" type="number" min="0" max="4" class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Cabin</span>
+          <span class="field-label">{{ t('common.search.cabin') }}</span>
           <select v-model="flight.cabin" class="field-control">
-            <option value="y">Economy</option>
-            <option value="c">Business</option>
-            <option value="f">First</option>
+            <option value="y">{{ t('common.search.economy') }}</option>
+            <option value="c">{{ t('common.search.business') }}</option>
+            <option value="f">{{ t('common.search.first') }}</option>
           </select>
         </label>
       </div>
       <div class="flex">
         <button type="submit" class="min-h-12 w-full rounded-xl bg-[#008A9B] px-7 py-3 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] focus-visible:ring-offset-2 sm:ml-auto sm:w-auto">
-          Search flights
+          {{ t('common.search.searchFlights') }}
         </button>
       </div>
     </form>
@@ -75,44 +75,44 @@
     <form v-else @submit.prevent="searchHotels" @focusin="markStarted" class="space-y-4">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <label class="block min-w-0">
-          <span class="field-label">City</span>
+          <span class="field-label">{{ t('common.search.city') }}</span>
           <select v-model.number="hotel.cityId" required class="field-control">
-            <option v-for="city in cities" :key="city.hotelCityId" :value="city.hotelCityId">{{ city.name }}</option>
+            <option v-for="city in cities" :key="city.hotelCityId" :value="city.hotelCityId">{{ placeName(city.name) }}</option>
           </select>
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Check-in</span>
+          <span class="field-label">{{ t('common.search.checkIn') }}</span>
           <input v-model="hotel.checkIn" type="date" required :min="today" class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Check-out</span>
+          <span class="field-label">{{ t('common.search.checkOut') }}</span>
           <input v-model="hotel.checkOut" type="date" required :min="hotel.checkIn || today" class="field-control" />
         </label>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <label class="block min-w-0">
-          <span class="field-label">Adults</span>
+          <span class="field-label">{{ t('common.search.adults') }}</span>
           <input v-model.number="hotel.adults" type="number" min="1" max="20" required class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Children</span>
+          <span class="field-label">{{ t('common.search.children') }}</span>
           <input v-model.number="hotel.children" type="number" min="0" max="10" class="field-control" />
         </label>
         <label class="block min-w-0">
-          <span class="field-label">Rooms</span>
+          <span class="field-label">{{ t('common.search.rooms') }}</span>
           <input v-model.number="hotel.rooms" type="number" min="1" max="10" required class="field-control" />
         </label>
       </div>
       <div class="flex">
         <button type="submit" class="min-h-12 w-full rounded-xl bg-[#008A9B] px-7 py-3 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] focus-visible:ring-offset-2 sm:ml-auto sm:w-auto">
-          Search hotels
+          {{ t('common.search.searchHotels') }}
         </button>
       </div>
     </form>
 
     <p v-if="error" class="mt-3 text-sm text-red-600">{{ error }}</p>
       <p class="mt-4 border-t border-[#F1F5F9] pt-3 text-[13px] leading-5 text-[#64748B]">
-      Checkout happens on Trip.com, which confirms the price and availability. GoTravelNha does not charge you for this booking.
+      {{ t('common.search.checkoutNote') }}
     </p>
   </div>
 </template>
@@ -132,10 +132,11 @@ const props = withDefaults(defineProps<{ initialMode?: 'flight' | 'hotel'; place
 const route = useRoute()
 const config = useRuntimeConfig().public
 const { track } = useFunnel()
+const { t, placeName } = useI18n()
 const cities = SEARCH_CITIES
 const tabs = [
-  { id: 'flight' as const, label: 'Flights', icon: 'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2Z' },
-  { id: 'hotel' as const, label: 'Hotels', icon: 'M3 20V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v14M14 10h6a1 1 0 0 1 1 1v9M2 20h20M7 9h3M7 13h3M7 17h3' }
+  { id: 'flight' as const, label: 'common.search.flights', icon: 'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2Z' },
+  { id: 'hotel' as const, label: 'common.search.hotels', icon: 'M3 20V6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v14M14 10h6a1 1 0 0 1 1 1v9M2 20h20M7 9h3M7 13h3M7 17h3' }
 ]
 
 const today = new Date().toISOString().slice(0, 10)
@@ -190,17 +191,17 @@ const open = (provider: string, url: string, search: Record<string, string | num
 const searchFlights = () => {
   error.value = null
   if (flight.from === flight.to) {
-    error.value = 'Choose different departure and arrival cities.'
+    error.value = t('common.search.sameCity')
     return
   }
   if (flight.returnDate && flight.returnDate < flight.departDate) {
-    error.value = 'The return date must be after the departure date.'
+    error.value = t('common.search.returnAfterDepart')
     return
   }
   const adults = count(flight.adults, 1)
   const infants = count(flight.infants, 0)
   if (infants > adults) {
-    error.value = 'Each infant needs an adult travelling with them.'
+    error.value = t('common.search.infantNeedsAdult')
     return
   }
   const search = {
@@ -225,7 +226,7 @@ const selectHotelCity = (cityId: number) => {
 const searchHotels = () => {
   error.value = null
   if (hotel.checkOut <= hotel.checkIn) {
-    error.value = 'Check-out must be after check-in.'
+    error.value = t('common.search.checkoutAfterCheckin')
     return
   }
   const search = {

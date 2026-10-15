@@ -9,8 +9,8 @@
                 <PlannerIcon name="spark" class="h-4 w-4" />
               </span>
               <div class="min-w-0">
-                <h1 class="truncate text-[15px] font-bold leading-5 tracking-[-0.01em] text-[#101D3A]">AI Travel Agent</h1>
-                <p class="truncate text-[12px] leading-[18px] text-[#64748B]">GoTravelNha AI · family trip planning</p>
+                <h1 class="truncate text-[15px] font-bold leading-5 tracking-[-0.01em] text-[#101D3A]">{{ t('planner.header.title') }}</h1>
+                <p class="truncate text-[12px] leading-[18px] text-[#64748B]">{{ t('planner.header.subtitle') }}</p>
               </div>
             </div>
             <!-- Icon-only on phones so the title keeps one line; labels from sm up -->
@@ -18,31 +18,31 @@
               <button
                 v-if="hasUserNote || result"
                 type="button"
-                title="New trip"
+                :title="t('planner.header.newTrip')"
                 class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] disabled:opacity-50 sm:min-h-9 sm:min-w-0 sm:px-2.5"
                 :disabled="busy"
                 @click="newTrip"
               >
                 <PlannerIcon name="refresh" class="h-4 w-4 text-[#008A9B]" />
-                <span class="sr-only sm:not-sr-only">New trip</span>
+                <span class="sr-only sm:not-sr-only">{{ t('planner.header.newTrip') }}</span>
               </button>
               <NuxtLink
                 :to="tripsTo"
-                title="My trips"
+                :title="t('planner.header.myTrips')"
                 class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9 sm:min-w-0 sm:px-2.5"
               >
                 <PlannerIcon name="bookmark" class="h-4 w-4 text-[#008A9B]" />
-                <span class="sr-only sm:not-sr-only">My trips</span>
+                <span class="sr-only sm:not-sr-only">{{ t('planner.header.myTrips') }}</span>
               </NuxtLink>
             </div>
           </header>
 
-          <section class="shrink-0 border-b border-[#E2E8F0] py-3" aria-label="Trip brief">
+          <section class="shrink-0 border-b border-[#E2E8F0] py-3" :aria-label="t('planner.brief.title')">
             <div class="flex items-center justify-between gap-2">
-              <h2 class="text-[11px] font-semibold uppercase leading-4 tracking-[0.06em] text-[#64748B]">Trip brief</h2>
+              <h2 class="text-[11px] font-semibold uppercase leading-4 tracking-[0.06em] text-[#64748B]">{{ t('planner.brief.title') }}</h2>
               <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold leading-4" :class="briefMissing.length ? 'text-[#C2410C]' : 'text-[#047857]'">
                 <span class="h-1.5 w-1.5 rounded-full" :class="briefMissing.length ? 'bg-[#F97316]' : 'bg-[#10B981]'" aria-hidden="true"></span>
-                {{ briefMissing.length ? `Needs ${briefMissing.join(', ')}` : 'Ready to plan' }}
+                {{ briefMissing.length ? t('planner.brief.needs', { fields: briefMissing.map((field) => t(`planner.brief.missing.${field}`)).join(', ') }) : t('planner.brief.ready') }}
               </span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
@@ -56,7 +56,7 @@
                   !field.active && (field.value ? 'border-[#E2E8F0] text-[#101D3A]' : 'border-dashed border-[#CBD5E1] text-[#64748B]')
                 ]"
                 :aria-expanded="field.active"
-                :aria-label="`${field.label}: ${field.value || 'not set'}. Edit`"
+                :aria-label="t('planner.brief.edit', { label: field.label, value: field.value || t('planner.brief.notSet') })"
                 @click="toggleControl(field.control)"
               >
                 <PlannerIcon :name="field.icon" class="h-3.5 w-3.5 shrink-0" :class="field.value || field.active ? 'text-[#008A9B]' : ''" />
@@ -81,23 +81,23 @@
               >
                 <div class="max-w-[92%]" :class="note.role === 'user' ? 'text-right' : ''">
                   <p v-if="note.time" class="mb-1 text-[11px] leading-4 text-[#94A3B8]">
-                    {{ note.role === 'user' ? 'You' : 'GoTravelNha AI' }} · {{ note.time }}
+                    {{ note.role === 'user' ? t('planner.chat.you') : t('planner.chat.agent') }} · {{ note.time }}
                   </p>
                   <p
                     class="inline-block whitespace-pre-line px-3.5 py-2.5 text-left text-[14px] leading-[21px]"
                     :class="note.role === 'user' ? 'rounded-2xl rounded-br-md bg-[#008A9B] text-white' : 'rounded-2xl rounded-bl-md bg-[#F1F5F9] text-[#1E293B]'"
                   >
-                    {{ note.text }}
+                    {{ note.key ? t(note.key) : note.text }}
                   </p>
-                  <ul v-if="note.actions?.length" class="mt-2 space-y-1 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-left" aria-label="Brief updated">
+                  <ul v-if="note.actions?.length" class="mt-2 space-y-1 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-left" :aria-label="t('planner.chat.briefUpdated')">
                     <li v-for="action in note.actions" :key="action" class="flex items-start gap-1.5 text-[12px] leading-[18px] text-[#475569]">
                       <PlannerIcon name="check" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#059669]" />
                       {{ action }}
                     </li>
                   </ul>
-                  <div v-if="note.replies?.length && index === messages.length - 1 && !busy" class="mt-2 flex flex-wrap gap-1.5">
+                  <div v-if="repliesFor(note).length && index === messages.length - 1 && !busy" class="mt-2 flex flex-wrap gap-1.5">
                     <button
-                      v-for="reply in note.replies"
+                      v-for="reply in repliesFor(note)"
                       :key="reply"
                       type="button"
                       class="min-h-11 rounded-full border border-[#008A9B]/40 bg-white px-3 text-[13px] font-medium leading-5 text-[#007789] hover:bg-[#E8F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-8"
@@ -110,7 +110,7 @@
               </li>
               <li v-if="thinking" class="flex items-start">
                 <div class="inline-flex items-center gap-1 rounded-2xl rounded-bl-md bg-[#F1F5F9] px-3.5 py-3">
-                  <span class="sr-only">GoTravelNha AI is thinking</span>
+                  <span class="sr-only">{{ t('planner.chat.thinking') }}</span>
                   <span v-for="n in 3" :key="n" class="h-1.5 w-1.5 animate-bounce rounded-full bg-[#64748B]" :style="{ animationDelay: `${(n - 1) * 150}ms` }" aria-hidden="true"></span>
                 </div>
               </li>
@@ -119,7 +119,7 @@
           </div>
 
           <div class="shrink-0 space-y-2 pt-1">
-            <div v-if="result && !busy" class="-mx-1 flex gap-1.5 overflow-x-auto px-1 [scrollbar-width:none]" aria-label="Quick changes">
+            <div v-if="result && !busy" class="-mx-1 flex gap-1.5 overflow-x-auto px-1 [scrollbar-width:none]" :aria-label="t('planner.chat.quickChanges')">
               <button
                 v-for="item in adjustments"
                 :key="item.id"
@@ -127,7 +127,7 @@
                 class="min-h-11 shrink-0 rounded-full border border-[#E2E8F0] bg-white px-3 text-[12px] font-semibold leading-[18px] text-[#334155] hover:border-[#008A9B] hover:text-[#008A9B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-8"
                 @click="adjust(item.id)"
               >
-                {{ item.label }}
+                {{ t(`planner.adjust.${item.id}`) }}
               </button>
             </div>
             <RequestComposer v-model="draft" :loading="loading" :thinking="thinking" :authenticated="isAuthenticated" @submit="ask" />
@@ -144,10 +144,10 @@
               @click="startOver"
             >
               <PlannerIcon name="refresh" class="h-4 w-4" />
-              Plan another trip
+              {{ t('planner.plan.another') }}
             </button>
             <p v-if="result.catalogueSize === 0" class="text-sm text-ink/70">
-              No bookable activities for {{ result.request.destination }} yet, so this plan has ideas only.
+              {{ t('planner.plan.ideasOnly', { destination: placeName(result.request.destination) }) }}
             </p>
           </div>
 
@@ -164,22 +164,22 @@
             <!-- Asked right after a plan, when interest is highest -->
             <NewsletterSignup
               source="planner_after_plan"
-              :title="`More ideas for ${result.request.destination} and beyond`"
-              text="Get family trip ideas and school-holiday tips by email."
-              button-label="Send me ideas"
+              :title="t('planner.plan.newsletterTitle', { destination: placeName(result.request.destination) })"
+              :text="t('planner.plan.newsletterText')"
+              :button-label="t('planner.plan.newsletterButton')"
             />
           </template>
           <PlannerStates v-else-if="loading" kind="loading" :destination="form.destination" :revising="revising" />
           <PlannerStates v-else-if="error" kind="error" :message="error" @retry="retry" />
           <div v-else class="mx-auto max-w-5xl py-2 sm:py-4">
-            <p class="text-[12px] font-semibold uppercase leading-[18px] tracking-[0.06em] text-[#008A9B]">Start here</p>
-            <h2 class="mt-1 text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px] sm:leading-9">Where should the family go next?</h2>
+            <p class="text-[12px] font-semibold uppercase leading-[18px] tracking-[0.06em] text-[#008A9B]">{{ t('planner.start.eyebrow') }}</p>
+            <h2 class="mt-1 text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px] sm:leading-9">{{ t('planner.start.title') }}</h2>
             <p class="mt-2 max-w-2xl text-[14px] leading-[22px] text-[#64748B]">
-              Pick a trip to fill in the brief, or describe your own in the chat. The agent asks for anything missing, then plans the days.
+              {{ t('planner.start.text') }}
             </p>
             <PromptSuggestions layout="gallery" class="mt-6" @select="applyPrompt" />
             <ol class="mt-8 grid gap-4 border-t border-[#E2E8F0] pt-6 sm:grid-cols-3">
-              <li v-for="(step, index) in howItWorks" :key="step.title" class="flex items-start gap-3">
+              <li v-for="(step, index) in tm<{ title: string; text: string }[]>('planner.start.how')" :key="step.title" class="flex items-start gap-3">
                 <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#E8F7FA] text-[13px] font-bold text-[#008A9B]">{{ index + 1 }}</span>
                 <span>
                   <span class="block text-[14px] font-semibold leading-5 text-[#101D3A]">{{ step.title }}</span>
@@ -187,7 +187,7 @@
                 </span>
               </li>
             </ol>
-            <p class="mt-6 text-[12px] leading-[18px] text-[#94A3B8]">A suggestion is not a booking. A price appears only when a partner has checked it.</p>
+            <p class="mt-6 text-[12px] leading-[18px] text-[#94A3B8]">{{ t('planner.start.disclaimer') }}</p>
           </div>
         </div>
       </template>
@@ -234,6 +234,10 @@ interface Note {
   id: number
   role: 'user' | 'assistant'
   text: string
+  /** Translation key, for notes created before the visitor's language is applied */
+  key?: string
+  /** Translation key of a list of quick replies */
+  repliesKey?: string
   time?: string
   /** What the agent changed in the brief this turn */
   actions?: string[]
@@ -261,18 +265,7 @@ type ControlId = 'dates' | 'family' | 'budget' | 'style'
 
 const CITIES = ['Ho Chi Minh City', 'Kuala Lumpur', 'Hong Kong', 'Singapore', 'Bangkok', 'Phuket', 'Hanoi', 'Taipei', 'Seoul', 'Tokyo', 'Osaka', 'Sydney', 'Bali']
 
-const howItWorks = [
-  { title: 'Describe the trip', text: 'Where, when and who is coming, in your own words.' },
-  { title: 'The agent fills the brief', text: 'It sets dates and travellers and asks for anything missing.' },
-  { title: 'Review and refine', text: 'Read the days, then ask for changes in the chat.' }
-]
-
-const adjustments = [
-  { id: 'cheaper', label: 'Make it cheaper' },
-  { id: 'kids', label: 'More kid-friendly' },
-  { id: 'walking', label: 'Less walking' },
-  { id: 'food', label: 'Add more food options' }
-] as const
+const adjustments = [{ id: 'cheaper' }, { id: 'kids' }, { id: 'walking' }, { id: 'food' }] as const
 
 type AdjustmentId = (typeof adjustments)[number]['id']
 
@@ -284,6 +277,7 @@ let startSource: 'chat' | 'home_prompt' | 'example' | 'shared_trip' = 'chat'
 const route = useRoute()
 const router = useRouter()
 const { track } = useFunnel()
+const { t, tm, locale, localeTag, placeName } = useI18n()
 const { isAuthenticated } = useAuthState()
 const tripsTo = computed(() => (isAuthenticated.value ? '/mytrip' : '/login?redirect=/mytrip'))
 
@@ -317,17 +311,20 @@ const messages = ref<Note[]>([
   {
     id: noteId,
     role: 'assistant',
-    text: "Hi, I'm GoTravelNha AI. Tell me where you'd like to go, when, and who is coming. I'll fill in the brief, ask for anything missing, and plan the days.",
-    replies: ['Weekend in Singapore with a 5-year-old', '5 days in Tokyo, family of four']
+    text: '',
+    key: 'planner.chat.welcome',
+    repliesKey: 'planner.chat.welcomeReplies'
   }
 ])
 
 const hasUserNote = computed(() => messages.value.some((note) => note.role === 'user'))
 
-const paceLabels: Record<TripPace, string> = { relaxed: 'Relaxed', balanced: 'Balanced', packed: 'Packed' }
+const repliesFor = (note: Note) => (note.repliesKey ? tm<string[]>(note.repliesKey) : note.replies || [])
+
+const paceLabel = (pace: TripPace) => t(`planner.pace.${pace}`)
 
 const shortDate = (value: string) =>
-  new Intl.DateTimeFormat('en-SG', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`))
+  new Intl.DateTimeFormat(localeTag.value, { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`))
 
 const includedParty = computed(() => party.value.filter((person) => person.include))
 const agesKnown = computed(
@@ -349,35 +346,35 @@ const partyLabel = () => {
   if (!people.length || !agesKnown.value) return null
   const children = people.filter((person) => Number(person.age) < 18).length
   const adults = people.length - children
-  const parts = [`${adults} ${adults === 1 ? 'adult' : 'adults'}`]
-  if (children) parts.push(`${children} ${children === 1 ? 'child' : 'children'}`)
+  const parts = [t('planner.brief.adults', { count: adults })]
+  if (children) parts.push(t('planner.brief.children', { count: children }))
   return parts.join(', ')
 }
 
 const briefFields = computed<
   Array<{ id: string; label: string; icon: PlannerIconName; value: string | null; placeholder: string; control: ControlId; active: boolean }>
 >(() => [
-  { id: 'destination', label: 'Destination', icon: 'pin', value: form.destination.trim() || null, placeholder: 'Add destination', control: 'dates', active: preferencesOpen.value },
+  { id: 'destination', label: t('planner.brief.destination'), icon: 'pin', value: form.destination.trim() ? placeName(form.destination.trim()) : null, placeholder: t('planner.brief.addDestination'), control: 'dates', active: preferencesOpen.value },
   {
     id: 'dates',
-    label: 'Dates',
+    label: t('planner.brief.dates'),
     icon: 'calendar',
     value: form.startDate && form.endDate ? `${shortDate(form.startDate)} – ${shortDate(form.endDate)}` : null,
-    placeholder: 'Add dates',
+    placeholder: t('planner.brief.addDates'),
     control: 'dates',
     active: preferencesOpen.value
   },
-  { id: 'party', label: 'Travellers', icon: 'users', value: partyLabel(), placeholder: 'Add ages', control: 'family', active: partyOpen.value },
+  { id: 'party', label: t('planner.brief.travellers'), icon: 'users', value: partyLabel(), placeholder: t('planner.brief.addAges'), control: 'family', active: partyOpen.value },
   {
     id: 'budget',
-    label: 'Activity budget',
+    label: t('planner.brief.budget'),
     icon: 'wallet',
-    value: form.budget ? `S$${form.budget.toLocaleString('en-SG')}` : null,
-    placeholder: 'Budget (optional)',
+    value: form.budget ? `S$${form.budget.toLocaleString(localeTag.value)}` : null,
+    placeholder: t('planner.brief.budgetOptional'),
     control: 'budget',
     active: preferencesOpen.value
   },
-  { id: 'pace', label: 'Pace', icon: 'sliders', value: paceLabels[form.pace], placeholder: 'Pace', control: 'style', active: preferencesOpen.value }
+  { id: 'pace', label: t('planner.brief.pace'), icon: 'sliders', value: paceLabel(form.pace), placeholder: t('planner.brief.pace'), control: 'style', active: preferencesOpen.value }
 ])
 
 const toggleControl = (id: ControlId) => {
@@ -396,9 +393,9 @@ const scrollLog = () => {
   })
 }
 
-const pushNote = (role: Note['role'], text: string, extra: Pick<Note, 'actions' | 'replies'> = {}) => {
+const pushNote = (role: Note['role'], text: string, extra: Pick<Note, 'actions' | 'replies' | 'key'> = {}) => {
   noteId += 1
-  const time = new Intl.DateTimeFormat('en-SG', { hour: '2-digit', minute: '2-digit' }).format(new Date())
+  const time = new Intl.DateTimeFormat(localeTag.value, { hour: '2-digit', minute: '2-digit' }).format(new Date())
   messages.value.push({ id: noteId, role, text, time, ...extra })
   scrollLog()
 }
@@ -506,12 +503,13 @@ const applyPrompt = (prompt: PlannerPrompt) => {
   form.startDate = prompt.startDate
   form.endDate = prompt.endDate
   form.pace = prompt.pace
-  form.interests = prompt.interests
+  const copy = tm<{ label: string; caption: string; interests: string; note: string }>(`planner.prompts.items.${prompt.id}`)
+  form.interests = copy.interests
   if (prompt.budget !== undefined) form.budget = prompt.budget
-  draft.value = `${prompt.label}: ${prompt.caption.toLowerCase()}`
+  draft.value = `${copy.label}: ${copy.caption.toLocaleLowerCase(localeTag.value)}`
   startSource = 'example'
   preferencesOpen.value = false
-  pushNote('assistant', prompt.note)
+  pushNote('assistant', copy.note)
 }
 
 const addInterest = (phrase: string) => {
@@ -532,24 +530,16 @@ const adjust = async (id: AdjustmentId) => {
   if (id === 'cheaper') {
     const current = form.budget && form.budget > 0 ? form.budget : 2000
     form.budget = Math.max(200, Math.round(current * 0.8))
-    change = `Keep activities within S$${form.budget} for the whole family and prefer free or low-cost options`
-    note = `I set the activity budget to SGD ${form.budget.toLocaleString('en-SG')}.`
-  } else if (id === 'kids') {
-    addInterest('kid-friendly, playgrounds, short queues')
-    change = 'Make it more kid-friendly, with playgrounds and short queues'
-    note = 'I added kid-friendly time and shorter queues.'
-  } else if (id === 'walking') {
-    form.pace = 'relaxed'
-    addInterest('less walking, rest after lunch')
-    change = 'Cut walking between places and leave rest after lunch'
-    note = 'I set a relaxed pace and less walking.'
+    change = t('planner.adjust.cheaperChange', { budget: form.budget })
+    note = t('planner.adjust.cheaperNote', { budget: form.budget.toLocaleString(localeTag.value) })
   } else {
-    addInterest('more local food')
-    change = 'Add more local food stops'
-    note = 'I added more local food.'
+    if (id === 'walking') form.pace = 'relaxed'
+    addInterest(t(`planner.adjust.${id}Interest`))
+    change = t(`planner.adjust.${id}Change`)
+    note = t(`planner.adjust.${id}Note`)
   }
 
-  const label = adjustments.find((item) => item.id === id)?.label ?? change
+  const label = t(`planner.adjust.${id}`)
   if (result.value) {
     // A plan exists: edit it now instead of waiting for another message
     pushNote('user', label)
@@ -557,16 +547,14 @@ const adjust = async (id: AdjustmentId) => {
     return
   }
   draft.value = change
-  pushNote('assistant', `${note} Send the message to build the plan.`)
+  pushNote('assistant', t('planner.chat.sendToBuild', { note }))
   tab.value = 'talk'
   focusRequest()
 }
 
 const refine = () => {
   tab.value = 'talk'
-  pushNote('assistant', 'What should I change? For example, "swap day 2 for something indoors". I will edit this plan and keep the rest.', {
-    replies: ['Add a rest afternoon', 'More indoor options', 'Fewer early starts']
-  })
+  pushNote('assistant', t('planner.chat.refine'), { replies: tm<string[]>('planner.chat.refineReplies') })
   focusRequest()
 }
 
@@ -574,18 +562,18 @@ const clarify = () => {
   if (!form.destination.trim() || form.destination.trim().length < 2) {
     preferencesOpen.value = true
     partyOpen.value = false
-    return 'Which city should we plan? Add it under Dates.'
+    return t('planner.chat.askCity')
   }
   if (!form.startDate || !form.endDate) {
     preferencesOpen.value = true
     partyOpen.value = false
-    return 'Add a start date and an end date, then send again.'
+    return t('planner.chat.askDates')
   }
   const travellers = party.value.filter((person) => person.include)
   if (!travellers.length || travellers.some((person) => person.age === null || person.age === undefined || Number.isNaN(Number(person.age)))) {
     partyOpen.value = true
     preferencesOpen.value = false
-    return 'Add at least one traveller and fill in every age.'
+    return t('planner.chat.askAges')
   }
   return null
 }
@@ -606,29 +594,29 @@ const applyUpdates = (updates: AgentTurn['updates']) => {
   const done: string[] = []
   if (updates.destination && updates.destination !== form.destination) {
     form.destination = updates.destination
-    done.push(`Destination set to ${updates.destination}`)
+    done.push(t('planner.updates.destination', { value: placeName(updates.destination) }))
   }
   if (updates.startDate || updates.endDate) {
     if (updates.startDate) form.startDate = updates.startDate
     if (updates.endDate) form.endDate = updates.endDate
     if (form.endDate && form.startDate && form.endDate < form.startDate) form.endDate = ''
-    if (form.startDate && form.endDate) done.push(`Dates set to ${shortDate(form.startDate)} – ${shortDate(form.endDate)}`)
+    if (form.startDate && form.endDate) done.push(t('planner.updates.dates', { value: `${shortDate(form.startDate)} – ${shortDate(form.endDate)}` }))
   }
   if (updates.travellers?.length && !party.value.some((person) => person.fromProfile)) {
     party.value = updates.travellers.map((person) => ({ name: person.label || '', age: person.age, include: true, fromProfile: false }))
-    done.push(`Travellers set to ${updates.travellers.length} (ages ${updates.travellers.map((person) => person.age).join(', ')})`)
+    done.push(t('planner.updates.travellers', { count: updates.travellers.length, ages: updates.travellers.map((person) => person.age).join(', ') }))
   }
   if (updates.budget && updates.budget !== form.budget) {
     form.budget = updates.budget
-    done.push(`Activity budget set to S$${updates.budget.toLocaleString('en-SG')}`)
+    done.push(t('planner.updates.budget', { value: `S$${updates.budget.toLocaleString(localeTag.value)}` }))
   }
   if (updates.pace && updates.pace !== form.pace) {
     form.pace = updates.pace
-    done.push(`Pace set to ${paceLabels[updates.pace].toLowerCase()}`)
+    done.push(t('planner.updates.pace', { value: paceLabel(updates.pace).toLocaleLowerCase(localeTag.value) }))
   }
   if (updates.interests && updates.interests !== form.interests) {
     form.interests = updates.interests
-    done.push(`Interests: ${updates.interests}`)
+    done.push(t('planner.updates.interests', { value: updates.interests }))
   }
   return done
 }
@@ -644,9 +632,9 @@ const ask = async () => {
 
   // Empty box: plan from the brief as it stands
   if (!spoken) {
-    const when = form.startDate && form.endDate ? `${shortDate(form.startDate)} – ${shortDate(form.endDate)}` : 'dates not set yet'
+    const when = form.startDate && form.endDate ? `${shortDate(form.startDate)} – ${shortDate(form.endDate)}` : t('planner.chat.datesNotSet')
     track('planner_started', { source: startSource }, true)
-    pushNote('user', `Plan ${form.destination || 'my trip'}, ${when}`)
+    pushNote('user', t('planner.chat.planBrief', { destination: form.destination ? placeName(form.destination) : t('planner.chat.myTrip'), when }))
     await planFromBrief()
     return
   }
@@ -660,7 +648,7 @@ const ask = async () => {
     turn = await $fetch<AgentTurn>('/api/planner/chat', {
       method: 'POST',
       body: {
-        messages: messages.value.slice(1).map((note) => ({ role: note.role, text: note.text.slice(0, 800) })),
+        messages: messages.value.slice(1).map((note) => ({ role: note.role, text: (note.key ? t(note.key) : note.text).slice(0, 800) })),
         brief: {
           destination: form.destination || undefined,
           startDate: form.startDate || undefined,
@@ -673,6 +661,7 @@ const ask = async () => {
           pace: form.pace,
           interests: form.interests || undefined
         },
+        language: locale.value,
         plan: result.value
           ? { title: result.value.itinerary.title.slice(0, 200), days: result.value.itinerary.days.map((day) => day.theme.slice(0, 200)) }
           : null
@@ -732,6 +721,7 @@ const generate = async (revision?: { change: string }) => {
         currency: 'SGD',
         pace: form.pace,
         interests: form.interests || undefined,
+        language: locale.value,
         revise
       }
     })
@@ -746,13 +736,17 @@ const generate = async (revision?: { change: string }) => {
     const days = response.itinerary.days.length
     pushNote(
       'assistant',
-      revise
-        ? `I updated the ${days}-day plan for ${response.request.destination}. Anything else to change?`
-        : `Here is a ${days}-day plan for ${response.request.destination}. Prices stay with the partner that checked them. Tell me what to change and I will edit it.`,
-      { replies: revise ? [] : ['Make day 1 lighter', 'Add a rainy-day backup', 'More food stops'] }
+      t(revise ? 'planner.chat.planUpdated' : 'planner.chat.planReady', { days, destination: placeName(response.request.destination) }),
+      { replies: revise ? [] : tm<string[]>('planner.chat.planReplies') }
     )
   } catch (err: any) {
-    const message = err?.data?.message || 'The trip planner could not finish. Please try again.'
+    const status = err?.statusCode ?? err?.status
+    const message =
+      status === 429
+        ? t(isAuthenticated.value ? 'planner.chat.limitUser' : 'planner.chat.limitGuest')
+        : locale.value === 'en'
+          ? err?.data?.message || t('planner.chat.failed')
+          : t('planner.chat.failed')
     track('ai_itinerary_failed', { revise: !!revise, status: err?.statusCode ?? err?.status ?? null })
     error.value = message
     pushNote('assistant', message)
@@ -796,7 +790,7 @@ const saveTrip = async () => {
     track('trip_saved', { destination: result.value.request.destination })
     router.push(`/mytrip/${response.data.id}`)
   } catch (err: any) {
-    const message = err?.data?.message || 'Could not save this trip.'
+    const message = locale.value === 'en' ? err?.data?.message || t('planner.chat.saveFailed') : t('planner.chat.saveFailed')
     error.value = message
     pushNote('assistant', message)
   } finally {
@@ -827,7 +821,7 @@ const startOver = () => {
   error.value = null
   localStorage.removeItem(PENDING_KEY)
   tab.value = 'talk'
-  pushNote('assistant', 'What should we plan next? Describe the trip and I will set up a new brief.')
+  pushNote('assistant', t('planner.chat.startOver'))
 }
 
 onMounted(async () => {
@@ -853,7 +847,8 @@ onMounted(async () => {
     if (!party.value.some((person) => person.fromProfile)) party.value = []
     startSource = 'home_prompt'
     draft.value = prompt
-    pushNote('assistant', 'I put your trip in the message box below. Change anything you like, then press send and I will start planning.')
+    // Keyed: this runs before plugins/i18n.client.ts applies the visitor's language
+    pushNote('assistant', '', { key: 'planner.chat.promptReady' })
     await nextTick()
     // Desktop only: on phones focusing opens the keyboard over the brief
     if (window.matchMedia('(min-width: 1024px)').matches) {
@@ -869,12 +864,7 @@ onMounted(async () => {
     try {
       result.value = await $fetch<PlannerResult>(`/api/planner/generations/${pendingId}`)
       useRequest(result.value.request)
-      pushNote(
-        'assistant',
-        isAuthenticated.value
-          ? 'I brought back the last plan from this browser.'
-          : 'I brought back the last plan from this browser. Sign in to save it.'
-      )
+      pushNote('assistant', '', { key: isAuthenticated.value ? 'planner.chat.restored' : 'planner.chat.restoredGuest' })
       tab.value = 'plan'
     } catch {
       localStorage.removeItem(PENDING_KEY)
@@ -882,15 +872,15 @@ onMounted(async () => {
   }
 })
 
-useHead({
-  title: 'AI Trip Planner for Families | GoTravelNha',
+useHead(() => ({
+  title: t('planner.meta.title'),
   // Full-screen app: stop Safari's rubber-band scroll from dragging the whole page
   htmlAttrs: { class: 'overscroll-none' },
   meta: [
     {
       name: 'description',
-      content: 'Describe your family trip and the GoTravelNha AI agent plans it day by day, asks for missing details and edits the plan on request. Partner links appear only after a price has been checked.'
+      content: t('planner.meta.description')
     }
   ]
-})
+}))
 </script>

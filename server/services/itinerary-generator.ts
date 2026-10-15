@@ -30,9 +30,19 @@ export const TripRequestSchema = z.object({
   budget: z.number().positive().max(1_000_000).nullable().optional(),
   currency: z.string().trim().length(3).default('SGD'),
   pace: z.enum(['relaxed', 'balanced', 'packed']).default('balanced'),
-  interests: z.string().trim().max(500).optional()
+  interests: z.string().trim().max(500).optional(),
+  // Site language the visitor chose; the plan text is written in it
+  language: z.enum(['en', 'vi', 'zh']).default('en')
 })
 export type TripRequest = z.infer<typeof TripRequestSchema>
+
+const LANGUAGE_NAMES = { en: 'English', vi: 'Vietnamese', zh: 'Simplified Chinese' } as const
+
+/** Instruction appended to prompts for visitors who use the site in Vietnamese or Chinese. */
+export const languageInstruction = (language: keyof typeof LANGUAGE_NAMES | undefined, fields: string) =>
+  language && language !== 'en'
+    ? `\n\n<language>\nWrite ${fields} in ${LANGUAGE_NAMES[language]}. Keep place and attraction names recognisable (add the local or English name in brackets when it helps). Keep activityId values exactly as given.\n</language>`
+    : ''
 
 // Asks for an edit of an earlier plan instead of a new one
 export const RevisionSchema = z.object({
@@ -167,7 +177,8 @@ export async function generateItinerary(
   const revisionBlock = revision
     ? `\n\n<current_plan>\n${renderPlan(revision.itinerary)}\n</current_plan>\n\n<change_request>\n${revision.change}\n</change_request>`
     : ''
-  const userContent = `${catalogueBlock}\n\n<trip>\n${tripBlock}\n</trip>${revisionBlock}\n\nReturn exactly ${dates.length} days in date order.`
+  const languageBlock = languageInstruction(request.language, 'the title, summary, day themes, item titles, descriptions, family tips and tips')
+  const userContent = `${catalogueBlock}\n\n<trip>\n${tripBlock}\n</trip>${revisionBlock}${languageBlock}\n\nReturn exactly ${dates.length} days in date order.`
 
   let response
   try {

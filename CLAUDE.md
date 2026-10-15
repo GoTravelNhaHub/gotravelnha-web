@@ -1,6 +1,6 @@
 # web/ — GoTravelNha site
 
-Nuxt `^3.17`, Vue `^3.5`, Tailwind (`@nuxtjs/tailwindcss` only), Nitro server routes, Prisma `^5.19` on PostgreSQL. No Pinia. No component library. Custom `useI18n` (`en` / `vi`, localStorage key `gotravelnha_lang`).
+Nuxt `^3.17`, Vue `^3.5`, Tailwind (`@nuxtjs/tailwindcss` only), Nitro server routes, Prisma `^5.19` on PostgreSQL. No Pinia. No component library. Custom `useI18n` (`en` / `vi` / `zh`, localStorage key `gotravelnha_lang`); see "Languages" below.
 
 Work from this directory.
 
@@ -69,6 +69,14 @@ export default defineEventHandler(async (event) => {
 - **Analytics:** `useActivityTracker` → `server/api/track-activity.ts` → `UserActivity`.
 
 Feature flag for nav: `NUXT_PUBLIC_ENABLE_BEST_DEALS_NAV` (`runtimeConfig.public`). `/compare` and `/search` 301 to `/explore`; their page files are unreachable.
+
+## Languages
+
+- Strings live in `locales/{en,vi,zh}/<area>.ts`. English is the source; `vi` and `zh` are typed against it, so a missing key fails type checking. Add every new UI string to all three.
+- Use `const { t, tm, placeName, localeTag } = useI18n()`. `t('area.key', { name })` for text (`key_one` is used when `count` is 1), `tm<T>()` for lists, `placeName()` for city and country names, `localeTag` for `Intl` dates and numbers.
+- One URL per page. The server always renders English (search engines and the `swr` cache see English); `plugins/i18n.client.ts` switches to the saved or browser language after hydration. So text created in `onMounted` must be a key rendered in the template, not a translated string.
+- The planner sends `language` to `/api/planner/chat` and `/api/planner/itinerary`; the AI writes replies and plans in that language and keeps `destination` as the English city name.
+- Database content (deal templates edited in admin, AttractionsSG events, guide bodies) and server error messages stay English.
 
 ## Auth boundary
 

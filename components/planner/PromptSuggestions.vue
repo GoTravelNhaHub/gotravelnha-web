@@ -22,13 +22,13 @@
         <span
           class="block font-semibold tracking-[-0.025em] text-white"
           :class="layout === 'gallery' ? 'text-[16px] leading-6' : 'text-[13px] leading-4'"
-        >{{ prompt.label }}</span>
-        <span class="mt-0.5 block text-white/90" :class="layout === 'gallery' ? 'text-[13px] leading-5' : 'text-[11px] leading-4'">{{ prompt.caption }}</span>
+        >{{ t(`planner.prompts.items.${prompt.id}.label`) }}</span>
+        <span class="mt-0.5 block text-white/90" :class="layout === 'gallery' ? 'text-[13px] leading-5' : 'text-[11px] leading-4'">{{ t(`planner.prompts.items.${prompt.id}.caption`) }}</span>
         <span
           v-if="layout === 'gallery'"
           class="mt-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold leading-4 text-[#101D3A] opacity-90 transition group-hover:opacity-100"
         >
-          Use this trip
+          {{ t('planner.prompts.useTrip') }}
           <PlannerIcon name="arrow" class="h-3 w-3" />
         </span>
       </span>
@@ -41,6 +41,8 @@ import PlannerIcon from '~/components/planner/PlannerIcon.vue'
 import type { TripPace } from '~/types/trip'
 
 withDefaults(defineProps<{ layout?: 'compact' | 'gallery' }>(), { layout: 'compact' })
+
+const { t } = useI18n()
 
 export interface PlannerPrompt {
   id: string

@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="$emit('submit')">
-    <label class="sr-only" for="planner-request">Describe your trip, or ask for a change</label>
+    <label class="sr-only" for="planner-request">{{ t('planner.composer.label') }}</label>
     <div
       class="rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_1px_2px_rgba(16,29,58,0.06)] transition focus-within:border-[#008A9B] focus-within:shadow-[0_0_0_3px_rgba(0,138,155,0.15)]"
     >
@@ -10,7 +10,7 @@
         :value="modelValue"
         rows="1"
         :maxlength="MAX_LENGTH"
-        placeholder="Describe your trip, or ask for a change…"
+        :placeholder="t('planner.composer.placeholder')"
         aria-describedby="planner-request-help"
         class="block w-full resize-none border-0 bg-transparent px-4 pb-1 pt-3.5 text-[16px] leading-6 text-[#1E293B] placeholder:text-[#94A3B8] focus:outline-none focus:ring-0 sm:text-[15px]"
         :style="{ maxHeight: `${MAX_HEIGHT}px` }"
@@ -24,8 +24,8 @@
             {{ modelValue.length }} / {{ MAX_LENGTH }}
           </span>
           <span v-else class="hidden sm:inline">
-            <kbd class="font-sans font-semibold text-[#64748B]">Enter</kbd> to send ·
-            <kbd class="font-sans font-semibold text-[#64748B]">Shift + Enter</kbd> for a new line
+            <kbd class="font-sans font-semibold text-[#64748B]">{{ t('planner.composer.enter') }}</kbd> {{ t('planner.composer.toSend') }} ·
+            <kbd class="font-sans font-semibold text-[#64748B]">{{ t('planner.composer.shiftEnter') }}</kbd> {{ t('planner.composer.newLine') }}
           </span>
         </p>
         <button
@@ -39,9 +39,9 @@
         </button>
       </div>
     </div>
-    <p v-if="loading" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">Planning the days. This can take up to a minute.</p>
-    <p v-else-if="thinking" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">The agent is reading your message.</p>
-    <p v-else-if="!authenticated" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">Guests can create 3 plans a day.</p>
+    <p v-if="loading" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">{{ t('planner.composer.planningNote') }}</p>
+    <p v-else-if="thinking" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">{{ t('planner.composer.thinkingNote') }}</p>
+    <p v-else-if="!authenticated" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">{{ t('planner.composer.guestLimit') }}</p>
   </form>
 </template>
 
@@ -66,13 +66,14 @@ const emit = defineEmits<{
 }>()
 
 const box = ref<HTMLTextAreaElement | null>(null)
+const { t } = useI18n()
 
 const nearLimit = computed(() => props.modelValue.length >= MAX_LENGTH - 100)
 // An empty box plans from the brief as it stands (see ask() in pages/planner/index.vue)
 const buttonLabel = computed(() => {
-  if (props.loading) return 'Planning'
-  if (props.thinking) return 'Replying'
-  return props.modelValue.trim() ? 'Send' : 'Plan trip'
+  if (props.loading) return t('planner.composer.planning')
+  if (props.thinking) return t('planner.composer.replying')
+  return props.modelValue.trim() ? t('planner.composer.send') : t('planner.composer.plan')
 })
 
 // Grow with the text, including text set from outside (a prompt from the home page, a quick reply)

@@ -3,16 +3,16 @@
     <!-- Selected Package Summary -->
     <div
       v-if="selectedOptionSummary"
-      class="relative overflow-hidden rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50/90 to-teal-50/50 p-5 shadow-sm shadow-emerald-500/10 backdrop-blur-sm"
+      class="relative overflow-hidden rounded-2xl border border-brand-200/80 bg-gradient-to-br from-brand-50/90 to-brand-50/50 p-5 shadow-sm shadow-brand-500/10 backdrop-blur-sm"
     >
       <div class="flex items-start gap-3">
-        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
+        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-500 text-white shadow-lg shadow-brand-500/30">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
         </div>
         <div class="flex-1 min-w-0">
-          <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700 mb-1.5">{{ t('attractions.request.selectedPackage') }}</p>
+          <p class="text-xs font-semibold uppercase tracking-wide text-brand-700 mb-1.5">{{ t('attractions.request.selectedPackage') }}</p>
           <p class="text-sm font-medium text-slate-800 leading-relaxed">{{ selectedOptionSummary }}</p>
         </div>
       </div>
@@ -32,7 +32,7 @@
           type="text"
           required
           :placeholder="t('attractions.request.namePlaceholder')"
-          class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none"
+          class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/40 focus:outline-none"
         />
       </div>
 
@@ -50,7 +50,7 @@
             type="number"
             min="0"
             step="1"
-            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none"
+            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/40 focus:outline-none"
           />
         </label>
         <label class="flex flex-col gap-2">
@@ -65,7 +65,7 @@
             type="number"
             min="0"
             step="1"
-            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none"
+            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/40 focus:outline-none"
           />
         </label>
       </div>
@@ -83,7 +83,7 @@
           type="email"
           required
           placeholder="your@email.com"
-          class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none"
+          class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/40 focus:outline-none"
         />
       </div>
 
@@ -100,7 +100,7 @@
           type="tel"
           required
           placeholder="+65 1234 5678"
-          class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none"
+          class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/40 focus:outline-none"
         />
       </div>
 
@@ -116,7 +116,7 @@
           v-model="form.notes"
           rows="4"
           :placeholder="t('attractions.request.notesPlaceholder')"
-          class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all resize-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none"
+          class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 placeholder:text-slate-400 transition-all resize-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/40 focus:outline-none"
         ></textarea>
       </div>
 
@@ -149,7 +149,7 @@
       <button
         type="submit"
         :disabled="submitting"
-        class="relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 px-6 py-4 sm:py-4 font-bold text-white shadow-[0_12px_24px_-12px_rgba(16,185,129,0.55)] transition-all hover:-translate-y-0.5 active:scale-95 active:translate-y-0 hover:from-emerald-600 hover:to-teal-600 hover:shadow-[0_16px_32px_-12px_rgba(16,185,129,0.65)] focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:transform-none disabled:shadow-sm touch-manipulation min-h-[52px] sm:min-h-[56px]"
+        class="relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 px-6 py-4 sm:py-4 font-bold text-white shadow-[0_12px_24px_-12px_rgba(0,102,228,0.55)] transition-all hover:-translate-y-0.5 active:scale-95 active:translate-y-0 hover:from-brand-600 hover:to-brand-600 hover:shadow-[0_16px_32px_-12px_rgba(0,102,228,0.65)] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:transform-none disabled:shadow-sm touch-manipulation min-h-[52px] sm:min-h-[56px]"
       >
         <span v-if="submitting" class="flex items-center justify-center gap-2.5">
           <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24">
@@ -168,9 +168,9 @@
     </form>
 
     <!-- Trust Badges -->
-    <div class="space-y-3 rounded-2xl border border-slate-200/70 bg-white/70 p-5 shadow-sm shadow-emerald-500/5">
+    <div class="space-y-3 rounded-2xl border border-slate-200/70 bg-white/70 p-5 shadow-sm shadow-brand-500/5">
       <div class="flex items-center gap-3 text-sm">
-        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
+        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
           </svg>

@@ -3,7 +3,7 @@
     <div class="space-y-5">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div class="max-w-2xl">
-          <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">Bookings</h2>
+          <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#0A1024]">Bookings</h2>
           <p class="text-[14px] text-[#64748B]">
             Singapore attraction tickets sold on GoTravelNha. "Needs attention" lists paid tickets not confirmed or emailed, and refunds still to cancel with the supplier.
           </p>
@@ -17,7 +17,7 @@
               role="tab"
               :aria-selected="view === option.id"
               class="min-h-9 whitespace-nowrap rounded-lg px-3.5 text-[13px] font-semibold"
-              :class="view === option.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
+              :class="view === option.id ? 'bg-white text-[#0A1024] shadow-[0_1px_3px_rgba(10,16,36,0.12)]' : 'text-[#64748B] hover:text-[#0A1024]'"
               @click="view = option.id"
             >
               {{ option.label }}
@@ -35,10 +35,10 @@
       <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
       <p v-if="notice" class="alert-success" role="status">{{ notice }}</p>
 
-      <section v-if="fulfil.id" class="rounded-2xl border border-[#99E3EC] bg-white p-5" aria-labelledby="fulfil-title">
+      <section v-if="fulfil.id" class="rounded-2xl border border-[#CFE0F7] bg-white p-5" aria-labelledby="fulfil-title">
         <form class="grid grid-cols-1 items-end gap-4 md:grid-cols-3" @submit.prevent="submitFulfil">
           <div class="md:col-span-3">
-            <h3 id="fulfil-title" class="text-[15px] font-bold text-[#101D3A]">Tickets for <span class="font-mono">{{ fulfil.reference }}</span></h3>
+            <h3 id="fulfil-title" class="text-[15px] font-bold text-[#0A1024]">Tickets for <span class="font-mono">{{ fulfil.reference }}</span></h3>
             <p class="text-[13px] text-[#64748B]">Saved to the booking and emailed to the customer.</p>
           </div>
           <div>
@@ -77,7 +77,7 @@
             <tr v-for="booking in bookings" :key="booking.id" class="align-top hover:bg-[#F8FAFC]">
               <td class="whitespace-nowrap px-4 py-3 text-[13px] text-[#64748B]">{{ formatDate(booking.createdAt) }}</td>
               <td class="px-4 py-3">
-                <div class="font-semibold text-[#101D3A]">{{ booking.eventTitle }}</div>
+                <div class="font-semibold text-[#0A1024]">{{ booking.eventTitle }}</div>
                 <div class="text-[12px] text-[#64748B]">
                   {{ booking.optionName || '—' }} · Qty {{ booking.quantity }}
                 </div>
@@ -87,7 +87,7 @@
                 <div>{{ booking.customerName || '—' }}</div>
                 <div class="text-[12px] text-[#64748B]">{{ booking.customerEmail || '—' }}</div>
               </td>
-              <td class="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-[#101D3A]">
+              <td class="whitespace-nowrap px-4 py-3 font-semibold tabular-nums text-[#0A1024]">
                 {{ booking.currency }} {{ booking.amount.toFixed(2) }}
                 <div v-if="booking.discountAmount" class="text-xs text-amber-700">
                   Discount {{ booking.discountAmount.toFixed(2) }}
@@ -252,7 +252,7 @@ const paymentBadge = (status: AdminBooking['status']) =>
 const supplierBadge = (status: string | null) => {
   if (status === 'CONFIRMED') return 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
   if (status === 'FAILED') return 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA]'
-  if (status === 'PLACING') return 'bg-[#E8F7FA] text-[#007789] border-[#99E3EC]'
+  if (status === 'PLACING') return 'bg-[#EAF2FC] text-[#0057C8] border-[#CFE0F7]'
   return 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]'
 }
 

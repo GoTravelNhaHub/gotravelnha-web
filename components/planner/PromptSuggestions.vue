@@ -4,7 +4,7 @@
       v-for="prompt in prompts"
       :key="prompt.id"
       type="button"
-      class="group relative overflow-hidden text-left shadow-[0_1px_2px_rgba(16,29,58,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
+      class="group relative overflow-hidden text-left shadow-[0_1px_2px_rgba(10,16,36,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] focus-visible:ring-offset-2"
       :class="layout === 'gallery' ? 'aspect-[4/3] rounded-2xl xl:aspect-[3/4]' : 'aspect-[2/1] rounded-[10px]'"
       @click="$emit('select', prompt)"
     >
@@ -26,7 +26,7 @@
         <span class="mt-0.5 block text-white/90" :class="layout === 'gallery' ? 'text-[13px] leading-5' : 'text-[11px] leading-4'">{{ t(`planner.prompts.items.${prompt.id}.caption`) }}</span>
         <span
           v-if="layout === 'gallery'"
-          class="mt-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold leading-4 text-[#101D3A] opacity-90 transition group-hover:opacity-100"
+          class="mt-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[12px] font-semibold leading-4 text-[#0A1024] opacity-90 transition group-hover:opacity-100"
         >
           {{ t('planner.prompts.useTrip') }}
           <PlannerIcon name="arrow" class="h-3 w-3" />

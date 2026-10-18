@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-dvh bg-[#F6F9FC] font-brand text-[#334155]">
+  <div class="min-h-dvh bg-[#F7F9FD] font-brand text-[#334155]">
     <!-- Sidebar -->
     <aside
       :class="[
-        'fixed inset-y-0 left-0 z-40 flex flex-col bg-[#101D3A] text-white transition-[width,transform] duration-200',
+        'fixed inset-y-0 left-0 z-40 flex flex-col bg-[#0A1024] text-white transition-[width,transform] duration-200',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         collapsed ? 'w-64 lg:w-[72px]' : 'w-64'
       ]"
@@ -11,9 +11,9 @@
     >
       <div class="flex h-16 shrink-0 items-center gap-2.5 border-b border-white/10 px-4" :class="collapsed ? 'lg:justify-center lg:px-0' : ''">
         <NuxtLink to="/admin" class="flex min-w-0 items-center gap-2.5" @click="closeSidebar">
-          <Logo :size="'32'" />
+          <Logo :size="'32'" light />
           <span v-show="!collapsed || !isDesktop" class="min-w-0">
-            <span class="block truncate text-[15px] font-bold leading-5 tracking-[-0.02em]">GoTravel<span class="text-[#5EEAD4]">Nha</span></span>
+            <span class="block truncate text-[15px] font-bold leading-5 tracking-[-0.025em]">GoTravelNha</span>
             <span class="block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-white/50">Admin</span>
           </span>
         </NuxtLink>
@@ -35,15 +35,15 @@
                 :target="item.external ? '_blank' : undefined"
                 :title="collapsed && isDesktop ? item.label : undefined"
                 :aria-current="isActive(item) ? 'page' : undefined"
-                class="group relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5EEAD4]"
+                class="group relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7DB4FF]"
                 :class="[
                   isActive(item) ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white',
                   collapsed && isDesktop ? 'lg:justify-center lg:px-0' : ''
                 ]"
                 @click="closeSidebar"
               >
-                <span v-if="isActive(item)" class="absolute inset-y-2 left-0 w-0.5 rounded-full bg-[#5EEAD4]" aria-hidden="true"></span>
-                <svg class="h-5 w-5 shrink-0" :class="isActive(item) ? 'text-[#5EEAD4]' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <span v-if="isActive(item)" class="absolute inset-y-2 left-0 w-0.5 rounded-full bg-[#7DB4FF]" aria-hidden="true"></span>
+                <svg class="h-5 w-5 shrink-0" :class="isActive(item) ? 'text-[#7DB4FF]' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="item.icon" />
                 </svg>
                 <span v-show="!collapsed || !isDesktop" class="min-w-0 flex-1 truncate">{{ item.label }}</span>
@@ -67,7 +67,7 @@
       <div class="hidden shrink-0 border-t border-white/10 p-3 lg:block">
         <button
           type="button"
-          class="flex min-h-10 w-full items-center gap-3 rounded-lg px-3 text-[13px] font-medium text-white/60 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5EEAD4]"
+          class="flex min-h-10 w-full items-center gap-3 rounded-lg px-3 text-[13px] font-medium text-white/60 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7DB4FF]"
           :class="collapsed ? 'justify-center px-0' : ''"
           :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
           @click="toggleCollapsed"
@@ -81,7 +81,7 @@
     </aside>
 
     <!-- Mobile overlay -->
-    <div v-if="sidebarOpen" class="fixed inset-0 z-30 bg-[#101D3A]/50 backdrop-blur-sm lg:hidden" aria-hidden="true" @click="sidebarOpen = false"></div>
+    <div v-if="sidebarOpen" class="fixed inset-0 z-30 bg-[#0A1024]/50 backdrop-blur-sm lg:hidden" aria-hidden="true" @click="sidebarOpen = false"></div>
 
     <!-- Top bar -->
     <header
@@ -102,13 +102,13 @@
 
         <div class="min-w-0 flex-1">
           <p v-if="current.group" class="hidden text-[12px] font-medium leading-4 text-[#94A3B8] sm:block">{{ current.group }}</p>
-          <h1 class="truncate text-[17px] font-bold leading-6 tracking-[-0.02em] text-[#101D3A]">{{ current.title }}</h1>
+          <h1 class="truncate text-[17px] font-bold leading-6 tracking-[-0.02em] text-[#0A1024]">{{ current.title }}</h1>
         </div>
 
         <NuxtLink
           to="/"
           target="_blank"
-          class="hidden min-h-10 items-center gap-1.5 rounded-lg border border-[#E2E8F0] px-3 text-[13px] font-semibold text-[#101D3A] hover:bg-[#F8FAFC] sm:inline-flex"
+          class="hidden min-h-10 items-center gap-1.5 rounded-lg border border-[#E2E8F0] px-3 text-[13px] font-semibold text-[#0A1024] hover:bg-[#F8FAFC] sm:inline-flex"
         >
           View site
           <svg class="h-3.5 w-3.5 text-[#64748B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
@@ -124,9 +124,9 @@
             aria-haspopup="menu"
             @click="userMenuOpen = !userMenuOpen"
           >
-            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#008A9B] text-[13px] font-bold text-white">{{ initial }}</span>
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#0066E4] text-[13px] font-bold text-white">{{ initial }}</span>
             <span class="hidden text-left sm:block">
-              <span class="block max-w-[10rem] truncate text-[13px] font-semibold leading-4 text-[#101D3A]">{{ displayName }}</span>
+              <span class="block max-w-[10rem] truncate text-[13px] font-semibold leading-4 text-[#0A1024]">{{ displayName }}</span>
               <span class="block text-[11px] leading-4 text-[#64748B]">Administrator</span>
             </span>
             <svg class="hidden h-4 w-4 text-[#94A3B8] sm:block" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
@@ -136,7 +136,7 @@
           <div
             v-if="userMenuOpen"
             role="menu"
-            class="absolute right-0 mt-2 w-52 overflow-hidden rounded-xl border border-[#E2E8F0] bg-white py-1 shadow-[0_16px_40px_-16px_rgba(16,29,58,0.35)]"
+            class="absolute right-0 mt-2 w-52 overflow-hidden rounded-xl border border-[#E2E8F0] bg-white py-1 shadow-[0_16px_40px_-16px_rgba(10,16,36,0.35)]"
           >
             <p v-if="user?.email" class="truncate border-b border-[#F1F5F9] px-4 py-2.5 text-[12px] text-[#64748B]">{{ user.email }}</p>
             <NuxtLink to="/user" role="menuitem" class="block px-4 py-2.5 text-[14px] text-[#334155] hover:bg-[#F8FAFC]" @click="userMenuOpen = false">My profile</NuxtLink>
@@ -208,7 +208,10 @@ const navGroups: Array<{ label: string; items: NavItem[] }> = [
   },
   {
     label: 'Content',
-    items: [{ to: '/admin/deal-template-generator', label: 'Deal templates', icon: ICONS.templates }]
+    items: [
+      { to: '/admin/deal-template-generator', label: 'Deal templates', icon: ICONS.templates },
+      { to: '/admin/community', label: 'Community moderation', icon: ICONS.support }
+    ]
   },
   {
     label: 'Site',

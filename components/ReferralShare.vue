@@ -5,7 +5,7 @@
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 12v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8m16-4H4v4h16V8Zm-8 0v13M12 8H8.5a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8Zm0 0h3.5a2.5 2.5 0 1 0 0-5C13 3 12 8 12 8Z" /></svg>
       </span>
       <div>
-        <h2 id="referral-title" class="text-[15px] font-bold leading-5 text-[#101D3A]">{{ t('account.referral.title') }}</h2>
+        <h2 id="referral-title" class="text-[15px] font-bold leading-5 text-[#0A1024]">{{ t('account.referral.title') }}</h2>
         <p class="mt-0.5 text-[13px] leading-5 text-[#64748B]">{{ t('account.referral.text') }}</p>
       </div>
     </div>
@@ -14,7 +14,7 @@
       <div>
         <label for="referral-code" class="form-label">{{ t('account.referral.code') }}</label>
         <div class="flex gap-2">
-          <code id="referral-code" class="flex min-h-11 flex-1 items-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3.5 font-mono text-[15px] font-bold tracking-wide text-[#101D3A]">{{ referralCode }}</code>
+          <code id="referral-code" class="flex min-h-11 flex-1 items-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3.5 font-mono text-[15px] font-bold tracking-wide text-[#0A1024]">{{ referralCode }}</code>
           <button type="button" class="btn-secondary min-h-11 w-auto px-3.5 text-[13px]" @click="copyReferralCode">{{ copied ? t('account.referral.copied') : t('account.referral.copy') }}</button>
         </div>
       </div>
@@ -27,15 +27,15 @@
       </div>
 
       <div class="grid grid-cols-3 gap-2">
-        <button type="button" class="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] text-[13px] font-semibold text-[#101D3A] hover:bg-[#F8FAFC]" @click="shareViaWhatsApp">
+        <button type="button" class="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] text-[13px] font-semibold text-[#0A1024] hover:bg-[#F8FAFC]" @click="shareViaWhatsApp">
           <svg class="h-4 w-4 fill-[#25D366]" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.04c-5.51 0-9.96 4.45-9.96 9.96 0 1.76.47 3.49 1.36 5.01L2 22l5.16-1.33c1.46.8 3.1 1.23 4.78 1.23h.01c5.51 0 9.96-4.45 9.96-9.96 0-2.66-1.04-5.17-2.93-7.07A9.92 9.92 0 0 0 12 2.04z"/></svg>
           WhatsApp
         </button>
-        <button type="button" class="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] text-[13px] font-semibold text-[#101D3A] hover:bg-[#F8FAFC]" @click="shareViaEmail">
+        <button type="button" class="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] text-[13px] font-semibold text-[#0A1024] hover:bg-[#F8FAFC]" @click="shareViaEmail">
           <svg class="h-4 w-4 text-[#64748B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16v12H4V6Zm0 0 8 7 8-7" /></svg>
           {{ t('account.referral.email') }}
         </button>
-        <button type="button" class="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] text-[13px] font-semibold text-[#101D3A] hover:bg-[#F8FAFC]" @click="shareViaTelegram">
+        <button type="button" class="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] text-[13px] font-semibold text-[#0A1024] hover:bg-[#F8FAFC]" @click="shareViaTelegram">
           <svg class="h-4 w-4 fill-[#229ED9]" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 3.24c-.24-.24-.6-.31-.9-.19L2.35 11.01a.75.75 0 0 0 .02 1.4l5.32 2.02 2.05 5.44c.11.3.39.5.7.52h.05c.29 0 .56-.16.69-.42l2.39-4.68 4.35 4.35a.75.75 0 0 0 .53.22h.06a.75.75 0 0 0 .53-.33c2.53-3.79 3.71-7.12 3.81-10.54a.76.76 0 0 0-.22-.56z"/></svg>
           Telegram
         </button>
@@ -44,11 +44,11 @@
       <dl v-if="stats" class="grid grid-cols-3 gap-2 border-t border-[#F1F5F9] pt-3 text-center">
         <div class="flex flex-col-reverse">
           <dt class="text-[12px] text-[#64748B]">{{ t('account.referral.invited') }}</dt>
-          <dd class="text-[20px] font-bold text-[#101D3A]">{{ stats.totalReferrals || 0 }}</dd>
+          <dd class="text-[20px] font-bold text-[#0A1024]">{{ stats.totalReferrals || 0 }}</dd>
         </div>
         <div class="flex flex-col-reverse">
           <dt class="text-[12px] text-[#64748B]">{{ t('account.referral.signedUp') }}</dt>
-          <dd class="text-[20px] font-bold text-[#101D3A]">{{ stats.signedUp || 0 }}</dd>
+          <dd class="text-[20px] font-bold text-[#0A1024]">{{ stats.signedUp || 0 }}</dd>
         </div>
         <div class="flex flex-col-reverse">
           <dt class="text-[12px] text-[#64748B]">{{ t('account.referral.points') }}</dt>

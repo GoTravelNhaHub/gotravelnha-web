@@ -9,7 +9,8 @@ import auth from './auth'
 import account from './account'
 import info from './info'
 import attractions from './attractions'
+import community from './community'
 
-const messages: Messages = { common, explore, planner, trips, places, partners, auth, account, info, attractions }
+const messages: Messages = { common, explore, planner, trips, places, partners, auth, account, info, attractions, community }
 
 export default messages

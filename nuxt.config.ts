@@ -59,7 +59,7 @@ export default defineNuxtConfig({
           link: [
             { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
             { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-            { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,560;8..60,650&display=swap' },
+            { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' },
             { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
             { rel: 'icon', type: 'image/png', sizes: '180x180', href: '/apple-touch-icon.png' },
             // iOS ignores SVG touch icons, so this one is a PNG
@@ -170,6 +170,10 @@ export default defineNuxtConfig({
              /** Customer support address shown on contact, help and booking pages. Hidden when unset. */
              supportEmail: process.env.NUXT_PUBLIC_SUPPORT_EMAIL || '',
              enableBestDealsNav: process.env.NUXT_PUBLIC_ENABLE_BEST_DEALS_NAV ?? 'true',
+             /** Community pages, APIs and nav item. Off until the community launch. */
+             enableCommunity: process.env.NUXT_PUBLIC_ENABLE_COMMUNITY ?? 'false',
+             /** Labelled sample trips on /community for design review. Never on in production. */
+             communityDemo: process.env.NUXT_PUBLIC_COMMUNITY_DEMO ?? 'false',
              stripeFeePercent: process.env.NUXT_PUBLIC_STRIPE_FEE_PERCENT || '0.034',
              stripeFeeFixed: process.env.NUXT_PUBLIC_STRIPE_FEE_FIXED || '0.5'
       }

@@ -13,9 +13,9 @@
     </div>
     <p class="mt-10 text-sm text-slate-600">
       {{ t('info.policy.questions') }}
-      <a v-if="supportEmail" :href="`mailto:${supportEmail}`" class="text-emerald-700 hover:underline">{{ supportEmail }}</a>
+      <a v-if="supportEmail" :href="`mailto:${supportEmail}`" class="text-brand-700 hover:underline">{{ supportEmail }}</a>
       <template v-if="supportEmail"> {{ t('info.policy.or') }} </template>
-      <NuxtLink to="/contact" class="text-emerald-700 hover:underline">{{ t('info.policy.useForm') }}</NuxtLink>.
+      <NuxtLink to="/contact" class="text-brand-700 hover:underline">{{ t('info.policy.useForm') }}</NuxtLink>.
     </p>
   </div>
 </template>
@@ -64,7 +64,7 @@ const onClick = (event: MouseEvent) => {
   margin-top: 0.25rem;
 }
 .policy :deep(a) {
-  color: rgb(4 120 87);
+  color: #0642d2;
 }
 .policy :deep(a:hover) {
   text-decoration: underline;

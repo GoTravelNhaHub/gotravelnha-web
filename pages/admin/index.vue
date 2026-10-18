@@ -2,7 +2,7 @@
   <div class="mx-auto max-w-[1400px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 class="text-[22px] font-bold leading-8 tracking-[-0.02em] text-[#101D3A]">{{ greeting }}</h2>
+        <h2 class="text-[22px] font-bold leading-8 tracking-[-0.02em] text-[#0A1024]">{{ greeting }}</h2>
         <p class="text-[14px] text-[#64748B]">{{ today }} · Here's what needs you first.</p>
       </div>
       <button type="button" class="btn-secondary w-auto min-h-10 px-4 text-[13px]" :disabled="loading" @click="loadStats">
@@ -26,11 +26,11 @@
               </svg>
             </span>
             <div class="min-w-0">
-              <h3 class="text-[15px] font-bold leading-5 text-[#101D3A]">{{ queue.title }}</h3>
+              <h3 class="text-[15px] font-bold leading-5 text-[#0A1024]">{{ queue.title }}</h3>
               <p class="text-[13px] leading-5 text-[#64748B]">{{ queue.count ? queue.hint : queue.clear }}</p>
             </div>
           </div>
-          <span class="text-[28px] font-bold leading-8 tracking-[-0.02em]" :class="queue.count ? 'text-[#C2410C]' : 'text-[#101D3A]'">
+          <span class="text-[28px] font-bold leading-8 tracking-[-0.02em]" :class="queue.count ? 'text-[#C2410C]' : 'text-[#0A1024]'">
             {{ loading && !loaded ? '–' : queue.count }}
           </span>
         </header>
@@ -38,7 +38,7 @@
           <li v-for="item in queue.items" :key="item.id">
             <NuxtLink :to="queue.to" class="flex items-start justify-between gap-3 px-5 py-3 hover:bg-[#F8FAFC]">
               <span class="min-w-0">
-                <span class="block truncate text-[14px] font-semibold text-[#101D3A]">{{ item.title }}</span>
+                <span class="block truncate text-[14px] font-semibold text-[#0A1024]">{{ item.title }}</span>
                 <span class="block truncate text-[13px] text-[#64748B]">{{ item.detail }}</span>
               </span>
               <span class="shrink-0 text-[12px] text-[#94A3B8]">{{ relative(item.createdAt) }}</span>
@@ -58,7 +58,7 @@
       <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div v-for="tile in weekTiles" :key="tile.label" class="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5">
           <p class="text-[13px] font-medium text-[#64748B]">{{ tile.label }}</p>
-          <p class="mt-1 text-[26px] font-semibold leading-8 tracking-[-0.02em] text-[#101D3A]">{{ loaded ? tile.value : '–' }}</p>
+          <p class="mt-1 text-[26px] font-semibold leading-8 tracking-[-0.02em] text-[#0A1024]">{{ loaded ? tile.value : '–' }}</p>
           <p v-if="tile.note" class="mt-0.5 text-[12px] text-[#94A3B8]">{{ tile.note }}</p>
         </div>
       </div>
@@ -69,25 +69,25 @@
       <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5" aria-labelledby="planner-title">
         <div class="flex items-start justify-between gap-3">
           <div>
-            <h2 id="planner-title" class="text-[15px] font-bold leading-5 text-[#101D3A]">AI Travel Agent usage</h2>
+            <h2 id="planner-title" class="text-[15px] font-bold leading-5 text-[#0A1024]">AI Travel Agent usage</h2>
             <p class="text-[13px] text-[#64748B]">Plans in the last 24 hours vs the site cap</p>
           </div>
           <span
             v-if="loaded"
             class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[12px] font-semibold"
-            :class="meter.level === 'ok' ? 'bg-[#E8F7FA] text-[#007789]' : meter.level === 'warning' ? 'bg-[#FFFBEB] text-[#B45309]' : 'bg-[#FEF2F2] text-[#B91C1C]'"
+            :class="meter.level === 'ok' ? 'bg-[#EAF2FC] text-[#0057C8]' : meter.level === 'warning' ? 'bg-[#FFFBEB] text-[#B45309]' : 'bg-[#FEF2F2] text-[#B91C1C]'"
           >
             <svg v-if="meter.level !== 'ok'" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 7v4m0 3h.01M8.6 3.5 2.2 14.6A1.6 1.6 0 0 0 3.6 17h12.8a1.6 1.6 0 0 0 1.4-2.4L11.4 3.5a1.6 1.6 0 0 0-2.8 0Z" /></svg>
             {{ meter.label }}
           </span>
         </div>
-        <p class="mt-4 text-[26px] font-semibold leading-8 tracking-[-0.02em] text-[#101D3A]">
+        <p class="mt-4 text-[26px] font-semibold leading-8 tracking-[-0.02em] text-[#0A1024]">
           {{ loaded ? planner.last24h : '–' }}
           <span class="text-[15px] font-medium text-[#64748B]">/ {{ planner.siteDailyLimit }}</span>
         </p>
         <div
           class="mt-3 h-2.5 overflow-hidden rounded-full"
-          :class="meter.level === 'ok' ? 'bg-[#E8F7FA]' : meter.level === 'warning' ? 'bg-[#FEF3C7]' : 'bg-[#FEE2E2]'"
+          :class="meter.level === 'ok' ? 'bg-[#EAF2FC]' : meter.level === 'warning' ? 'bg-[#FEF3C7]' : 'bg-[#FEE2E2]'"
           role="meter"
           :aria-valuenow="planner.last24h"
           aria-valuemin="0"
@@ -96,7 +96,7 @@
         >
           <div
             class="h-full rounded-full transition-[width] duration-500"
-            :class="meter.level === 'ok' ? 'bg-[#008A9B]' : meter.level === 'warning' ? 'bg-[#D97706]' : 'bg-[#DC2626]'"
+            :class="meter.level === 'ok' ? 'bg-[#0066E4]' : meter.level === 'warning' ? 'bg-[#D97706]' : 'bg-[#DC2626]'"
             :style="{ width: `${meter.percent}%` }"
           ></div>
         </div>
@@ -105,7 +105,7 @@
 
       <!-- Setup checks -->
       <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5" aria-labelledby="config-title">
-        <h2 id="config-title" class="text-[15px] font-bold leading-5 text-[#101D3A]">Setup checks</h2>
+        <h2 id="config-title" class="text-[15px] font-bold leading-5 text-[#0A1024]">Setup checks</h2>
         <p class="text-[13px] text-[#64748B]">Whether each setting is present on this server</p>
         <ul class="mt-4 space-y-2.5">
           <li v-for="check in configChecks" :key="check.label" class="flex items-center justify-between gap-3 text-[14px]">
@@ -126,11 +126,11 @@
 
       <!-- All time -->
       <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5" aria-labelledby="totals-title">
-        <h2 id="totals-title" class="text-[15px] font-bold leading-5 text-[#101D3A]">All time</h2>
+        <h2 id="totals-title" class="text-[15px] font-bold leading-5 text-[#0A1024]">All time</h2>
         <dl class="mt-4 space-y-3">
           <div v-for="item in totals" :key="item.label" class="flex items-baseline justify-between gap-3">
             <dt class="text-[14px] text-[#64748B]">{{ item.label }}</dt>
-            <dd class="text-[15px] font-semibold tabular-nums text-[#101D3A]">{{ loaded ? item.value : '–' }}</dd>
+            <dd class="text-[15px] font-semibold tabular-nums text-[#0A1024]">{{ loaded ? item.value : '–' }}</dd>
           </div>
         </dl>
       </section>
@@ -144,13 +144,13 @@
           v-for="link in shortcuts"
           :key="link.to"
           :to="link.to"
-          class="group flex items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 transition hover:border-[#008A9B]/40 hover:shadow-[0_12px_28px_-20px_rgba(16,29,58,0.4)]"
+          class="group flex items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 transition hover:border-[#0066E4]/40 hover:shadow-[0_12px_28px_-20px_rgba(10,16,36,0.4)]"
         >
-          <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+          <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EAF2FC] text-[#0066E4]" aria-hidden="true">
             <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="link.icon" /></svg>
           </span>
           <span class="min-w-0">
-            <span class="block text-[14px] font-semibold text-[#101D3A] group-hover:text-[#007789]">{{ link.label }}</span>
+            <span class="block text-[14px] font-semibold text-[#0A1024] group-hover:text-[#0057C8]">{{ link.label }}</span>
             <span class="block text-[13px] leading-5 text-[#64748B]">{{ link.detail }}</span>
           </span>
         </NuxtLink>

@@ -22,10 +22,10 @@
     </PageHero>
 
     <section class="site-shell relative z-20 -mt-20 sm:-mt-24" aria-labelledby="compare-title">
-      <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-6">
+      <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_24px_60px_-28px_rgba(10,16,36,0.45)] sm:p-6">
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div class="min-w-0">
-            <h2 id="compare-title" class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">{{ t('partners.guide.compareTitle') }}</h2>
+            <h2 id="compare-title" class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#0A1024]">{{ t('partners.guide.compareTitle') }}</h2>
             <p class="mt-1 max-w-2xl text-[14px] leading-[22px] text-[#64748B]">{{ bookStripSub }}</p>
           </div>
           <div class="flex flex-wrap gap-1.5 text-[12px] font-medium text-[#475569]">
@@ -38,7 +38,7 @@
           <article
             v-for="option in view.comparison"
             :key="option.label"
-            :class="['flex flex-col rounded-2xl border p-4 transition-shadow hover:shadow-[0_16px_32px_-20px_rgba(16,29,58,0.35)] sm:p-5', partnerCardSurface(option.provider)]"
+            :class="['flex flex-col rounded-2xl border p-4 transition-shadow hover:shadow-[0_16px_32px_-20px_rgba(10,16,36,0.35)] sm:p-5', partnerCardSurface(option.provider)]"
           >
             <div class="flex items-center gap-3">
               <span
@@ -50,13 +50,13 @@
                 <KlookIcon v-else :size="26" class="shrink-0" />
               </span>
               <div class="min-w-0">
-                <h3 class="break-words text-[17px] font-bold leading-6 text-[#101D3A]">{{ option.label }}</h3>
+                <h3 class="break-words text-[17px] font-bold leading-6 text-[#0A1024]">{{ option.label }}</h3>
                 <p class="text-[12px] leading-[18px] text-[#64748B]">{{ t('partners.guide.bookingPartner', { provider: option.provider === 'trip' ? 'Trip.com' : 'Klook' }) }}</p>
               </div>
             </div>
             <p class="mt-4 grow text-[14px] leading-[22px] text-[#475569]">{{ option.priceNote }}</p>
-            <p class="mt-3 flex items-start gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-[13px] font-medium leading-5 text-[#101D3A]">
-              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+            <p class="mt-3 flex items-start gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-[13px] font-medium leading-5 text-[#0A1024]">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#0066E4]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 2.5 12.2 7l5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L2.8 7.7l5-.7L10 2.5Z" />
               </svg>
               {{ option.highlight }}
@@ -86,11 +86,11 @@
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-16">
       <div class="grid gap-4 lg:grid-cols-2">
         <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6" aria-labelledby="why-title">
-          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">{{ t('partners.guide.whyEyebrow') }}</p>
-          <h2 id="why-title" class="mt-1 text-[18px] font-bold leading-6 text-[#101D3A]">{{ t('partners.guide.whyTitle') }}</h2>
+          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0066E4]">{{ t('partners.guide.whyEyebrow') }}</p>
+          <h2 id="why-title" class="mt-1 text-[18px] font-bold leading-6 text-[#0A1024]">{{ t('partners.guide.whyTitle') }}</h2>
           <ul class="mt-4 space-y-3">
             <li v-for="bullet in view.summaryBullets" :key="bullet" class="flex items-start gap-3 text-[14px] leading-[22px] text-[#334155]">
-              <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+              <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EAF2FC] text-[#0066E4]" aria-hidden="true">
                 <svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="m5 10.5 3 3 7-7" /></svg>
               </span>
               {{ bullet }}
@@ -98,11 +98,11 @@
           </ul>
         </section>
         <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6" aria-labelledby="tips-title">
-          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">{{ t('partners.guide.tipsEyebrow') }}</p>
-          <h2 id="tips-title" class="mt-1 text-[18px] font-bold leading-6 text-[#101D3A]">{{ t('partners.guide.tipsTitle') }}</h2>
+          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0066E4]">{{ t('partners.guide.tipsEyebrow') }}</p>
+          <h2 id="tips-title" class="mt-1 text-[18px] font-bold leading-6 text-[#0A1024]">{{ t('partners.guide.tipsTitle') }}</h2>
           <ol class="mt-4 space-y-3">
             <li v-for="(tip, index) in view.tips" :key="tip" class="flex items-start gap-3 text-[14px] leading-[22px] text-[#334155]">
-              <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#101D3A] text-[11px] font-bold text-white" aria-hidden="true">{{ index + 1 }}</span>
+              <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0A1024] text-[11px] font-bold text-white" aria-hidden="true">{{ index + 1 }}</span>
               {{ tip }}
             </li>
           </ol>
@@ -116,12 +116,12 @@
             v-for="item in relatedLinks"
             :key="item.to"
             :to="item.to"
-            class="group flex items-start gap-3 rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-20px_rgba(16,29,58,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:p-5"
-            :class="item.featured ? 'border-[#101D3A] bg-[#101D3A]' : 'border-[#E2E8F0] bg-white hover:border-[#008A9B]/40'"
+            class="group flex items-start gap-3 rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-20px_rgba(10,16,36,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:p-5"
+            :class="item.featured ? 'border-[#0A1024] bg-[#0A1024]' : 'border-[#E2E8F0] bg-white hover:border-[#0066E4]/40'"
           >
             <span
               class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-              :class="item.featured ? 'bg-white/10 text-[#5EEAD4]' : 'bg-[#E8F7FA] text-[#008A9B]'"
+              :class="item.featured ? 'bg-white/10 text-[#7DB4FF]' : 'bg-[#EAF2FC] text-[#0066E4]'"
               aria-hidden="true"
             >
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -129,9 +129,9 @@
               </svg>
             </span>
             <span class="min-w-0">
-              <span class="flex items-center gap-1 text-[15px] font-semibold leading-6" :class="item.featured ? 'text-white' : 'text-[#101D3A]'">
+              <span class="flex items-center gap-1 text-[15px] font-semibold leading-6" :class="item.featured ? 'text-white' : 'text-[#0A1024]'">
                 {{ item.label }}
-                <svg class="h-3.5 w-3.5 transition group-hover:translate-x-0.5" :class="item.featured ? 'text-[#5EEAD4]' : 'text-[#94A3B8] group-hover:text-[#008A9B]'" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+                <svg class="h-3.5 w-3.5 transition group-hover:translate-x-0.5" :class="item.featured ? 'text-[#7DB4FF]' : 'text-[#94A3B8] group-hover:text-[#0066E4]'" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" />
                 </svg>
               </span>

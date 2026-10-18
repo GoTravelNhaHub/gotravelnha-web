@@ -1,6 +1,6 @@
 <template>
   <form class="rounded-3xl border border-[#E2E8F0] bg-white p-5 shadow-xl sm:p-6" @submit.prevent="submit">
-    <label :for="inputId" class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">{{ t('explore.prompt.label') }}</label>
+    <label :for="inputId" class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0066E4]">{{ t('explore.prompt.label') }}</label>
     <textarea
       :id="inputId"
       v-model="prompt"
@@ -8,7 +8,7 @@
       maxlength="500"
       :placeholder="`${t('explore.prompt.placeholderPrefix')} ${examples[0]}`"
       :aria-describedby="needsText ? `${inputId}-hint` : undefined"
-      class="mt-2 block w-full resize-none rounded-xl border border-[#CBD5E1] px-4 py-3 text-[16px] leading-6 text-[#101D3A] placeholder:text-[#94A3B8] focus:border-[#008A9B] focus:outline-none focus:ring-2 focus:ring-[#008A9B]/30"
+      class="mt-2 block w-full resize-none rounded-xl border border-[#CBD5E1] px-4 py-3 text-[16px] leading-6 text-[#0A1024] placeholder:text-[#94A3B8] focus:border-[#0066E4] focus:outline-none focus:ring-2 focus:ring-[#0066E4]/30"
       @keydown.enter.exact.prevent="submit"
       @input="needsText = false"
     ></textarea>
@@ -22,7 +22,7 @@
         v-for="example in examples.slice(1)"
         :key="example"
         type="button"
-        class="min-h-8 rounded-full border border-[#E2E8F0] px-3 text-left text-[13px] text-[#334155] transition hover:border-[#008A9B] hover:bg-[#E8F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+        class="min-h-8 rounded-full border border-[#E2E8F0] px-3 text-left text-[13px] text-[#334155] transition hover:border-[#0066E4] hover:bg-[#EAF2FC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
         @click="selectExample(example)"
       >
         {{ example }}
@@ -32,7 +32,7 @@
     <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
       <button
         type="submit"
-        class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#008A9B] px-6 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
+        class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#0066E4] px-6 text-[15px] font-semibold text-white hover:bg-[#0057C8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] focus-visible:ring-offset-2"
       >
         {{ t('explore.prompt.submit') }}
         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
@@ -41,7 +41,7 @@
       </button>
       <a
         :href="secondaryHref"
-        class="inline-flex min-h-12 items-center justify-center rounded-xl px-4 text-[15px] font-semibold text-[#101D3A] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+        class="inline-flex min-h-12 items-center justify-center rounded-xl px-4 text-[15px] font-semibold text-[#0A1024] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
       >
         {{ t('explore.prompt.secondary') }}
       </a>

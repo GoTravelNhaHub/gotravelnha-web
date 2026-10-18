@@ -1,12 +1,13 @@
 <template>
   <div class="pb-16 font-brand sm:pb-20">
+    <!-- The hero leads with the AI planner. Browsing community trips lives in the Community tab and side rail. -->
     <PageHero
-      :eyebrow="t('explore.hero.eyebrow')"
-      :title="t('explore.hero.title')"
-      :subtitle="t('explore.hero.subtitle')"
+      :eyebrow="communityOn ? t('community.home.eyebrow') : t('explore.hero.eyebrow')"
+      :title="communityOn ? t('community.home.title') : t('explore.hero.title')"
+      :subtitle="communityOn ? t('community.home.subtitle') : t('explore.hero.subtitle')"
       :image="heroImage"
       image-position="center 45%"
-      :trust="tm<string[]>('explore.hero.trust')"
+      :trust="communityOn ? tm<string[]>('community.home.trust') : tm<string[]>('explore.hero.trust')"
       overlap
     />
 
@@ -15,6 +16,19 @@
     </div>
 
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
+      <template v-if="communityOn">
+        <section class="space-y-6" aria-labelledby="community-steps-title">
+          <SectionHeading :eyebrow="t('community.home.stepsEyebrow')" :title="t('community.home.stepsTitle')" />
+          <ol class="grid gap-4 sm:grid-cols-3">
+            <li v-for="(step, index) in communitySteps" :key="step.title" class="relative rounded-2xl border border-[#E2E8F0] bg-white p-5">
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#0A1024] text-[14px] font-bold text-white">{{ index + 1 }}</span>
+              <h3 class="mt-3 text-[16px] font-bold leading-6 text-[#0A1024]">{{ step.title }}</h3>
+              <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">{{ step.text }}</p>
+            </li>
+          </ol>
+        </section>
+      </template>
+
       <SampleItinerary />
 
       <section class="space-y-6">
@@ -23,22 +37,22 @@
             <NuxtLink to="/destinations" class="text-link text-[14px]">{{ t('explore.destinations.all', { count: DESTINATIONS.length }) }}</NuxtLink>
           </template>
         </SectionHeading>
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 3xl:grid-cols-8 lg:gap-4">
           <CityTile
             v-for="city in cities"
             :key="city.name"
             :name="placeName(city.name)"
             :caption="t(`common.placeCaptions.${city.name}`)"
             :image="city.image"
-            :to="`/planner?destination=${encodeURIComponent(city.name)}`"
-            :cta="t('explore.destinations.cta')"
+            :to="communityOn ? `/community?destination=${encodeURIComponent(city.name)}` : `/planner?destination=${encodeURIComponent(city.name)}`"
+            :cta="communityOn ? t('community.home.destinationsCta') : t('explore.destinations.cta')"
           />
         </div>
       </section>
 
       <!-- Booking is a supporting step: search on a partner, or open a booking guide -->
       <section id="deals" class="scroll-mt-24 space-y-4" aria-labelledby="deals-title">
-        <h2 id="deals-title" class="text-[22px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A] sm:text-[26px] sm:leading-8">
+        <h2 id="deals-title" class="text-[22px] font-bold leading-7 tracking-[-0.02em] text-[#0A1024] sm:text-[26px] sm:leading-8">
           {{ t('explore.deals.title') }}
         </h2>
         <TravelSearch placement="deals_hub" />
@@ -47,8 +61,8 @@
       <section class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white" aria-labelledby="compare-title">
         <div class="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:p-10">
           <div>
-            <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">{{ t('explore.compare.eyebrow') }}</p>
-            <h2 id="compare-title" class="mt-1 text-[26px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[32px] sm:leading-10">{{ t('explore.compare.title') }}</h2>
+            <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0066E4]">{{ t('explore.compare.eyebrow') }}</p>
+            <h2 id="compare-title" class="mt-1 text-[26px] font-bold leading-8 tracking-[-0.025em] text-[#0A1024] sm:text-[32px] sm:leading-10">{{ t('explore.compare.title') }}</h2>
             <p class="mt-3 max-w-xl text-[15px] leading-6 text-[#475569]">
               {{ t('explore.compare.text') }}
             </p>
@@ -57,13 +71,13 @@
                 v-for="item in comparisons"
                 :key="item.to"
                 :to="item.to"
-                class="group flex min-h-12 items-center justify-between gap-2 rounded-xl border border-[#E2E8F0] px-4 text-[14px] font-semibold text-[#101D3A] transition hover:border-[#008A9B] hover:bg-[#E8F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+                class="group flex min-h-12 items-center justify-between gap-2 rounded-xl border border-[#E2E8F0] px-4 text-[14px] font-semibold text-[#0A1024] transition hover:border-[#0066E4] hover:bg-[#EAF2FC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
               >
                 <span class="inline-flex items-center gap-2">
-                  <svg class="h-[18px] w-[18px] text-[#008A9B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="item.icon" /></svg>
+                  <svg class="h-[18px] w-[18px] text-[#0066E4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="item.icon" /></svg>
                   {{ t(item.label) }}
                 </span>
-                <svg class="h-4 w-4 text-[#94A3B8] transition group-hover:translate-x-0.5 group-hover:text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" /></svg>
+                <svg class="h-4 w-4 text-[#94A3B8] transition group-hover:translate-x-0.5 group-hover:text-[#0066E4]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h12m0 0-5-5m5 5-5 5" /></svg>
               </NuxtLink>
             </div>
           </div>
@@ -74,15 +88,15 @@
                 <TripWordmark v-if="partner.name === 'Trip.com'" />
                 <KlookIcon v-else :size="24" />
               </span>
-              <h3 class="mt-3 text-[17px] font-bold text-[#101D3A]">{{ partner.name }}</h3>
+              <h3 class="mt-3 text-[17px] font-bold text-[#0A1024]">{{ partner.name }}</h3>
               <ul class="mt-2 space-y-1.5">
                 <li v-for="point in tm<string[]>(partner.points)" :key="point" class="flex items-start gap-2 text-[14px] leading-5 text-[#475569]">
-                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 10.5 3 3 7-7" /></svg>
+                  <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#0066E4]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 10.5 3 3 7-7" /></svg>
                   {{ point }}
                 </li>
               </ul>
             </div>
-            <span class="absolute left-1/2 top-1/2 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#101D3A] text-[12px] font-bold text-white ring-4 ring-white sm:inline-flex" aria-hidden="true">VS</span>
+            <span class="absolute left-1/2 top-1/2 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#0A1024] text-[12px] font-bold text-white ring-4 ring-white sm:inline-flex" aria-hidden="true">VS</span>
           </div>
         </div>
       </section>
@@ -94,7 +108,7 @@
           </template>
         </SectionHeading>
 
-        <div v-if="loadingTemplates" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div v-if="loadingTemplates" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
           <div v-for="n in 3" :key="n" class="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white">
             <div class="aspect-[16/10] animate-pulse bg-[#F1F5F9]"></div>
             <div class="space-y-2 p-5">
@@ -105,11 +119,11 @@
         </div>
 
         <div v-else-if="dealTemplates.length === 0" class="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-10 text-center">
-          <p class="font-semibold text-[#101D3A]">{{ t('explore.guides.emptyTitle') }}</p>
+          <p class="font-semibold text-[#0A1024]">{{ t('explore.guides.emptyTitle') }}</p>
           <p class="mt-1 text-sm text-[#64748B]">{{ t('explore.guides.emptyText') }}</p>
         </div>
 
-        <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-5">
+        <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 xl:gap-5">
           <DealHubCard
             v-for="item in dealTemplates"
             :key="item.slug"
@@ -119,12 +133,23 @@
         </div>
       </section>
 
-      <section class="space-y-6" aria-labelledby="how-title">
+      <section v-if="communityOn" class="relative isolate overflow-hidden rounded-3xl bg-[#0A1024] p-6 text-white sm:p-10" aria-labelledby="share-trip-title">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#0066E4]/40 to-transparent" aria-hidden="true"></div>
+        <div class="relative flex flex-wrap items-center justify-between gap-6">
+          <div class="max-w-xl">
+            <h2 id="share-trip-title" class="text-[24px] font-bold leading-8 tracking-[-0.02em] sm:text-[28px] sm:leading-9">{{ t('community.home.shareTitle') }}</h2>
+            <p class="mt-2 text-[15px] leading-6 text-white/80">{{ t('community.home.shareText') }}</p>
+          </div>
+          <NuxtLink to="/mytrip" class="btn-primary w-auto px-6" @click="track('home_share_trip_clicked')">{{ t('community.home.shareButton') }}</NuxtLink>
+        </div>
+      </section>
+
+      <section v-else class="space-y-6" aria-labelledby="how-title">
         <SectionHeading :eyebrow="t('explore.how.eyebrow')" :title="t('explore.how.title')" />
         <ol class="grid gap-4 sm:grid-cols-3">
-          <li v-for="(step, index) in tm<{ title: string; text: string }[]>('explore.how.steps')" :key="step.title" class="rounded-2xl border border-[#E2E8F0] bg-white p-5">
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F7FA] text-[13px] font-bold text-[#008A9B]">{{ index + 1 }}</span>
-            <h3 class="mt-3 text-[16px] font-bold leading-6 text-[#101D3A]">{{ step.title }}</h3>
+          <li v-for="(step, index) in howSteps" :key="step.title" class="rounded-2xl border border-[#E2E8F0] bg-white p-5">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#EAF2FC] text-[13px] font-bold text-[#0066E4]">{{ index + 1 }}</span>
+            <h3 class="mt-3 text-[16px] font-bold leading-6 text-[#0A1024]">{{ step.title }}</h3>
             <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">{{ step.text }}</p>
           </li>
         </ol>
@@ -143,8 +168,8 @@
           {{ t('explore.bookingNote.text') }}
           <template #links>
             <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[14px] font-semibold">
-              <NuxtLink to="/help" class="text-[#008A9B] underline-offset-2 hover:underline">{{ t('explore.bookingNote.help') }}</NuxtLink>
-              <NuxtLink to="/contact" class="text-[#008A9B] underline-offset-2 hover:underline">{{ t('explore.bookingNote.contact') }}</NuxtLink>
+              <NuxtLink to="/help" class="text-[#0066E4] underline-offset-2 hover:underline">{{ t('explore.bookingNote.help') }}</NuxtLink>
+              <NuxtLink to="/contact" class="text-[#0066E4] underline-offset-2 hover:underline">{{ t('explore.bookingNote.contact') }}</NuxtLink>
             </div>
           </template>
         </BookingNote>
@@ -164,6 +189,7 @@ import PageHero from '~/components/site/PageHero.vue'
 import PlannerPrompt from '~/components/site/PlannerPrompt.vue'
 import SampleItinerary from '~/components/site/SampleItinerary.vue'
 import SectionHeading from '~/components/site/SectionHeading.vue'
+import { communityEnabled } from '~/utils/feature-flags'
 import { destinationPhoto } from '~/utils/destination-photos'
 import { DESTINATIONS } from '~/utils/destination-catalog'
 import type { DealPageTemplate } from '~/types/deal-template'
@@ -178,6 +204,13 @@ definePageMeta({
 
 const siteOrigin = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 const { t, tm, locale, placeName } = useI18n()
+// Object-literal generics do not parse inside template attributes, so typed lists are read here
+const howSteps = computed(() => tm<{ title: string; text: string }[]>('explore.how.steps'))
+
+// Community launch (NUXT_PUBLIC_ENABLE_COMMUNITY): community-first hero and sections
+const communityOn = communityEnabled(useRuntimeConfig().public)
+const { track } = useFunnel()
+const communitySteps = computed(() => tm<{ title: string; text: string }[]>('community.home.steps'))
 
 const allowedBuiltinSlugs = new Set(['flights', 'hotels', 'attractions'])
 
@@ -228,7 +261,8 @@ const dealTemplates = computed(() =>
     const builtin = en.explore.guides.items[item.slug as keyof typeof en.explore.guides.items]
     if (locale.value === 'en' || !builtin || item.title !== builtin.title) return item
     const copy = tm<{ title: string; outcome: string; destination: string; category: string }>(`explore.guides.items.${item.slug}`)
-    return { ...item, title: copy.title, hubOutcome: copy.outcome, destination: copy.destination, category: copy.category }
+    // category here is the translated label DealHubCard displays, not the hotel/flight/activity key
+    return { ...item, title: copy.title, hubOutcome: copy.outcome, destination: copy.destination, category: copy.category } as DealPageTemplate
   })
 )
 
@@ -252,8 +286,8 @@ const hubOgImage = computed(() => resolveAbsoluteOgImage('/og-image.jpg', siteOr
 const hubImageMime = computed(() => inferOgImageMime(hubOgImage.value))
 
 useHead(() => {
-  const title = t('explore.meta.title')
-  const description = t('explore.meta.description')
+  const title = communityOn ? t('community.home.metaTitle') : t('explore.meta.title')
+  const description = communityOn ? t('community.home.metaDescription') : t('explore.meta.description')
   const canonical = `${siteOrigin}/explore`
   const img = hubOgImage.value
   const secure = img.startsWith('https://') ? img : img.replace(/^http:\/\//i, 'https://')

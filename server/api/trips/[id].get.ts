@@ -7,7 +7,13 @@ import { itineraryActivityIds, type Itinerary } from '~/server/services/itinerar
 export default defineEventHandler(async (event) => {
   const user = await requireUser(event)
   const id = getRouterParam(event, 'id')
-  const trip = id ? await prisma.trip.findFirst({ where: { id, userId: user.id } }) : null
+  const trip = id
+    ? await prisma.trip.findFirst({
+        where: { id, userId: user.id },
+        // Community version of this trip, if the owner published it
+        include: { published: { select: { id: true, slug: true, visibility: true, status: true } } }
+      })
+    : null
 
   if (!trip) {
     throw createError({ statusCode: 404, message: 'Trip not found.' })

@@ -3,6 +3,9 @@ import { destinationSlug } from '~/utils/destination-slug'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { publishedGuides } from '~/utils/destination-guides'
 import { DESTINATIONS, catalogSlug } from '~/utils/destination-catalog'
+import { communityEnabled } from '~/utils/feature-flags'
+import { listIndexableTrips } from '~/server/services/community/trips'
+import { listIndexableTravelers } from '~/server/services/community/travelers'
 
 const staticPaths = [
   '/explore',
@@ -26,7 +29,8 @@ const escapeXml = (value: string) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 export default defineEventHandler(async (event) => {
-  const site = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
+  const config = useRuntimeConfig().public
+  const site = canonicalSiteOrigin(config.siteUrl)
   const urls = new Map<string, string>()
   for (const path of staticPaths) urls.set(path, '')
 
@@ -35,7 +39,7 @@ export default defineEventHandler(async (event) => {
   for (const guide of guides) urls.set(`/guides/${guide.slug}`, guide.updated)
 
   // Each lookup is independent so one failing table cannot drop every dynamic URL.
-  const [events, templates, destinations] = await Promise.allSettled([
+  const [events, templates, destinations, communityTrips, travelers] = await Promise.allSettled([
     prisma.attractionsgEvent.findMany({
       where: { isActive: true, isPublished: true },
       select: { slug: true, id: true, updatedAt: true }
@@ -47,7 +51,11 @@ export default defineEventHandler(async (event) => {
     prisma.affiliateEntity.findMany({
       where: { status: 'active', location: { not: null } },
       select: { location: true }
-    })
+    }),
+    // Public community trips only; unlisted and private ones never appear here
+    communityEnabled(config) ? listIndexableTrips() : Promise.resolve([]),
+    // Traveler profiles with at least one public trip (the others are noindex)
+    communityEnabled(config) ? listIndexableTravelers() : Promise.resolve([])
   ])
 
   if (events.status === 'fulfilled') {
@@ -73,6 +81,17 @@ export default defineEventHandler(async (event) => {
     }
   } else {
     console.error('Sitemap affiliateEntity lookup failed:', destinations.reason)
+  }
+  if (communityEnabled(config)) urls.set('/community', '')
+  if (communityTrips.status === 'fulfilled') {
+    for (const item of communityTrips.value) urls.set(`/community/trips/${encodeURIComponent(item.slug)}`, item.updatedAt.toISOString())
+  } else {
+    console.error('Sitemap publishedTrip lookup failed:', communityTrips.reason)
+  }
+  if (travelers.status === 'fulfilled') {
+    for (const item of travelers.value) urls.set(`/travelers/${encodeURIComponent(item.handle)}`, item.updatedAt.toISOString())
+  } else {
+    console.error('Sitemap travelerProfile lookup failed:', travelers.reason)
   }
   // Every catalogue city has a page, whether or not an affiliate entity lists it yet
   for (const destination of DESTINATIONS) urls.set(`/destinations/${encodeURIComponent(catalogSlug(destination))}`, '')

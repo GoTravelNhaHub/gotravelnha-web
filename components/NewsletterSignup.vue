@@ -1,13 +1,13 @@
 <template>
   <section
     class="font-brand"
-    :class="variant === 'band' ? 'relative isolate overflow-hidden rounded-3xl bg-[#101D3A] p-6 text-white sm:p-10' : 'rounded-2xl border border-[#E2E8F0] bg-white p-5'"
+    :class="variant === 'band' ? 'relative isolate overflow-hidden rounded-3xl bg-[#0A1024] p-6 text-white sm:p-10' : 'rounded-2xl border border-[#E2E8F0] bg-white p-5'"
     :aria-labelledby="titleId"
   >
-    <div v-if="variant === 'band'" class="absolute inset-0 bg-gradient-to-br from-[#008A9B]/35 to-transparent" aria-hidden="true"></div>
+    <div v-if="variant === 'band'" class="absolute inset-0 bg-gradient-to-br from-[#0066E4]/35 to-transparent" aria-hidden="true"></div>
     <div class="relative" :class="variant === 'band' ? 'grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]' : ''">
       <div>
-        <h2 :id="titleId" :class="variant === 'band' ? 'text-[24px] font-bold leading-8 tracking-[-0.02em] sm:text-[28px] sm:leading-9' : 'text-[15px] font-bold leading-5 text-[#101D3A]'">
+        <h2 :id="titleId" :class="variant === 'band' ? 'text-[24px] font-bold leading-8 tracking-[-0.02em] sm:text-[28px] sm:leading-9' : 'text-[15px] font-bold leading-5 text-[#0A1024]'">
           {{ title || t('common.newsletter.title') }}
         </h2>
         <p :class="variant === 'band' ? 'mt-2 text-[15px] leading-6 text-white/80' : 'mt-1 text-[13px] leading-5 text-[#64748B]'">{{ text || t('common.newsletter.text') }}</p>

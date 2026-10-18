@@ -3,6 +3,7 @@ import type { Messages } from '../en'
 const common: Messages['common'] = {
   nav: {
     explore: 'Khám phá',
+    community: 'Cộng đồng',
     planner: 'Trợ lý du lịch AI',
     plannerShort: 'Lên kế hoạch',
     guides: 'Cẩm nang',

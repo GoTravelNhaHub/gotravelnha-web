@@ -2,7 +2,7 @@
   <div class="mx-auto max-w-[1400px] space-y-5 px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">Support inbox</h2>
+        <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#0A1024]">Support inbox</h2>
         <p class="text-[14px] text-[#64748B]">Messages from the contact form. Reply by email, then mark them handled.</p>
       </div>
       <div class="flex items-center gap-2">
@@ -14,7 +14,7 @@
             role="tab"
             :aria-selected="view === option.id"
             class="min-h-9 rounded-lg px-3.5 text-[13px] font-semibold"
-            :class="view === option.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
+            :class="view === option.id ? 'bg-white text-[#0A1024] shadow-[0_1px_3px_rgba(10,16,36,0.12)]' : 'text-[#64748B] hover:text-[#0A1024]'"
             @click="view = option.id"
           >
             {{ option.label }}
@@ -40,11 +40,11 @@
       >
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div class="flex min-w-0 items-start gap-3">
-            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#E8F7FA] text-[14px] font-bold text-[#007789]" aria-hidden="true">
+            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#EAF2FC] text-[14px] font-bold text-[#0057C8]" aria-hidden="true">
               {{ message.name.charAt(0).toUpperCase() }}
             </span>
             <div class="min-w-0">
-              <p class="flex flex-wrap items-center gap-2 text-[15px] font-semibold text-[#101D3A]">
+              <p class="flex flex-wrap items-center gap-2 text-[15px] font-semibold text-[#0A1024]">
                 {{ message.name }}
                 <span v-if="message.handledAt" class="rounded-full bg-[#ECFDF5] px-2 py-0.5 text-[11px] font-semibold text-[#047857]">Handled</span>
                 <span v-else class="rounded-full bg-[#FFF7ED] px-2 py-0.5 text-[11px] font-semibold text-[#C2410C]">Open</span>
@@ -75,7 +75,7 @@
       <span class="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#ECFDF5] text-[#047857]" aria-hidden="true">
         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12.5 4.5 4.5L19 7.5" /></svg>
       </span>
-      <p class="mt-3 font-semibold text-[#101D3A]">{{ view === 'open' ? 'Inbox zero' : 'No messages yet' }}</p>
+      <p class="mt-3 font-semibold text-[#0A1024]">{{ view === 'open' ? 'Inbox zero' : 'No messages yet' }}</p>
       <p class="mt-1 text-[14px] text-[#64748B]">{{ view === 'open' ? 'Every message has been handled.' : 'Contact form messages will appear here.' }}</p>
     </div>
   </div>

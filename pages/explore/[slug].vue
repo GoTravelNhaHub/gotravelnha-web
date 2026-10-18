@@ -28,7 +28,7 @@
       </div>
       <button
         @click="openLegacyDeal"
-        class="mt-6 w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold hover:from-emerald-700 hover:to-teal-700"
+        class="mt-6 w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-brand-600 text-white font-semibold hover:from-brand-700 hover:to-brand-700"
       >
         {{ t('partners.legacy.checkPrice') }}
       </button>
@@ -38,7 +38,7 @@
     <div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl p-10 text-center">
       <h1 class="text-3xl font-bold text-slate-900 mb-3">{{ t('partners.legacy.notFoundTitle') }}</h1>
       <p class="text-slate-600 mb-6">{{ t('partners.legacy.notFoundText') }}</p>
-      <NuxtLink to="/explore" class="inline-flex px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">
+      <NuxtLink to="/explore" class="inline-flex px-5 py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700">
         {{ t('partners.legacy.back') }}
       </NuxtLink>
     </div>

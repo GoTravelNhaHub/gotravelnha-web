@@ -5,11 +5,11 @@
         <div class="flex h-full min-h-0 min-w-0 flex-col">
           <header class="flex shrink-0 items-center justify-between gap-2 border-b border-[#E2E8F0] pb-3">
             <div class="flex min-w-0 items-center gap-2.5">
-              <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+              <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EAF2FC] text-[#0066E4]" aria-hidden="true">
                 <PlannerIcon name="spark" class="h-4 w-4" />
               </span>
               <div class="min-w-0">
-                <h1 class="truncate text-[15px] font-bold leading-5 tracking-[-0.01em] text-[#101D3A]">{{ t('planner.header.title') }}</h1>
+                <h1 class="truncate text-[15px] font-bold leading-5 tracking-[-0.01em] text-[#0A1024]">{{ t('planner.header.title') }}</h1>
                 <p class="truncate text-[12px] leading-[18px] text-[#64748B]">{{ t('planner.header.subtitle') }}</p>
               </div>
             </div>
@@ -19,23 +19,38 @@
                 v-if="hasUserNote || result"
                 type="button"
                 :title="t('planner.header.newTrip')"
-                class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] disabled:opacity-50 sm:min-h-9 sm:min-w-0 sm:px-2.5"
+                class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#0A1024] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] disabled:opacity-50 sm:min-h-9 sm:min-w-0 sm:px-2.5"
                 :disabled="busy"
                 @click="newTrip"
               >
-                <PlannerIcon name="refresh" class="h-4 w-4 text-[#008A9B]" />
+                <PlannerIcon name="refresh" class="h-4 w-4 text-[#0066E4]" />
                 <span class="sr-only sm:not-sr-only">{{ t('planner.header.newTrip') }}</span>
               </button>
               <NuxtLink
                 :to="tripsTo"
                 :title="t('planner.header.myTrips')"
-                class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9 sm:min-w-0 sm:px-2.5"
+                class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#0A1024] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:min-h-9 sm:min-w-0 sm:px-2.5"
               >
-                <PlannerIcon name="bookmark" class="h-4 w-4 text-[#008A9B]" />
+                <PlannerIcon name="bookmark" class="h-4 w-4 text-[#0066E4]" />
                 <span class="sr-only sm:not-sr-only">{{ t('planner.header.myTrips') }}</span>
               </NuxtLink>
             </div>
           </header>
+
+          <!-- Customize with AI: the community trip this plan starts from (attribution stays visible) -->
+          <div v-if="adaptSource" class="mt-3 flex shrink-0 items-center gap-2.5 rounded-xl border border-[#CFE0F7] bg-[#F5F9FF] px-3 py-2.5" role="status">
+            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EAF2FC] text-[#0066E4]" aria-hidden="true">
+              <PlannerIcon name="spark" class="h-4 w-4" />
+            </span>
+            <p class="min-w-0 flex-1 text-[13px] leading-[18px] text-[#2B3245]">
+              {{ t('planner.adapt.basedOn') }}
+              <NuxtLink :to="`/community/trips/${adaptSource.slug}`" class="font-semibold text-[#0642D2] hover:underline">{{ adaptSource.title }}</NuxtLink>
+              <span class="text-[#64748B]"> · {{ t('community.trip.by', { name: adaptSource.author }) }}</span>
+            </p>
+            <button type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#64748B] hover:bg-white hover:text-[#0A1024] disabled:opacity-50" :aria-label="t('planner.adapt.remove')" :title="t('planner.adapt.remove')" :disabled="busy" @click="dropAdaptSource">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-width="2" d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
 
           <section class="shrink-0 border-b border-[#E2E8F0] py-3" :aria-label="t('planner.brief.title')">
             <div class="flex items-center justify-between gap-2">
@@ -50,16 +65,16 @@
                 v-for="field in briefFields"
                 :key="field.id"
                 type="button"
-                class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-[12px] font-semibold leading-[18px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-8"
+                class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-[12px] font-semibold leading-[18px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:min-h-8"
                 :class="[
-                  field.active ? 'border-[#008A9B] bg-[#E8F7FA] text-[#008A9B]' : 'bg-white hover:bg-[#F8FAFC]',
-                  !field.active && (field.value ? 'border-[#E2E8F0] text-[#101D3A]' : 'border-dashed border-[#CBD5E1] text-[#64748B]')
+                  field.active ? 'border-[#0066E4] bg-[#EAF2FC] text-[#0066E4]' : 'bg-white hover:bg-[#F8FAFC]',
+                  !field.active && (field.value ? 'border-[#E2E8F0] text-[#0A1024]' : 'border-dashed border-[#CBD5E1] text-[#64748B]')
                 ]"
                 :aria-expanded="field.active"
                 :aria-label="t('planner.brief.edit', { label: field.label, value: field.value || t('planner.brief.notSet') })"
                 @click="toggleControl(field.control)"
               >
-                <PlannerIcon :name="field.icon" class="h-3.5 w-3.5 shrink-0" :class="field.value || field.active ? 'text-[#008A9B]' : ''" />
+                <PlannerIcon :name="field.icon" class="h-3.5 w-3.5 shrink-0" :class="field.value || field.active ? 'text-[#0066E4]' : ''" />
                 {{ field.value || field.placeholder }}
               </button>
             </div>
@@ -85,9 +100,9 @@
                   </p>
                   <p
                     class="inline-block whitespace-pre-line px-3.5 py-2.5 text-left text-[14px] leading-[21px]"
-                    :class="note.role === 'user' ? 'rounded-2xl rounded-br-md bg-[#008A9B] text-white' : 'rounded-2xl rounded-bl-md bg-[#F1F5F9] text-[#1E293B]'"
+                    :class="note.role === 'user' ? 'rounded-2xl rounded-br-md bg-[#0066E4] text-white' : 'rounded-2xl rounded-bl-md bg-[#F1F5F9] text-[#1E293B]'"
                   >
-                    {{ note.key ? t(note.key) : note.text }}
+                    {{ note.key ? t(note.key, note.params) : note.text }}
                   </p>
                   <ul v-if="note.actions?.length" class="mt-2 space-y-1 rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-left" :aria-label="t('planner.chat.briefUpdated')">
                     <li v-for="action in note.actions" :key="action" class="flex items-start gap-1.5 text-[12px] leading-[18px] text-[#475569]">
@@ -100,7 +115,7 @@
                       v-for="reply in repliesFor(note)"
                       :key="reply"
                       type="button"
-                      class="min-h-11 rounded-full border border-[#008A9B]/40 bg-white px-3 text-[13px] font-medium leading-5 text-[#007789] hover:bg-[#E8F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-8"
+                      class="min-h-11 rounded-full border border-[#0066E4]/40 bg-white px-3 text-[13px] font-medium leading-5 text-[#0057C8] hover:bg-[#EAF2FC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:min-h-8"
                       @click="sendReply(reply)"
                     >
                       {{ reply }}
@@ -124,7 +139,7 @@
                 v-for="item in adjustments"
                 :key="item.id"
                 type="button"
-                class="min-h-11 shrink-0 rounded-full border border-[#E2E8F0] bg-white px-3 text-[12px] font-semibold leading-[18px] text-[#334155] hover:border-[#008A9B] hover:text-[#008A9B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-8"
+                class="min-h-11 shrink-0 rounded-full border border-[#E2E8F0] bg-white px-3 text-[12px] font-semibold leading-[18px] text-[#334155] hover:border-[#0066E4] hover:text-[#0066E4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:min-h-8"
                 @click="adjust(item.id)"
               >
                 {{ t(`planner.adjust.${item.id}`) }}
@@ -140,7 +155,7 @@
           <div v-if="result && !loading" class="flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
-              class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-[#64748B] hover:text-[#101D3A]"
+              class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-[#64748B] hover:text-[#0A1024]"
               @click="startOver"
             >
               <PlannerIcon name="refresh" class="h-4 w-4" />
@@ -172,17 +187,17 @@
           <PlannerStates v-else-if="loading" kind="loading" :destination="form.destination" :revising="revising" />
           <PlannerStates v-else-if="error" kind="error" :message="error" @retry="retry" />
           <div v-else class="mx-auto max-w-5xl py-2 sm:py-4">
-            <p class="text-[12px] font-semibold uppercase leading-[18px] tracking-[0.06em] text-[#008A9B]">{{ t('planner.start.eyebrow') }}</p>
-            <h2 class="mt-1 text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px] sm:leading-9">{{ t('planner.start.title') }}</h2>
+            <p class="text-[12px] font-semibold uppercase leading-[18px] tracking-[0.06em] text-[#0066E4]">{{ t('planner.start.eyebrow') }}</p>
+            <h2 class="mt-1 text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#0A1024] sm:text-[28px] sm:leading-9">{{ t('planner.start.title') }}</h2>
             <p class="mt-2 max-w-2xl text-[14px] leading-[22px] text-[#64748B]">
               {{ t('planner.start.text') }}
             </p>
             <PromptSuggestions layout="gallery" class="mt-6" @select="applyPrompt" />
             <ol class="mt-8 grid gap-4 border-t border-[#E2E8F0] pt-6 sm:grid-cols-3">
-              <li v-for="(step, index) in tm<{ title: string; text: string }[]>('planner.start.how')" :key="step.title" class="flex items-start gap-3">
-                <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#E8F7FA] text-[13px] font-bold text-[#008A9B]">{{ index + 1 }}</span>
+              <li v-for="(step, index) in howSteps" :key="step.title" class="flex items-start gap-3">
+                <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EAF2FC] text-[13px] font-bold text-[#0066E4]">{{ index + 1 }}</span>
                 <span>
-                  <span class="block text-[14px] font-semibold leading-5 text-[#101D3A]">{{ step.title }}</span>
+                  <span class="block text-[14px] font-semibold leading-5 text-[#0A1024]">{{ step.title }}</span>
                   <span class="mt-0.5 block text-[13px] leading-5 text-[#64748B]">{{ step.text }}</span>
                 </span>
               </li>
@@ -213,6 +228,8 @@ import RequestComposer from '~/components/planner/RequestComposer.vue'
 import TravellerStrip from '~/components/planner/TravellerStrip.vue'
 import type { PartyRow } from '~/components/planner/TravellerStrip.vue'
 import type { Itinerary, LiveActivity, TripPace } from '~/types/trip'
+import type { PublishedTripView } from '~/types/community'
+import { takeAdaptHandoff } from '~/utils/community-adapt'
 
 interface PlannerResult {
   generationId: string
@@ -236,6 +253,8 @@ interface Note {
   text: string
   /** Translation key, for notes created before the visitor's language is applied */
   key?: string
+  /** Values for the key's {placeholders} */
+  params?: Record<string, string | number>
   /** Translation key of a list of quick replies */
   repliesKey?: string
   time?: string
@@ -271,13 +290,24 @@ type AdjustmentId = (typeof adjustments)[number]['id']
 
 const PENDING_KEY = 'gotravelnha_pending_trip'
 
+// Customize with AI: the community trip this plan starts from (/planner?adapt=<slug>)
+interface AdaptSource {
+  id: string
+  slug: string
+  title: string
+  author: string
+}
+const adaptSource = ref<AdaptSource | null>(null)
+
 // Where the first message came from, for the planner_started funnel event
-let startSource: 'chat' | 'home_prompt' | 'example' | 'shared_trip' = 'chat'
+let startSource: 'chat' | 'home_prompt' | 'example' | 'shared_trip' | 'community_trip' = 'chat'
 
 const route = useRoute()
 const router = useRouter()
 const { track } = useFunnel()
 const { t, tm, locale, localeTag, placeName } = useI18n()
+// Object-literal generics do not parse inside template attributes, so typed lists are read here
+const howSteps = computed(() => tm<{ title: string; text: string }[]>('planner.start.how'))
 const { isAuthenticated } = useAuthState()
 const tripsTo = computed(() => (isAuthenticated.value ? '/mytrip' : '/login?redirect=/mytrip'))
 
@@ -393,7 +423,7 @@ const scrollLog = () => {
   })
 }
 
-const pushNote = (role: Note['role'], text: string, extra: Pick<Note, 'actions' | 'replies' | 'key'> = {}) => {
+const pushNote = (role: Note['role'], text: string, extra: Pick<Note, 'actions' | 'replies' | 'key' | 'params'> = {}) => {
   noteId += 1
   const time = new Intl.DateTimeFormat(localeTag.value, { hour: '2-digit', minute: '2-digit' }).format(new Date())
   messages.value.push({ id: noteId, role, text, time, ...extra })
@@ -648,7 +678,7 @@ const ask = async () => {
     turn = await $fetch<AgentTurn>('/api/planner/chat', {
       method: 'POST',
       body: {
-        messages: messages.value.slice(1).map((note) => ({ role: note.role, text: (note.key ? t(note.key) : note.text).slice(0, 800) })),
+        messages: messages.value.slice(1).map((note) => ({ role: note.role, text: (note.key ? t(note.key, note.params) : note.text).slice(0, 800) })),
         brief: {
           destination: form.destination || undefined,
           startDate: form.startDate || undefined,
@@ -722,10 +752,15 @@ const generate = async (revision?: { change: string }) => {
         pace: form.pace,
         interests: form.interests || undefined,
         language: locale.value,
-        revise
+        revise,
+        // Only the first plan needs the source; revisions keep it on the server
+        adaptFrom: adaptSource.value && !revise ? { tripId: adaptSource.value.id } : undefined
       }
     })
     result.value = response
+    if (adaptSource.value && !revise) {
+      track('itinerary_customize_complete', { tripId: adaptSource.value.id, generationId: response.generationId })
+    }
     localStorage.setItem(PENDING_KEY, response.generationId)
     track('ai_itinerary_generated', {
       provider: 'planner',
@@ -814,6 +849,49 @@ const newTrip = () => {
   partyOpen.value = false
   tab.value = 'talk'
   messages.value = [messages.value[0]]
+  dropAdaptSource()
+}
+
+const dropAdaptSource = () => {
+  if (!adaptSource.value) return
+  adaptSource.value = null
+  const { adapt: _drop, ...rest } = route.query
+  router.replace({ query: rest })
+}
+
+/**
+ * Loads the community trip to customize. With answers from its customize form (sessionStorage),
+ * plans straight away; otherwise pre-fills the brief and waits for the visitor.
+ * Returns true when it started a plan.
+ */
+const startAdaptation = async (slug: string) => {
+  const response = await $fetch<{ data: PublishedTripView }>(`/api/community/trips/${encodeURIComponent(slug)}`).catch(() => null)
+  const trip = response?.data
+  if (!trip || trip.visibility === 'PRIVATE') return false
+  adaptSource.value = { id: trip.id, slug: trip.slug, title: trip.title, author: trip.author.displayName }
+  form.destination = trip.destination
+  if (trip.travelStyle === 'relaxed' || trip.travelStyle === 'balanced' || trip.travelStyle === 'packed') form.pace = trip.travelStyle
+  startSource = 'community_trip'
+
+  const handoff = takeAdaptHandoff(trip.slug)
+  if (!handoff || handoff.tripId !== trip.id) {
+    pushNote('assistant', '', { key: 'planner.chat.adaptReady', params: { title: trip.title } })
+    return false
+  }
+  form.startDate = handoff.startDate
+  form.endDate = handoff.endDate
+  form.budget = handoff.budget
+  form.interests = handoff.interests
+  if (handoff.pace) form.pace = handoff.pace
+  party.value = [
+    ...Array.from({ length: handoff.adults }, () => ({ name: '', age: 35, include: true, fromProfile: false })),
+    ...handoff.childAges.map((age) => ({ name: '', age, include: true, fromProfile: false }))
+  ]
+  localStorage.removeItem(PENDING_KEY)
+  pushNote('user', '', { key: 'planner.chat.adaptRequest', params: { title: trip.title } })
+  track('planner_started', { source: startSource }, true)
+  await generate()
+  return true
 }
 
 const startOver = () => {
@@ -832,6 +910,13 @@ onMounted(async () => {
 
   if (isAuthenticated.value) {
     await loadFamily()
+  }
+
+  const adaptSlug = typeof route.query.adapt === 'string' ? route.query.adapt.trim().toLowerCase() : ''
+  if (/^[a-z0-9-]{3,80}$/.test(adaptSlug)) {
+    const started = await startAdaptation(adaptSlug)
+    // A fresh customization replaces the last unsaved plan; a bare link keeps it for later
+    if (started || adaptSource.value) return
   }
 
   // Trip described on the home page or a guide: put it in the message box instead of restoring the

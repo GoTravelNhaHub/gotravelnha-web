@@ -7,7 +7,7 @@
     :subline="t('auth.register.subline')"
     :points="tm<string[]>('auth.register.points')"
   >
-    <p v-if="referralCode" class="mb-5 rounded-xl border border-[#99E3EC] bg-[#E8F7FA] px-3.5 py-3 text-[14px] leading-5 text-[#005F6B]">
+    <p v-if="referralCode" class="mb-5 rounded-xl border border-[#CFE0F7] bg-[#EAF2FC] px-3.5 py-3 text-[14px] leading-5 text-[#0642D2]">
       {{ t('auth.register.referral') }}
     </p>
 
@@ -61,7 +61,7 @@
           />
           <button
             type="button"
-            class="absolute inset-y-0 right-0 inline-flex w-12 items-center justify-center rounded-r-xl text-[#64748B] hover:text-[#101D3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+            class="absolute inset-y-0 right-0 inline-flex w-12 items-center justify-center rounded-r-xl text-[#64748B] hover:text-[#0A1024] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
             :aria-label="showPassword ? t('auth.password.hide') : t('auth.password.show')"
             :aria-pressed="showPassword"
             @click="showPassword = !showPassword"
@@ -79,7 +79,7 @@
       </div>
 
       <label class="flex items-start gap-2.5 text-[14px] leading-5 text-[#334155]">
-        <input v-model="registerForm.agreedToTerms" type="checkbox" required class="mt-0.5 h-4 w-4 shrink-0 rounded accent-[#008A9B]" />
+        <input v-model="registerForm.agreedToTerms" type="checkbox" required class="mt-0.5 h-4 w-4 shrink-0 rounded accent-[#0066E4]" />
         <span>
           {{ t('auth.register.agreeBefore') }}
           <NuxtLink to="/terms" target="_blank" class="text-link">{{ t('auth.register.terms') }}</NuxtLink>

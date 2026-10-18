@@ -14,13 +14,13 @@
       <aside class="space-y-4 lg:pt-0" :aria-label="t('info.contact.asideLabel')">
         <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5">
           <div class="flex items-start gap-3">
-            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF2FC] text-[#0066E4]" aria-hidden="true">
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6ZM13 5v2M13 17v2M13 11v2" />
               </svg>
             </span>
             <div class="min-w-0">
-              <h2 class="text-[15px] font-bold leading-6 text-[#101D3A]">{{ t('info.contact.ticketsTitle') }}</h2>
+              <h2 class="text-[15px] font-bold leading-6 text-[#0A1024]">{{ t('info.contact.ticketsTitle') }}</h2>
               <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">{{ t('info.contact.ticketsText') }}</p>
               <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
                 <NuxtLink to="/bookings" class="text-link">{{ t('info.contact.myBookings') }}</NuxtLink>
@@ -38,7 +38,7 @@
               </svg>
             </span>
             <div class="min-w-0">
-              <h2 class="text-[15px] font-bold leading-6 text-[#101D3A]">{{ t('info.contact.partnerTitle') }}</h2>
+              <h2 class="text-[15px] font-bold leading-6 text-[#0A1024]">{{ t('info.contact.partnerTitle') }}</h2>
               <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">{{ t('info.contact.partnerText') }}</p>
             </div>
           </div>
@@ -52,7 +52,7 @@
               </svg>
             </span>
             <div class="min-w-0">
-              <h2 class="text-[15px] font-bold leading-6 text-[#101D3A]">{{ t('info.contact.quickTitle') }}</h2>
+              <h2 class="text-[15px] font-bold leading-6 text-[#0A1024]">{{ t('info.contact.quickTitle') }}</h2>
               <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">{{ t('info.contact.quickText') }}</p>
               <NuxtLink to="/help" class="text-link mt-2 inline-block text-[14px]">{{ t('info.contact.helpCentre') }}</NuxtLink>
             </div>

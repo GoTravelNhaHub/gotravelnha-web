@@ -1,18 +1,18 @@
 <template>
   <div class="min-h-screen bg-slate-50 pb-16">
-    <div class="max-w-6xl mx-auto px-4 pt-8 space-y-6">
+    <div class="space-y-6 pt-2">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <NuxtLink to="/destinations" class="text-sm font-semibold text-slate-600 hover:text-slate-900">{{ t('places.detail.all') }}</NuxtLink>
           <h1 class="mt-2 text-3xl font-bold text-slate-900">{{ t('places.detail.title', { city: placeName(name) }) }}</h1>
           <p class="mt-1 text-slate-600">{{ t('places.detail.subtitle') }}</p>
-          <NuxtLink v-if="guide" :to="`/guides/${guide.slug}`" class="mt-2 inline-block text-sm font-semibold text-emerald-700 hover:underline">
+          <NuxtLink v-if="guide" :to="`/guides/${guide.slug}`" class="mt-2 inline-block text-sm font-semibold text-brand-700 hover:underline">
             {{ t('places.detail.guide', { title: guide.title }) }}
           </NuxtLink>
         </div>
         <NuxtLink
           :to="`/planner?destination=${encodeURIComponent(name)}`"
-          class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+          class="cm-btn-primary h-11 px-5 text-[15px]"
         >
           🧭 {{ t('places.detail.planHere') }}
         </NuxtLink>
@@ -20,7 +20,7 @@
 
       <form @submit.prevent="load" class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap items-end gap-4">
         <label v-if="isAuthenticated" class="flex items-center gap-2 text-sm text-slate-700 py-2">
-          <input v-model="useFamily" type="checkbox" class="h-4 w-4 text-emerald-600 rounded" />
+          <input v-model="useFamily" type="checkbox" class="h-4 w-4 text-brand-600 rounded" />
           {{ t('places.detail.suitFamily') }}
         </label>
         <label v-if="!useFamily || !isAuthenticated" class="block">
@@ -29,7 +29,7 @@
             v-model.trim="ages"
             :placeholder="t('places.detail.agesPlaceholder')"
             maxlength="40"
-            class="mt-1 w-44 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            class="mt-1 w-44 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           />
         </label>
         <label class="block flex-1 min-w-[12rem]">
@@ -38,13 +38,13 @@
             v-model.trim="interests"
             :placeholder="t('places.detail.interestsPlaceholder')"
             maxlength="300"
-            class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           />
         </label>
         <button
           type="submit"
           :disabled="loading"
-          class="px-5 py-2 rounded-lg bg-slate-900 text-white font-semibold hover:bg-slate-700 disabled:opacity-60"
+          class="cm-btn-primary h-10 px-5 text-[14px] disabled:opacity-60"
         >
           {{ loading ? t('places.detail.loading') : t('places.detail.showMatches') }}
         </button>
@@ -55,7 +55,7 @@
       </p>
       <div v-if="error" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">{{ error }}</div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5 gap-4">
         <ActivityCard v-for="activity in activities" :key="activity.id" :activity="activity" placement-key="destination_page" />
       </div>
       <div

@@ -50,7 +50,7 @@
           />
           <button
             type="button"
-            class="absolute inset-y-0 right-0 inline-flex w-12 items-center justify-center rounded-r-xl text-[#64748B] hover:text-[#101D3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+            class="absolute inset-y-0 right-0 inline-flex w-12 items-center justify-center rounded-r-xl text-[#64748B] hover:text-[#0A1024] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
             :aria-label="showPassword ? t('auth.password.hide') : t('auth.password.show')"
             :aria-pressed="showPassword"
             @click="showPassword = !showPassword"
@@ -67,7 +67,7 @@
       </div>
 
       <label class="flex items-center gap-2.5 text-[14px] text-[#334155]">
-        <input v-model="loginForm.rememberMe" type="checkbox" class="h-4 w-4 rounded accent-[#008A9B]" />
+        <input v-model="loginForm.rememberMe" type="checkbox" class="h-4 w-4 rounded accent-[#0066E4]" />
         {{ t('auth.login.remember') }}
       </label>
 

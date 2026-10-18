@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 font-brand shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-6">
+  <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 font-brand shadow-[0_24px_60px_-28px_rgba(10,16,36,0.45)] sm:p-6">
     <div class="mb-5 inline-grid grid-cols-2 gap-1 rounded-xl bg-[#F1F5F9] p-1" role="tablist">
       <button
         v-for="tab in tabs"
@@ -10,10 +10,10 @@
         @click="mode = tab.id"
         :class="[
           'inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg px-4 text-[14px] font-semibold transition-colors sm:min-h-10 sm:px-5',
-          mode === tab.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'
+          mode === tab.id ? 'bg-white text-[#0A1024] shadow-[0_1px_3px_rgba(10,16,36,0.12)]' : 'text-[#64748B] hover:text-[#0A1024]'
         ]"
       >
-        <svg class="h-4 w-4" :class="mode === tab.id ? 'text-[#008A9B]' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+        <svg class="h-4 w-4" :class="mode === tab.id ? 'text-[#0066E4]' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="tab.icon" />
         </svg>
         {{ t(tab.label) }}
@@ -66,7 +66,7 @@
         </label>
       </div>
       <div class="flex">
-        <button type="submit" class="min-h-12 w-full rounded-xl bg-[#008A9B] px-7 py-3 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] focus-visible:ring-offset-2 sm:ml-auto sm:w-auto">
+        <button type="submit" class="min-h-12 w-full rounded-xl bg-[#0066E4] px-7 py-3 text-[15px] font-semibold text-white hover:bg-[#0057C8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A1024] focus-visible:ring-offset-2 sm:ml-auto sm:w-auto">
           {{ t('common.search.searchFlights') }}
         </button>
       </div>
@@ -104,7 +104,7 @@
         </label>
       </div>
       <div class="flex">
-        <button type="submit" class="min-h-12 w-full rounded-xl bg-[#008A9B] px-7 py-3 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] focus-visible:ring-offset-2 sm:ml-auto sm:w-auto">
+        <button type="submit" class="min-h-12 w-full rounded-xl bg-[#0066E4] px-7 py-3 text-[15px] font-semibold text-white hover:bg-[#0057C8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A1024] focus-visible:ring-offset-2 sm:ml-auto sm:w-auto">
           {{ t('common.search.searchHotels') }}
         </button>
       </div>
@@ -264,7 +264,7 @@ defineExpose({ selectHotelCity })
   font-size: 1rem;
   line-height: 1.5rem;
   background: white;
-  color: #101d3a;
+  color: #0A1024;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -274,8 +274,8 @@ defineExpose({ selectHotelCity })
 
 .field-control:focus {
   outline: none;
-  border-color: #008a9b;
-  box-shadow: 0 0 0 3px rgba(0, 138, 155, 0.18);
+  border-color: #0066E4;
+  box-shadow: 0 0 0 3px rgba(0,102,228, 0.18);
 }
 
 input[type='date'].field-control {

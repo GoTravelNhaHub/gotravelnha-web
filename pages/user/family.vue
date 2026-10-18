@@ -78,7 +78,7 @@
         </div>
       </form>
 
-      <NuxtLink to="/planner" class="inline-flex text-emerald-700 font-semibold hover:underline">{{ t('account.family.planWithFamily') }}</NuxtLink>
+      <NuxtLink to="/planner" class="inline-flex text-brand-700 font-semibold hover:underline">{{ t('account.family.planWithFamily') }}</NuxtLink>
     </div>
   </div>
 </template>

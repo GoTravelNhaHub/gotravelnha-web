@@ -20,18 +20,18 @@
         </section>
 
         <section aria-labelledby="itinerary-title" class="space-y-5">
-          <h2 id="itinerary-title" class="text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px]">{{ t('places.guides.dayByDay') }}</h2>
+          <h2 id="itinerary-title" class="text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#0A1024] sm:text-[28px]">{{ t('places.guides.dayByDay') }}</h2>
           <ol class="space-y-4">
             <li v-for="(day, index) in guide.itinerary" :key="day.title" class="rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6">
-              <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">{{ t('places.guides.day', { n: index + 1 }) }}</p>
-              <h3 class="mt-1 text-[19px] font-bold leading-7 text-[#101D3A]">{{ day.title }}</h3>
+              <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0066E4]">{{ t('places.guides.day', { n: index + 1 }) }}</p>
+              <h3 class="mt-1 text-[19px] font-bold leading-7 text-[#0A1024]">{{ day.title }}</h3>
               <dl class="mt-3 grid gap-3 text-[15px] leading-6 text-[#475569] sm:grid-cols-3">
                 <div v-for="part in dayParts(day)" :key="part.label">
-                  <dt class="text-[13px] font-semibold text-[#101D3A]">{{ part.label }}</dt>
+                  <dt class="text-[13px] font-semibold text-[#0A1024]">{{ part.label }}</dt>
                   <dd class="mt-0.5">{{ part.text }}</dd>
                 </div>
               </dl>
-              <p v-if="day.tip" class="mt-4 rounded-xl bg-[#E8F7FA] px-4 py-2.5 text-[14px] leading-[22px] text-[#0F4C55]">
+              <p v-if="day.tip" class="mt-4 rounded-xl bg-[#EAF2FC] px-4 py-2.5 text-[14px] leading-[22px] text-[#0F4C55]">
                 <span class="font-semibold">{{ t('places.guides.tip') }}</span> {{ day.tip }}
               </p>
             </li>
@@ -39,7 +39,7 @@
         </section>
 
         <section v-if="guide.costs" aria-labelledby="costs-title" class="space-y-4">
-          <h2 id="costs-title" class="text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px]">{{ t('places.guides.costs') }}</h2>
+          <h2 id="costs-title" class="text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#0A1024] sm:text-[28px]">{{ t('places.guides.costs') }}</h2>
           <div class="overflow-x-auto rounded-2xl border border-[#E2E8F0] bg-white">
             <table class="w-full text-left text-[15px]">
               <thead class="bg-[#F8FAFC] text-[13px] text-[#64748B]">
@@ -50,11 +50,11 @@
               </thead>
               <tbody>
                 <tr v-for="line in guide.costs.lines" :key="line.item" class="border-t border-[#E2E8F0]">
-                  <td class="px-4 py-3 text-[#101D3A]">
+                  <td class="px-4 py-3 text-[#0A1024]">
                     {{ line.item }}
                     <span v-if="line.note" class="block text-[13px] text-[#64748B]">{{ line.note }}</span>
                   </td>
-                  <td class="px-4 py-3 font-semibold text-[#101D3A]">{{ line.estimate }}</td>
+                  <td class="px-4 py-3 font-semibold text-[#0A1024]">{{ line.estimate }}</td>
                 </tr>
               </tbody>
             </table>
@@ -64,20 +64,20 @@
         </section>
 
         <section aria-labelledby="tips-title" class="space-y-4">
-          <h2 id="tips-title" class="text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px]">{{ t('places.guides.tips') }}</h2>
+          <h2 id="tips-title" class="text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#0A1024] sm:text-[28px]">{{ t('places.guides.tips') }}</h2>
           <ul class="space-y-2.5">
             <li v-for="tip in guide.tips" :key="tip" class="flex items-start gap-2.5 text-[15px] leading-6 text-[#475569]">
-              <svg class="mt-1 h-4 w-4 shrink-0 text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 10.5 3 3 7-7" /></svg>
+              <svg class="mt-1 h-4 w-4 shrink-0 text-[#0066E4]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 10.5 3 3 7-7" /></svg>
               {{ tip }}
             </li>
           </ul>
         </section>
 
         <section aria-labelledby="faq-title" class="space-y-4">
-          <h2 id="faq-title" class="text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#101D3A] sm:text-[28px]">{{ t('places.guides.questions') }}</h2>
+          <h2 id="faq-title" class="text-[24px] font-bold leading-8 tracking-[-0.025em] text-[#0A1024] sm:text-[28px]">{{ t('places.guides.questions') }}</h2>
           <div class="divide-y divide-[#E2E8F0] rounded-2xl border border-[#E2E8F0] bg-white">
             <details v-for="faq in guide.faqs" :key="faq.question" class="group px-5 py-4">
-              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-[#101D3A]">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-[#0A1024]">
                 {{ faq.question }}
                 <svg class="h-4 w-4 shrink-0 text-[#64748B] transition group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 8 5 5 5-5" /></svg>
               </summary>
@@ -88,13 +88,13 @@
       </article>
 
       <aside class="lg:sticky lg:top-24 lg:self-start">
-        <div class="rounded-2xl bg-[#101D3A] p-6 text-white">
-          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#5EEAD4]">{{ t('places.guides.makeYours') }}</p>
+        <div class="rounded-2xl bg-[#0A1024] p-6 text-white">
+          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#7DB4FF]">{{ t('places.guides.makeYours') }}</p>
           <h2 class="mt-1 text-[20px] font-bold leading-7">{{ t('places.guides.customiseTitle') }}</h2>
           <p class="mt-2 text-[14px] leading-[22px] text-white/75">{{ t('places.guides.customiseText') }}</p>
           <NuxtLink
             :to="{ path: '/planner', query: { prompt: guide.plannerPrompt } }"
-            class="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#008A9B] px-5 text-[15px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#101D3A]"
+            class="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0066E4] px-5 text-[15px] font-semibold text-white hover:bg-[#0057C8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1024]"
             @click="track('guide_customise_clicked', { guide: guide.slug })"
           >
             {{ t('places.guides.planMine') }}
@@ -102,7 +102,7 @@
         </div>
         <NuxtLink
           :to="`/destinations/${destinationSlug(guide.destination)}`"
-          class="mt-4 flex min-h-12 items-center justify-between rounded-2xl border border-[#E2E8F0] bg-white px-5 text-[14px] font-semibold text-[#101D3A] hover:border-[#008A9B]"
+          class="mt-4 flex min-h-12 items-center justify-between rounded-2xl border border-[#E2E8F0] bg-white px-5 text-[14px] font-semibold text-[#0A1024] hover:border-[#0066E4]"
         >
           {{ t('places.guides.activitiesIn', { destination: placeName(guide.destination) }) }}
           <span aria-hidden="true">→</span>

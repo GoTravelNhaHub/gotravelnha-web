@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto max-w-md py-10 font-brand">
     <section class="rounded-2xl border border-[#E2E8F0] bg-white p-6 text-center">
-      <h1 class="text-[22px] font-bold text-[#101D3A]">{{ done ? t('info.unsubscribe.doneTitle') : t('info.unsubscribe.title') }}</h1>
+      <h1 class="text-[22px] font-bold text-[#0A1024]">{{ done ? t('info.unsubscribe.doneTitle') : t('info.unsubscribe.title') }}</h1>
       <p class="mt-2 text-[14px] leading-[22px] text-[#64748B]">
         {{ done ? t('info.unsubscribe.doneText', { email }) : t('info.unsubscribe.confirm', { email: email || t('info.unsubscribe.thisAddress') }) }}
       </p>

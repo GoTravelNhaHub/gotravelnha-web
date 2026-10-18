@@ -33,7 +33,13 @@ const planner: Messages['planner'] = {
     children_one: '{count} trẻ em'
   },
   pace: { relaxed: 'Thong thả', balanced: 'Vừa phải', packed: 'Dày đặc' },
+  adapt: {
+    basedOn: 'Dựa trên',
+    remove: 'Lên kế hoạch không dùng chuyến này'
+  },
   chat: {
+    adaptReady: 'Cùng biến “{title}” thành chuyến của bạn. Thêm ngày đi và người đi cùng rồi bấm Lên kế hoạch. Lịch trình gốc vẫn giữ nguyên.',
+    adaptRequest: 'Tùy chỉnh “{title}” cho gia đình tôi.',
     you: 'Bạn',
     agent: 'GoTravelNha AI',
     briefUpdated: 'Đã cập nhật thông tin',

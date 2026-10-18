@@ -4,7 +4,10 @@ import type { Prisma } from '@prisma/client'
 import prisma from '~/server/utils/prisma'
 import { getSessionUser } from '~/server/utils/session'
 import { loadCatalogue, resolveActivities } from '~/server/services/trip-catalogue'
+import { adaptationSource } from '~/server/services/community/trips'
+import { communityEnabled } from '~/utils/feature-flags'
 import {
+  AdaptFromSchema,
   ITINERARY_MODEL,
   MAX_TRIP_DAYS,
   PLANNER_GUEST_DAILY_LIMIT,
@@ -15,6 +18,7 @@ import {
   generateItinerary,
   itineraryActivityIds,
   tripDates,
+  type Adaptation,
   type Itinerary,
   type Revision
 } from '~/server/services/itinerary-generator'
@@ -29,6 +33,10 @@ export default defineEventHandler(async (event) => {
   const revise = body?.revise ? RevisionSchema.safeParse(body.revise) : null
   if (revise && !revise.success) {
     throw createError({ statusCode: 400, message: 'Describe the change in a few words.' })
+  }
+  const adaptFrom = body?.adaptFrom && communityEnabled(useRuntimeConfig().public) ? AdaptFromSchema.safeParse(body.adaptFrom) : null
+  if (adaptFrom && !adaptFrom.success) {
+    throw createError({ statusCode: 400, message: 'The trip to customize was not found.' })
   }
 
   const today = new Date().toISOString().slice(0, 10)
@@ -66,6 +74,8 @@ export default defineEventHandler(async (event) => {
   }
 
   let revision: Revision | undefined
+  // Community trip this plan is based on: set by Customize with AI, and kept through revisions
+  let sourceTripId: string | null = null
   if (revise?.success) {
     const previous = await prisma.itineraryGeneration.findUnique({ where: { id: revise.data.generationId } })
     // Same visibility rule as /api/planner/generations/[id]
@@ -73,10 +83,19 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, message: 'The plan to change was not found. Build a new plan instead.' })
     }
     revision = { itinerary: previous.itinerary as unknown as Itinerary, change: revise.data.change }
+    sourceTripId = previous.sourceTripId
+  }
+
+  let adaptation: Adaptation | undefined
+  if (adaptFrom?.success && !revision) {
+    const source = await adaptationSource(adaptFrom.data.tripId)
+    if (!source) throw createError({ statusCode: 404, message: 'The trip to customize was not found.' })
+    adaptation = source
+    sourceTripId = source.id
   }
 
   const catalogue = await loadCatalogue(request.destination)
-  const result = await generateItinerary(request, catalogue, revision)
+  const result = await generateItinerary(request, catalogue, revision, adaptation)
 
   const generation = await prisma.itineraryGeneration.create({
     data: {
@@ -88,7 +107,8 @@ export default defineEventHandler(async (event) => {
       model: ITINERARY_MODEL,
       status: result.status,
       inputTokens: result.inputTokens,
-      outputTokens: result.outputTokens
+      outputTokens: result.outputTokens,
+      sourceTripId
     }
   })
 
@@ -105,6 +125,7 @@ export default defineEventHandler(async (event) => {
   return {
     success: true,
     generationId: generation.id,
+    sourceTripId,
     request,
     itinerary: result.itinerary,
     activities: await resolveActivities(itineraryActivityIds(result.itinerary)),

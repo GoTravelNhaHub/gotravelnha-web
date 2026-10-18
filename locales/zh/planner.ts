@@ -33,7 +33,13 @@ const planner: Messages['planner'] = {
     children_one: '{count} 个孩子'
   },
   pace: { relaxed: '轻松', balanced: '适中', packed: '紧凑' },
+  adapt: {
+    basedOn: '基于',
+    remove: '不使用此行程进行规划'
+  },
   chat: {
+    adaptReady: '一起把“{title}”变成你的行程。填好日期和同行人后点“规划行程”。原行程不会改变。',
+    adaptRequest: '为我的家庭定制“{title}”。',
     you: '你',
     agent: 'GoTravelNha AI',
     briefUpdated: '行程信息已更新',

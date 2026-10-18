@@ -3,9 +3,9 @@
     <!-- Profile header -->
     <section class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6">
       <div class="flex min-w-0 items-center gap-4">
-        <span class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#008A9B] text-[22px] font-bold text-white" aria-hidden="true">{{ profile.initial }}</span>
+        <span class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#0066E4] text-[22px] font-bold text-white" aria-hidden="true">{{ profile.initial }}</span>
         <div class="min-w-0">
-          <h1 class="truncate text-[22px] font-bold leading-8 tracking-[-0.02em] text-[#101D3A]">{{ profile.name }}</h1>
+          <h1 class="truncate text-[22px] font-bold leading-8 tracking-[-0.02em] text-[#0A1024]">{{ profile.name }}</h1>
           <p class="truncate text-[14px] text-[#64748B]">{{ profile.email }}<span v-if="profile.memberSince"> · {{ t('account.profile.memberSince', { date: profile.memberSince }) }}</span></p>
         </div>
       </div>
@@ -24,11 +24,11 @@
         v-for="tile in tiles"
         :key="tile.label"
         :to="tile.to"
-        class="group rounded-2xl border border-[#E2E8F0] bg-white p-4 transition hover:border-[#008A9B]/40 sm:p-5"
+        class="group rounded-2xl border border-[#E2E8F0] bg-white p-4 transition hover:border-[#0066E4]/40 sm:p-5"
       >
         <p class="text-[13px] font-medium text-[#64748B]">{{ tile.label }}</p>
-        <p class="mt-1 text-[26px] font-semibold leading-8 tracking-[-0.02em] text-[#101D3A]">{{ loaded ? tile.value : '–' }}</p>
-        <p class="mt-0.5 hidden text-[12px] text-[#008A9B] group-hover:underline sm:block">{{ tile.cta }} →</p>
+        <p class="mt-1 text-[26px] font-semibold leading-8 tracking-[-0.02em] text-[#0A1024]">{{ loaded ? tile.value : '–' }}</p>
+        <p class="mt-0.5 hidden text-[12px] text-[#0066E4] group-hover:underline sm:block">{{ tile.cta }} →</p>
       </NuxtLink>
     </section>
 
@@ -37,20 +37,20 @@
         <!-- Upcoming trips -->
         <section class="rounded-2xl border border-[#E2E8F0] bg-white" aria-labelledby="trips-title">
           <header class="flex items-center justify-between gap-3 border-b border-[#F1F5F9] px-5 py-4">
-            <h2 id="trips-title" class="text-[16px] font-bold text-[#101D3A]">{{ t('account.profile.upcoming') }}</h2>
+            <h2 id="trips-title" class="text-[16px] font-bold text-[#0A1024]">{{ t('account.profile.upcoming') }}</h2>
             <NuxtLink to="/mytrip" class="text-link text-[13px]">{{ t('account.profile.allTrips') }}</NuxtLink>
           </header>
           <ul v-if="upcomingTrips.length" class="divide-y divide-[#F1F5F9]">
             <li v-for="trip in upcomingTrips" :key="trip.id">
               <NuxtLink :to="`/mytrip/${trip.id}`" class="flex items-center gap-4 px-5 py-3.5 hover:bg-[#F8FAFC]">
-                <span class="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#E8F7FA]">
+                <span class="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#EAF2FC]">
                   <img v-if="destinationPhoto(trip.destination, 120)" :src="destinationPhoto(trip.destination, 120)!" alt="" width="48" height="48" class="h-full w-full object-cover" />
                 </span>
                 <span class="min-w-0 flex-1">
-                  <span class="block truncate text-[15px] font-semibold text-[#101D3A]">{{ trip.title }}</span>
+                  <span class="block truncate text-[15px] font-semibold text-[#0A1024]">{{ trip.title }}</span>
                   <span class="block text-[13px] text-[#64748B]">{{ placeName(trip.destination) }} · {{ dateRange(trip.startDate, trip.endDate) }}</span>
                 </span>
-                <span class="shrink-0 rounded-full bg-[#E8F7FA] px-2.5 py-0.5 text-[12px] font-semibold text-[#007789]">{{ countdown(trip.startDate) }}</span>
+                <span class="shrink-0 rounded-full bg-[#EAF2FC] px-2.5 py-0.5 text-[12px] font-semibold text-[#0057C8]">{{ countdown(trip.startDate) }}</span>
               </NuxtLink>
             </li>
           </ul>
@@ -63,14 +63,14 @@
         <!-- Recent bookings -->
         <section class="rounded-2xl border border-[#E2E8F0] bg-white" aria-labelledby="bookings-title">
           <header class="flex items-center justify-between gap-3 border-b border-[#F1F5F9] px-5 py-4">
-            <h2 id="bookings-title" class="text-[16px] font-bold text-[#101D3A]">{{ t('account.profile.recentBookings') }}</h2>
+            <h2 id="bookings-title" class="text-[16px] font-bold text-[#0A1024]">{{ t('account.profile.recentBookings') }}</h2>
             <NuxtLink to="/bookings" class="text-link text-[13px]">{{ t('account.profile.allBookings') }}</NuxtLink>
           </header>
           <ul v-if="recentBookings.length" class="divide-y divide-[#F1F5F9]">
             <li v-for="booking in recentBookings" :key="booking.reference || booking.createdAt">
               <NuxtLink to="/bookings" class="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-[#F8FAFC]">
                 <span class="min-w-0">
-                  <span class="block truncate text-[15px] font-semibold text-[#101D3A]">{{ booking.eventTitle }}</span>
+                  <span class="block truncate text-[15px] font-semibold text-[#0A1024]">{{ booking.eventTitle }}</span>
                   <span class="block text-[13px] text-[#64748B]">
                     <span class="font-mono">{{ booking.reference }}</span> · {{ booking.currency }} {{ booking.amount.toFixed(2) }} · {{ shortDate(booking.paidAt || booking.createdAt) }}
                   </span>
@@ -90,13 +90,13 @@
         <!-- Family -->
         <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5" aria-labelledby="family-title">
           <div class="flex items-center justify-between gap-3">
-            <h2 id="family-title" class="text-[16px] font-bold text-[#101D3A]">{{ t('account.profile.familyProfile') }}</h2>
+            <h2 id="family-title" class="text-[16px] font-bold text-[#0A1024]">{{ t('account.profile.familyProfile') }}</h2>
             <NuxtLink to="/user/family" class="text-link text-[13px]">{{ travellers.length ? t('account.profile.edit') : t('account.profile.add') }}</NuxtLink>
           </div>
           <p class="mt-1 text-[13px] leading-5 text-[#64748B]">{{ t('account.profile.familyNote') }}</p>
           <ul v-if="travellers.length" class="mt-3 flex flex-wrap gap-2">
-            <li v-for="person in travellers" :key="person.id" class="inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-[#F8FAFC] py-1 pl-1 pr-3 text-[13px] text-[#101D3A]">
-              <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#E8F7FA] text-[11px] font-bold text-[#007789]" aria-hidden="true">{{ person.name.charAt(0).toUpperCase() }}</span>
+            <li v-for="person in travellers" :key="person.id" class="inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-[#F8FAFC] py-1 pl-1 pr-3 text-[13px] text-[#0A1024]">
+              <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF2FC] text-[11px] font-bold text-[#0057C8]" aria-hidden="true">{{ person.name.charAt(0).toUpperCase() }}</span>
               {{ person.name }}<span v-if="person.age !== null" class="text-[#64748B]">· {{ person.age }}</span>
             </li>
           </ul>

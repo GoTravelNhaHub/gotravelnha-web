@@ -9,7 +9,7 @@
       overlap
     >
       <template #badge>
-        <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[#101D3A] shadow-sm">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[#0A1024] shadow-sm">
           <TripWordmark />
           {{ t('partners.trip.badge') }}
         </span>
@@ -23,7 +23,7 @@
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
       <section class="space-y-6">
         <SectionHeading :eyebrow="t('partners.trip.placesEyebrow')" :title="t('partners.trip.placesTitle')" :subtitle="t('partners.trip.placesSubtitle')" />
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 3xl:grid-cols-8 lg:gap-4">
           <CityTile
             v-for="place in places"
             :key="place.hotelCityId"

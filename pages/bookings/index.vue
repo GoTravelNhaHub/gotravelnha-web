@@ -2,7 +2,7 @@
   <div class="mx-auto max-w-[1200px] pb-12 font-brand">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 class="text-[26px] font-bold leading-9 tracking-[-0.025em] text-[#101D3A]">{{ t('account.bookings.title') }}</h1>
+        <h1 class="text-[26px] font-bold leading-9 tracking-[-0.025em] text-[#0A1024]">{{ t('account.bookings.title') }}</h1>
         <p class="text-[15px] text-[#64748B]">{{ t('account.bookings.intro') }}</p>
       </div>
       <NuxtLink v-if="!isAuthenticated" to="/login?redirect=/bookings" class="btn-secondary w-auto px-5">{{ t('account.bookings.signIn') }}</NuxtLink>
@@ -20,7 +20,7 @@
               role="tab"
               :aria-selected="filter === option.id"
               class="min-h-9 whitespace-nowrap rounded-lg px-3 text-[13px] font-semibold"
-              :class="filter === option.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
+              :class="filter === option.id ? 'bg-white text-[#0A1024] shadow-[0_1px_3px_rgba(10,16,36,0.12)]' : 'text-[#64748B] hover:text-[#0A1024]'"
               @click="filter = option.id"
             >
               {{ option.label }}<span v-if="option.count" class="ml-1 text-[#94A3B8]">{{ option.count }}</span>
@@ -36,15 +36,15 @@
             <BookingStatusCard v-for="booking in shownBookings" :key="booking.reference || booking.createdAt" :booking="booking" />
           </div>
           <div v-else-if="!listError" class="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-12 text-center">
-            <span class="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+            <span class="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF2FC] text-[#0066E4]" aria-hidden="true">
               <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6ZM13 5v2M13 17v2M13 11v2" /></svg>
             </span>
             <template v-if="myBookings.length">
-              <p class="mt-3 font-semibold text-[#101D3A]">{{ t('account.bookings.noneInFilter') }}</p>
+              <p class="mt-3 font-semibold text-[#0A1024]">{{ t('account.bookings.noneInFilter') }}</p>
               <button type="button" class="text-link mt-1 text-[14px]" @click="filter = 'all'">{{ t('account.bookings.showAll') }}</button>
             </template>
             <template v-else>
-              <p class="mt-3 font-semibold text-[#101D3A]">{{ t('account.bookings.noneYet') }}</p>
+              <p class="mt-3 font-semibold text-[#0A1024]">{{ t('account.bookings.noneYet') }}</p>
               <p class="mx-auto mt-1 max-w-sm text-[14px] leading-[22px] text-[#64748B]">{{ t('account.bookings.guestHint') }}</p>
             </template>
           </div>
@@ -52,7 +52,7 @@
 
         <!-- Find a booking: main task for guests, secondary when signed in -->
         <section id="find-booking" class="rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6" aria-labelledby="find-title">
-          <h2 id="find-title" class="text-[17px] font-bold text-[#101D3A]">{{ isAuthenticated ? t('account.bookings.guestTitle') : t('account.bookings.findTitle') }}</h2>
+          <h2 id="find-title" class="text-[17px] font-bold text-[#0A1024]">{{ isAuthenticated ? t('account.bookings.guestTitle') : t('account.bookings.findTitle') }}</h2>
           <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">{{ t('account.bookings.findText') }}</p>
           <form class="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_auto] sm:items-end" @submit.prevent="lookup">
             <div>
@@ -81,7 +81,7 @@
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" /></svg>
             </span>
             <div>
-              <h2 class="text-[15px] font-bold leading-6 text-[#101D3A]">{{ t('account.bookings.partnerTitle') }}</h2>
+              <h2 class="text-[15px] font-bold leading-6 text-[#0A1024]">{{ t('account.bookings.partnerTitle') }}</h2>
               <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">
                 {{ t('account.bookings.partnerText') }}
               </p>
@@ -90,10 +90,10 @@
         </section>
 
         <section class="rounded-2xl border border-[#E2E8F0] bg-white p-5">
-          <h2 class="text-[15px] font-bold text-[#101D3A]">{{ t('account.bookings.aboutTickets') }}</h2>
+          <h2 class="text-[15px] font-bold text-[#0A1024]">{{ t('account.bookings.aboutTickets') }}</h2>
           <ul class="mt-3 space-y-2.5 text-[14px] leading-[22px] text-[#475569]">
             <li v-for="line in tm<string[]>('account.bookings.ticketNotes')" :key="line" class="flex items-start gap-2.5">
-              <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+              <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EAF2FC] text-[#0066E4]" aria-hidden="true">
                 <svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="m5 10.5 3 3 7-7" /></svg>
               </span>
               {{ line }}

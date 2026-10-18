@@ -7,12 +7,12 @@
           <PlannerIcon v-else name="globe" class="m-4 h-6 w-6 text-sea" />
         </div>
         <div class="min-w-0">
-          <h2 class="text-[22px] font-bold leading-[30px] tracking-[-0.025em] text-[#101D3A]">{{ itinerary.title }}</h2>
+          <h2 class="text-[22px] font-bold leading-[30px] tracking-[-0.025em] text-[#0A1024]">{{ itinerary.title }}</h2>
           <ul class="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[12px] font-medium leading-[18px] text-[#64748B]">
-            <li class="inline-flex items-center gap-1.5"><PlannerIcon name="pin" class="h-3.5 w-3.5 text-[#008A9B]" />{{ placeName(request.destination) }}</li>
-            <li class="inline-flex items-center gap-1.5"><PlannerIcon name="calendar" class="h-3.5 w-3.5 text-[#008A9B]" />{{ stayLabel }}</li>
-            <li class="inline-flex items-center gap-1.5"><PlannerIcon name="users" class="h-3.5 w-3.5 text-[#008A9B]" />{{ partyLabel }}</li>
-            <li v-if="budgetLabel" class="inline-flex items-center gap-1.5"><PlannerIcon name="wallet" class="h-3.5 w-3.5 text-[#008A9B]" />{{ budgetLabel }}</li>
+            <li class="inline-flex items-center gap-1.5"><PlannerIcon name="pin" class="h-3.5 w-3.5 text-[#0066E4]" />{{ placeName(request.destination) }}</li>
+            <li class="inline-flex items-center gap-1.5"><PlannerIcon name="calendar" class="h-3.5 w-3.5 text-[#0066E4]" />{{ stayLabel }}</li>
+            <li class="inline-flex items-center gap-1.5"><PlannerIcon name="users" class="h-3.5 w-3.5 text-[#0066E4]" />{{ partyLabel }}</li>
+            <li v-if="budgetLabel" class="inline-flex items-center gap-1.5"><PlannerIcon name="wallet" class="h-3.5 w-3.5 text-[#0066E4]" />{{ budgetLabel }}</li>
           </ul>
         </div>
       </div>
@@ -20,7 +20,7 @@
         <button
           v-if="authenticated"
           type="button"
-          class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] disabled:opacity-60 sm:min-h-9"
+          class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#0A1024] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] disabled:opacity-60 sm:min-h-9"
           :disabled="saving"
           @click="$emit('save')"
         >
@@ -30,14 +30,14 @@
         <NuxtLink
           v-else
           to="/login?redirect=/planner"
-          class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] sm:min-h-9"
+          class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#0A1024] hover:bg-[#F1F5F9] sm:min-h-9"
         >
           <PlannerIcon name="bookmark" class="h-4 w-4" />
           {{ t('planner.board.signInToSave') }}
         </NuxtLink>
         <button
           type="button"
-          class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#101D3A] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-9"
+          class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#0A1024] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:min-h-9"
           @click="copy(tripSummary(), 'trip')"
         >
           <PlannerIcon :name="copied === 'trip' ? 'check' : 'copy'" class="h-4 w-4" />
@@ -45,7 +45,7 @@
         </button>
         <button
           type="button"
-          class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl bg-[#008A9B] px-3 text-[13px] font-semibold leading-5 text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] sm:min-h-9"
+          class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl bg-[#0066E4] px-3 text-[13px] font-semibold leading-5 text-white hover:bg-[#0057C8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A1024] sm:min-h-9"
           @click="$emit('refine')"
         >
           <PlannerIcon name="spark" class="h-4 w-4" />
@@ -62,8 +62,8 @@
         type="button"
         role="tab"
         :aria-selected="view === item.id"
-        class="-mb-px inline-flex min-h-11 shrink-0 items-center gap-1.5 border-b-2 px-3 text-[13px] font-semibold leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
-        :class="view === item.id ? 'border-[#008A9B] text-[#008A9B]' : 'border-transparent text-[#64748B] hover:text-[#101D3A]'"
+        class="-mb-px inline-flex min-h-11 shrink-0 items-center gap-1.5 border-b-2 px-3 text-[13px] font-semibold leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
+        :class="view === item.id ? 'border-[#0066E4] text-[#0066E4]' : 'border-transparent text-[#64748B] hover:text-[#0A1024]'"
         @click="view = item.id"
       >
         <PlannerIcon :name="item.icon" class="h-4 w-4" />
@@ -79,11 +79,11 @@
           type="button"
           role="tab"
           :aria-selected="selected === index"
-          class="h-[60px] w-36 shrink-0 snap-start rounded-xl border px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
-          :class="selected === index ? 'border-[#008A9B] bg-[#E8F7FA]' : 'border-[#E2E8F0] bg-white hover:border-[#008A9B]/40'"
+          class="h-[60px] w-36 shrink-0 snap-start rounded-xl border px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
+          :class="selected === index ? 'border-[#0066E4] bg-[#EAF2FC]' : 'border-[#E2E8F0] bg-white hover:border-[#0066E4]/40'"
           @click="selected = index"
         >
-          <span class="block text-[13px] font-semibold leading-5" :class="selected === index ? 'text-[#008A9B]' : 'text-[#101D3A]'">{{ t('planner.board.day', { n: index + 1 }) }}</span>
+          <span class="block text-[13px] font-semibold leading-5" :class="selected === index ? 'text-[#0066E4]' : 'text-[#0A1024]'">{{ t('planner.board.day', { n: index + 1 }) }}</span>
           <span class="block truncate text-[12px] leading-[18px] text-[#64748B]">{{ entry.theme }}</span>
         </button>
       </div>
@@ -91,7 +91,7 @@
       <div class="grid gap-4 xl:grid-cols-[minmax(0,1.85fr)_minmax(12rem,1fr)]">
         <section v-if="day" class="min-w-0">
           <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 class="text-[16px] font-bold leading-6 tracking-[-0.025em] text-[#101D3A]">{{ t('planner.board.dayTitle', { n: selected + 1, theme: day.theme }) }}</h3>
+            <h3 class="text-[16px] font-bold leading-6 tracking-[-0.025em] text-[#0A1024]">{{ t('planner.board.dayTitle', { n: selected + 1, theme: day.theme }) }}</h3>
             <p class="text-[12px] font-medium leading-[18px] text-[#64748B]">{{ formatDay(day.date) }}</p>
           </div>
 
@@ -101,17 +101,17 @@
               <div class="relative flex justify-center">
                 <span
                   v-if="index < day.items.length - 1"
-                  class="absolute bottom-[-0.65rem] top-10 w-px border-l border-dashed border-[#008A9B]/35"
+                  class="absolute bottom-[-0.65rem] top-10 w-px border-l border-dashed border-[#0066E4]/35"
                   aria-hidden="true"
                 ></span>
-                <span class="relative mt-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#E8F7FA] text-[#008A9B]">
+                <span class="relative mt-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#EAF2FC] text-[#0066E4]">
                   <PlannerIcon :name="slotIcons[item.slot]" class="h-4 w-4" />
                 </span>
               </div>
               <article class="flex min-w-0 gap-3 rounded-xl border border-[#E2E8F0] bg-white p-3">
                 <div class="min-w-0 flex-1">
                   <p class="text-xs font-semibold uppercase tracking-wide" :class="kindTone(item)">{{ itemKind(item) }}</p>
-                  <p class="mt-0.5 text-[14px] font-semibold leading-5 text-[#101D3A]">{{ item.title }}</p>
+                  <p class="mt-0.5 text-[14px] font-semibold leading-5 text-[#0A1024]">{{ item.title }}</p>
                   <p class="mt-1 text-[12px] leading-[18px] text-[#64748B]">{{ item.description }}</p>
                   <p v-if="isSuggestion(item)" class="mt-2 text-[12px] leading-[18px] text-[#64748B]">
                     {{ t('planner.board.suggestionOnly') }}
@@ -212,7 +212,7 @@
 
           <section v-if="partnerPicks.length">
             <div class="flex items-center justify-between gap-2">
-              <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#101D3A]">{{ t('planner.board.recommended') }}</h3>
+              <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#0A1024]">{{ t('planner.board.recommended') }}</h3>
               <NuxtLink :to="`/destinations/${slug}`" class="text-sm font-semibold text-sea hover:underline">{{ t('planner.board.viewAll') }}</NuxtLink>
             </div>
             <div class="mt-3 grid grid-cols-2 gap-3 xl:grid-cols-1 2xl:grid-cols-2">
@@ -237,7 +237,7 @@
           </section>
 
           <section class="rounded-2xl border border-[#E2E8F0] bg-white p-3">
-            <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#101D3A]">{{ t('planner.board.searchTitle') }}</h3>
+            <h3 class="text-[13px] font-bold leading-5 tracking-[-0.025em] text-[#0A1024]">{{ t('planner.board.searchTitle') }}</h3>
             <p class="mt-1 text-[12px] leading-[18px] text-[#64748B]">
               {{ t('planner.board.searchText') }}
             </p>
@@ -357,11 +357,9 @@ import { computed, ref, watch } from 'vue'
 import PlannerIcon from '~/components/planner/PlannerIcon.vue'
 import type { PlannerIconName } from '~/components/planner/PlannerIcon.vue'
 import type { Itinerary, ItineraryItem, LiveActivity } from '~/types/trip'
-import { appendKlookAffiliateId, appendTripAffiliateIds, openTrackedOutbound } from '~/utils/affiliate-links'
 import { destinationPhoto } from '~/utils/destination-photos'
 import { cityOf, destinationSlug } from '~/utils/destination-slug'
 import { SEARCH_CITIES, tripHotelUrl } from '~/utils/trip-search'
-import { getVisitorSessionId } from '~/utils/visitor-session'
 
 interface BoardRequest {
   destination: string
@@ -387,7 +385,6 @@ defineEmits<{
 const { openOffer, priceLabel } = usePartnerOffer('trip_planner')
 const { track } = useFunnel()
 const { t, locale, localeTag, placeName } = useI18n()
-const config = useRuntimeConfig().public
 
 const slotIcons: Record<ItineraryItem['slot'], PlannerIconName> = { morning: 'sun', afternoon: 'sunset', evening: 'moon' }
 
@@ -436,29 +433,9 @@ const hotelSearchUrl = computed(() => {
   })
 })
 
-const openPartnerSearch = (provider: 'klook' | 'trip', url: string, searchType: 'activity' | 'hotel') => {
-  const sessionId = getVisitorSessionId()
-  const placement = 'trip_planner_search'
-  track('travel_search_submitted', { provider, placement, destination: city.value, searchType })
-  const fallback =
-    provider === 'klook'
-      ? appendKlookAffiliateId(url, String(config.KLOOK_AD_ID || ''))
-      : appendTripAffiliateIds(url, String(config.TRIP_ALLIANCE_ID || ''), String(config.TRIP_SID || ''))
-  openTrackedOutbound(async () => {
-    const response = await $fetch<{ outboundUrl?: string }>('/api/affiliate/click', {
-      method: 'POST',
-      body: {
-        provider,
-        baseUrl: url,
-        placementKey: placement,
-        pagePath: '/planner',
-        sessionId,
-        metadata: { destination: city.value, searchType, funnel: 'affiliate_outbound_clicked' }
-      }
-    })
-    return response?.outboundUrl
-  }, fallback)
-}
+const { openSearch } = usePartnerSearch('trip_planner_search')
+const openPartnerSearch = (provider: 'klook' | 'trip', url: string, searchType: 'activity' | 'hotel') =>
+  openSearch(provider, url, searchType, { destination: city.value })
 
 const searchActivities = () => {
   const path = ({ en: 'en-SG', vi: 'vi', zh: 'zh-CN' } as const)[locale.value]

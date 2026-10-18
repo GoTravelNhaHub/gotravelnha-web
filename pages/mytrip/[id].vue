@@ -1,11 +1,15 @@
 <template>
   <div class="mx-auto max-w-[1200px] space-y-6 pb-12 font-brand">
     <div class="flex items-center justify-between gap-3 print:hidden">
-      <NuxtLink to="/mytrip" class="inline-flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-[#475569] hover:text-[#101D3A]">
+      <NuxtLink to="/mytrip" class="inline-flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-[#475569] hover:text-[#0A1024]">
         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10H4m0 0 5-5m-5 5 5 5" /></svg>
         {{ t('trips.detail.back') }}
       </NuxtLink>
-      <div v-if="trip" class="flex gap-2">
+      <div v-if="trip" class="flex flex-wrap justify-end gap-2">
+        <button v-if="communityOn" type="button" class="btn-secondary min-h-10 w-auto px-4 text-[13px]" @click="publishOpen = true">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm11 9v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" /></svg>
+          {{ trip.published ? t('community.publish.status', { visibility: t(`community.visibility.${trip.published.visibility}.label`) }) : t('community.publish.button') }}
+        </button>
         <button type="button" class="btn-primary min-h-10 w-auto px-4 text-[13px]" @click="shareOpen = true">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4M21 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM9 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm12 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
           {{ t('trips.detail.share') }}
@@ -35,23 +39,23 @@
 
     <template v-else-if="trip">
       <!-- Trip header -->
-      <section class="relative isolate overflow-hidden rounded-2xl bg-[#101D3A] text-white">
+      <section class="relative isolate overflow-hidden rounded-2xl bg-[#0A1024] text-white">
         <img v-if="cover" :src="cover" alt="" width="1600" height="700" class="absolute inset-0 h-full w-full object-cover print:hidden" />
-        <div class="absolute inset-0 bg-gradient-to-t from-[#101D3A] via-[#101D3A]/70 to-[#101D3A]/20 print:hidden"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0A1024] via-[#0A1024]/70 to-[#0A1024]/20 print:hidden"></div>
         <div class="relative px-5 pb-6 pt-24 sm:px-8 sm:pt-32">
           <span class="inline-flex rounded-full px-2.5 py-1 text-[12px] font-semibold" :class="status.classes">{{ status.label }}</span>
           <h1 class="mt-3 text-[28px] font-extrabold leading-9 tracking-[-0.025em] sm:text-[36px] sm:leading-[44px]">{{ trip.title }}</h1>
           <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-[14px] text-white/85">
             <li class="inline-flex items-center gap-1.5">
-              <svg class="h-4 w-4 text-[#5EEAD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21s-7-5.6-7-11a7 7 0 1 1 14 0c0 5.4-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" /></svg>
+              <svg class="h-4 w-4 text-[#7DB4FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21s-7-5.6-7-11a7 7 0 1 1 14 0c0 5.4-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" /></svg>
               {{ placeName(trip.destination) }}
             </li>
             <li class="inline-flex items-center gap-1.5">
-              <svg class="h-4 w-4 text-[#5EEAD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 3v3m10-3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" /></svg>
+              <svg class="h-4 w-4 text-[#7DB4FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 3v3m10-3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" /></svg>
               {{ tripDateRange(trip.startDate, trip.endDate) }} · {{ tripDayCount(trip.startDate, trip.endDate) }}
             </li>
             <li class="inline-flex items-center gap-1.5">
-              <svg class="h-4 w-4 text-[#5EEAD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm13 9v-1a4 4 0 0 0-3-3.9M16 4.1a3 3 0 0 1 0 5.8" /></svg>
+              <svg class="h-4 w-4 text-[#7DB4FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm13 9v-1a4 4 0 0 0-3-3.9M16 4.1a3 3 0 0 1 0 5.8" /></svg>
               {{ tripPartyLabel(trip.party) }}
             </li>
           </ul>
@@ -69,9 +73,9 @@
           v-for="(day, index) in trip.itinerary.days"
           :key="day.date"
           :href="`#day-${index + 1}`"
-          class="shrink-0 rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-2 text-left hover:border-[#008A9B]/40"
+          class="shrink-0 rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-2 text-left hover:border-[#0066E4]/40"
         >
-          <span class="block text-[12px] font-semibold text-[#008A9B]">{{ t('trips.detail.day', { n: index + 1 }) }}</span>
+          <span class="block text-[12px] font-semibold text-[#0066E4]">{{ t('trips.detail.day', { n: index + 1 }) }}</span>
           <span class="block whitespace-nowrap text-[13px] text-[#334155]">{{ shortDay(day.date) }}</span>
         </a>
       </nav>
@@ -80,30 +84,32 @@
 
       <section v-if="recommendations.length" class="space-y-4 print:hidden" aria-labelledby="more-title">
         <div>
-          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#008A9B]">{{ t('trips.detail.moreEyebrow') }}</p>
-          <h2 id="more-title" class="mt-1 text-[22px] font-bold tracking-[-0.02em] text-[#101D3A]">{{ t('trips.detail.moreTitle', { destination: placeName(trip.destination) }) }}</h2>
+          <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0066E4]">{{ t('trips.detail.moreEyebrow') }}</p>
+          <h2 id="more-title" class="mt-1 text-[22px] font-bold tracking-[-0.02em] text-[#0A1024]">{{ t('trips.detail.moreTitle', { destination: placeName(trip.destination) }) }}</h2>
           <p class="mt-1 text-[14px] text-[#64748B]">{{ t('trips.detail.moreText') }}</p>
         </div>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4">
           <ActivityCard v-for="activity in recommendations" :key="activity.id" :activity="activity" placement-key="trip_recommendations" />
         </div>
       </section>
 
-      <section class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-gradient-to-br from-white to-[#E8F7FA] p-5 print:hidden">
+      <section class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-gradient-to-br from-white to-[#EAF2FC] p-5 print:hidden">
         <div>
-          <h2 class="text-[16px] font-bold text-[#101D3A]">{{ t('trips.detail.anotherTitle') }}</h2>
+          <h2 class="text-[16px] font-bold text-[#0A1024]">{{ t('trips.detail.anotherTitle') }}</h2>
           <p class="text-[14px] text-[#64748B]">{{ t('trips.detail.anotherText') }}</p>
         </div>
         <NuxtLink :to="`/planner?destination=${encodeURIComponent(trip.destination)}`" class="btn-primary w-auto px-5">{{ t('trips.detail.planWithAgent') }}</NuxtLink>
       </section>
     </template>
 
+    <PublishSheet v-if="publishOpen && trip" :trip-id="trip.id" @close="publishOpen = false" @saved="onPublished" @removed="trip.published = null" />
+
     <Teleport to="body">
-      <div v-if="shareOpen && trip" class="fixed inset-0 z-[80] flex items-end justify-center bg-[#101D3A]/55 font-brand sm:items-center sm:p-4" @click.self="shareOpen = false">
+      <div v-if="shareOpen && trip" class="fixed inset-0 z-[80] flex items-end justify-center bg-[#0A1024]/55 font-brand sm:items-center sm:p-4" @click.self="shareOpen = false">
         <div class="w-full rounded-t-2xl bg-white p-6 shadow-2xl sm:max-w-md sm:rounded-2xl" role="dialog" aria-modal="true" aria-labelledby="share-title">
           <div class="flex items-start justify-between gap-3">
             <div>
-              <h2 id="share-title" class="text-[18px] font-bold text-[#101D3A]">{{ t('trips.detail.shareTitle') }}</h2>
+              <h2 id="share-title" class="text-[18px] font-bold text-[#0A1024]">{{ t('trips.detail.shareTitle') }}</h2>
               <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">{{ t('trips.detail.shareText') }}</p>
             </div>
             <button type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#64748B] hover:bg-[#F1F5F9]" :aria-label="t('trips.detail.close')" @click="shareOpen = false">
@@ -113,10 +119,10 @@
 
           <label class="mt-5 flex items-center justify-between gap-3 rounded-xl border border-[#E2E8F0] px-4 py-3">
             <span>
-              <span class="block text-[14px] font-semibold text-[#101D3A]">{{ t('trips.detail.publicLink') }}</span>
+              <span class="block text-[14px] font-semibold text-[#0A1024]">{{ t('trips.detail.publicLink') }}</span>
               <span class="block text-[12px] text-[#64748B]">{{ trip.shareId ? t('trips.detail.linkOn') : t('trips.detail.linkOff') }}</span>
             </span>
-            <input type="checkbox" class="h-5 w-5 accent-[#008A9B]" :checked="!!trip.shareId" :disabled="sharing" @change="setSharing(($event.target as HTMLInputElement).checked)" />
+            <input type="checkbox" class="h-5 w-5 accent-[#0066E4]" :checked="!!trip.shareId" :disabled="sharing" @change="setSharing(($event.target as HTMLInputElement).checked)" />
           </label>
 
           <template v-if="shareUrl">
@@ -126,11 +132,11 @@
               <button type="button" class="btn-secondary w-auto px-4 text-[13px]" @click="copyLink">{{ copied ? t('trips.detail.copied') : t('trips.detail.copy') }}</button>
             </div>
             <div class="mt-3 grid grid-cols-2 gap-2">
-              <a :href="whatsAppLink" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] text-[14px] font-semibold text-[#101D3A] hover:bg-[#F8FAFC]" @click="trackShare('whatsapp')">
+              <a :href="whatsAppLink" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] text-[14px] font-semibold text-[#0A1024] hover:bg-[#F8FAFC]" @click="trackShare('whatsapp')">
                 <svg class="h-4 w-4 fill-[#25D366]" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.04c-5.51 0-9.96 4.45-9.96 9.96 0 1.76.47 3.49 1.36 5.01L2 22l5.16-1.33c1.46.8 3.1 1.23 4.78 1.23h.01c5.51 0 9.96-4.45 9.96-9.96 0-2.66-1.04-5.17-2.93-7.07A9.92 9.92 0 0 0 12 2.04z"/></svg>
                 WhatsApp
               </a>
-              <button v-if="canNativeShare" type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] text-[14px] font-semibold text-[#101D3A] hover:bg-[#F8FAFC]" @click="nativeShare">
+              <button v-if="canNativeShare" type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#E2E8F0] text-[14px] font-semibold text-[#0A1024] hover:bg-[#F8FAFC]" @click="nativeShare">
                 {{ t('trips.detail.moreOptions') }}
               </button>
             </div>
@@ -147,6 +153,9 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ItineraryView from '~/components/planner/ItineraryView.vue'
 import ActivityCard from '~/components/planner/ActivityCard.vue'
+import PublishSheet from '~/components/community/PublishSheet.vue'
+import type { OwnPublication, TripVisibility } from '~/types/community'
+import { communityEnabled } from '~/utils/feature-flags'
 import type { Itinerary, LiveActivity, RecommendedActivity, TripPartyMember } from '~/types/trip'
 import { destinationPhoto } from '~/utils/destination-photos'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
@@ -165,6 +174,7 @@ interface SavedTrip {
   endDate: string
   party: TripPartyMember[]
   itinerary: Itinerary
+  published: { id: string; slug: string; visibility: TripVisibility; status: string } | null
 }
 
 const route = useRoute()
@@ -184,6 +194,13 @@ const shortDay = (date: string) =>
   new Intl.DateTimeFormat(localeTag.value, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`))
 
 const printTrip = () => window.print()
+
+// Community publishing
+const communityOn = communityEnabled(useRuntimeConfig().public)
+const publishOpen = ref(false)
+const onPublished = (publication: OwnPublication) => {
+  if (trip.value) trip.value.published = { id: publication.id, slug: publication.slug, visibility: publication.visibility, status: publication.status }
+}
 
 // Sharing
 const { track } = useFunnel()

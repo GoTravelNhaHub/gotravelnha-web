@@ -14,8 +14,10 @@ const fromBrowser = (): Locale | null => {
   return null
 }
 
-export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.hook('app:mounted', () => {
+export default defineNuxtPlugin(() => {
+  // onNuxtReady, not app:mounted: app:mounted fires before async pages finish hydrating, and a
+  // language change in that window left attributes (placeholders, aria-labels) in English
+  onNuxtReady(() => {
     const { setLocale } = useI18n()
     let saved: string | null = null
     try {

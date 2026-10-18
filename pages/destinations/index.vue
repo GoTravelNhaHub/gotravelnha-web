@@ -19,7 +19,7 @@
             role="tab"
             :aria-selected="region === option.id"
             class="min-h-10 shrink-0 rounded-full border px-4 text-[14px] font-semibold transition"
-            :class="region === option.id ? 'border-[#101D3A] bg-[#101D3A] text-white' : 'border-[#E2E8F0] bg-white text-[#334155] hover:border-[#008A9B]/40'"
+            :class="region === option.id ? 'border-[#0A1024] bg-[#0A1024] text-white' : 'border-[#E2E8F0] bg-white text-[#334155] hover:border-[#0066E4]/40'"
             @click="region = option.id"
           >
             {{ option.label }} <span class="ml-0.5 opacity-60">{{ option.count }}</span>
@@ -28,7 +28,7 @@
         <p class="text-[13px] text-[#64748B]">{{ t('places.index.hint') }}</p>
       </div>
 
-      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 lg:gap-4">
         <CityTile
           v-for="city in shownCities"
           :key="city.name"
@@ -41,10 +41,10 @@
       </div>
 
       <section v-if="otherCities.length" class="rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6" aria-labelledby="more-cities">
-        <h2 id="more-cities" class="text-[16px] font-bold text-[#101D3A]">{{ t('places.index.moreCities') }}</h2>
+        <h2 id="more-cities" class="text-[16px] font-bold text-[#0A1024]">{{ t('places.index.moreCities') }}</h2>
         <ul class="mt-3 flex flex-wrap gap-2">
           <li v-for="item in otherCities" :key="item.slug">
-            <NuxtLink :to="`/destinations/${item.slug}`" class="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#E2E8F0] px-4 text-[14px] font-medium text-[#101D3A] hover:border-[#008A9B] hover:bg-[#E8F7FA]">
+            <NuxtLink :to="`/destinations/${item.slug}`" class="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#E2E8F0] px-4 text-[14px] font-medium text-[#0A1024] hover:border-[#0066E4] hover:bg-[#EAF2FC]">
               {{ item.name }}
               <span class="text-[12px] text-[#64748B]">{{ t('places.index.activities', { count: item.activityCount }) }}</span>
             </NuxtLink>
@@ -52,9 +52,9 @@
         </ul>
       </section>
 
-      <section class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-gradient-to-br from-white to-[#E8F7FA] p-5 sm:p-6">
+      <section class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-gradient-to-br from-white to-[#EAF2FC] p-5 sm:p-6">
         <div>
-          <h2 class="text-[17px] font-bold text-[#101D3A]">{{ t('places.index.elsewhereTitle') }}</h2>
+          <h2 class="text-[17px] font-bold text-[#0A1024]">{{ t('places.index.elsewhereTitle') }}</h2>
           <p class="text-[14px] text-[#64748B]">{{ t('places.index.elsewhereText') }}</p>
         </div>
         <NuxtLink to="/planner" class="btn-primary w-auto px-6">{{ t('places.index.planWithAgent') }}</NuxtLink>

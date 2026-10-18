@@ -4,12 +4,12 @@
       <span v-if="kind === 'loading'" class="h-6 w-6 animate-spin rounded-full border-2 border-sea/30 border-t-sea"></span>
       <PlannerIcon v-else :name="kind === 'error' ? 'info' : 'calendar'" class="h-7 w-7" />
     </span>
-    <h2 class="mt-4 text-[22px] font-bold leading-[30px] tracking-[-0.025em] text-[#101D3A]">{{ title }}</h2>
+    <h2 class="mt-4 text-[22px] font-bold leading-[30px] tracking-[-0.025em] text-[#0A1024]">{{ title }}</h2>
     <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/70" :role="kind === 'error' ? 'alert' : undefined">{{ message }}</p>
     <button
       v-if="kind === 'error'"
       type="button"
-      class="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#008A9B] px-5 text-[14px] font-semibold text-white hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] focus-visible:ring-offset-2"
+      class="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0066E4] px-5 text-[14px] font-semibold text-white hover:bg-[#0057C8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] focus-visible:ring-offset-2"
       @click="$emit('retry')"
     >
       <PlannerIcon name="refresh" class="h-4 w-4" />

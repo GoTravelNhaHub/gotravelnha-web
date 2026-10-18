@@ -35,8 +35,8 @@ export const useTripDisplay = () => {
     if (dayStart(end) < today) return { label: t('trips.display.completed'), classes: 'bg-white/90 text-[#475569]' }
     const days = Math.round((dayStart(start) - today) / DAY_MS)
     if (days <= 0) return { label: t('trips.display.now'), classes: 'bg-[#10B981] text-white' }
-    if (days === 1) return { label: t('trips.display.tomorrow'), classes: 'bg-[#008A9B] text-white' }
-    return { label: t('trips.display.inDays', { count: days }), classes: 'bg-white/95 text-[#007789]' }
+    if (days === 1) return { label: t('trips.display.tomorrow'), classes: 'bg-[#0066E4] text-white' }
+    return { label: t('trips.display.inDays', { count: days }), classes: 'bg-white/95 text-[#0057C8]' }
   }
 
   return { tripDateRange, tripDayCount, tripPartyLabel, tripStatus }

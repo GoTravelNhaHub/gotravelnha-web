@@ -2,7 +2,7 @@
   <form @submit.prevent="$emit('submit')">
     <label class="sr-only" for="planner-request">{{ t('planner.composer.label') }}</label>
     <div
-      class="rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_1px_2px_rgba(16,29,58,0.06)] transition focus-within:border-[#008A9B] focus-within:shadow-[0_0_0_3px_rgba(0,138,155,0.15)]"
+      class="rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_1px_2px_rgba(10,16,36,0.06)] transition focus-within:border-[#0066E4] focus-within:shadow-[0_0_0_3px_rgba(0,102,228,0.15)]"
     >
       <textarea
         id="planner-request"
@@ -31,7 +31,7 @@
         <button
           type="submit"
           :disabled="loading || thinking"
-          class="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-[#008A9B] px-4 text-[14px] font-semibold text-white transition hover:bg-[#007789] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101D3A] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-[#0066E4] px-4 text-[14px] font-semibold text-white transition hover:bg-[#0057C8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A1024] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <span v-if="loading || thinking" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
           <PlannerIcon v-else name="send" class="h-4 w-4" />

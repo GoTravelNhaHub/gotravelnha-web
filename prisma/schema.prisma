@@ -40,6 +40,11 @@ model User {
   travellers    Traveller[]
   trips         Trip[]
   attractionBookings AttractionsgBooking[]
+  travelerProfile    TravelerProfile?
+  savedTrips         SavedTrip[]
+  following          Follow[]
+  tripComments       TripComment[]
+  contentReports     ContentReport[]
   
   @@unique([provider, providerId], name: "provider_unique")
   @@map("users")
@@ -642,12 +647,17 @@ model Trip {
   itinerary    Json
   // Random public link code. Null means the trip is private; clearing it revokes old links.
   shareId      String?  @unique
+  // Community trip this one was customized from, kept for attribution
+  adaptedFromId String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adaptedFrom PublishedTrip? @relation("AdaptedTrips", fields: [adaptedFromId], references: [id], onDelete: SetNull)
+  published   PublishedTrip? @relation("PublishedFrom")
 
   @@index([userId])
+  @@index([adaptedFromId])
   @@map("trips")
 }
 
@@ -664,10 +674,15 @@ model ItineraryGeneration {
   status       String   // SUCCESS, REFUSED, FAILED
   inputTokens  Int?
   outputTokens Int?
+  // Community trip used as the starting plan ("Customize with AI")
+  sourceTripId String?
   createdAt    DateTime @default(now())
+
+  sourceTrip PublishedTrip? @relation(fields: [sourceTripId], references: [id], onDelete: SetNull)
 
   @@index([clientKey, createdAt])
   @@index([createdAt])
+  @@index([sourceTripId])
   @@map("itinerary_generations")
 }
 
@@ -688,4 +703,195 @@ model ContactMessage {
   @@index([createdAt])
   @@index([handledAt])
   @@map("contact_messages")
+}
+
+// ---------------------------------------------------------------------------
+// Community. Public identity and published itineraries live here, apart from
+// login identity (User) and private trips (Trip). See docs/social-community-roadmap.md.
+
+enum TripVisibility {
+  PRIVATE // author only
+  UNLISTED // anyone with the link; never indexed or listed
+  PUBLIC // listed, indexed, in the sitemap
+}
+
+// Moderation state, separate from visibility so an author cannot undo a hide
+enum ContentStatus {
+  ACTIVE
+  HIDDEN // hidden by a moderator; author still sees it
+  REMOVED // deleted by the author or a moderator; content cleared
+}
+
+enum CommentKind {
+  TIP
+  QUESTION
+}
+
+enum ReportTarget {
+  TRIP
+  COMMENT
+  PROFILE
+}
+
+enum ReportStatus {
+  OPEN
+  ACTIONED
+  DISMISSED
+}
+
+// A user's public face in the community. Created the first time they publish,
+// comment or edit their profile. The handle is chosen by the user and is never
+// derived from the email (User.username can be the email's local part).
+model TravelerProfile {
+  userId               String        @id
+  // Lowercase a-z, 0-9, _; 3-30 chars (CHECK constraint in the migration)
+  handle               String        @unique
+  displayName          String
+  bio                  String?
+  avatarUrl            String?
+  favoriteDestinations String[]
+  // Country only. Never a city or address.
+  homeCountry          String?
+  showSavedTrips       Boolean       @default(false)
+  status               ContentStatus @default(ACTIVE)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trips     PublishedTrip[]
+  followers Follow[]
+
+  @@map("traveler_profiles")
+}
+
+// A sanitized snapshot of a trip, made at publish time. Editing the private Trip
+// does not change this until the author republishes. Holds no names, exact dates
+// or budget amounts.
+model PublishedTrip {
+  id             String         @id @default(uuid())
+  slug           String         @unique
+  authorId       String
+  // Private trip it was published from. One published version per trip.
+  sourceTripId   String?        @unique
+  // Community trip this was adapted from (lineage for attribution)
+  parentId       String?
+  visibility     TripVisibility @default(PRIVATE)
+  status         ContentStatus  @default(ACTIVE)
+  title          String
+  description    String?
+  // English city name, as the planner stores it
+  destination    String
+  country        String?
+  durationDays   Int
+  // Month of travel (1-12), optional. Never exact dates.
+  travelMonth    Int?
+  // relaxed, balanced, packed
+  travelStyle    String?
+  // budget, mid, premium: a level, not an amount
+  budgetLevel    String?
+  familyFriendly Boolean        @default(false)
+  // Opt-in: "0-2", "3-5", "6-12", "13-17"
+  childAgeBands  String[]
+  // Itinerary with days as Day 1..N (date fields removed)
+  itinerary      Json
+  tips           String[]
+  coverImage     String?
+  // Kept in step with their tables inside the same transaction
+  saveCount      Int            @default(0)
+  commentCount   Int            @default(0)
+  adaptCount     Int            @default(0)
+  // First time it became PUBLIC. Feeds sort on this.
+  publishedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  author       TravelerProfile       @relation(fields: [authorId], references: [userId], onDelete: Cascade)
+  sourceTrip   Trip?                 @relation("PublishedFrom", fields: [sourceTripId], references: [id], onDelete: SetNull)
+  parent       PublishedTrip?        @relation("Lineage", fields: [parentId], references: [id], onDelete: SetNull)
+  children     PublishedTrip[]       @relation("Lineage")
+  adaptedTrips Trip[]                @relation("AdaptedTrips")
+  generations  ItineraryGeneration[]
+  saves        SavedTrip[]
+  comments     TripComment[]
+
+  @@index([visibility, status, publishedAt(sort: Desc)])
+  @@index([visibility, status, saveCount(sort: Desc)])
+  @@index([destination, visibility, status])
+  @@index([country, visibility, status])
+  @@index([authorId, visibility, status])
+  @@index([parentId])
+  @@map("published_trips")
+}
+
+model SavedTrip {
+  userId    String
+  tripId    String
+  createdAt DateTime @default(now())
+
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip PublishedTrip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  // One save per user and trip
+  @@id([userId, tripId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([tripId])
+  @@map("saved_trips")
+}
+
+// Any signed-in user can follow a creator; following does not need a public profile
+model Follow {
+  followerId String
+  followeeId String
+  createdAt  DateTime @default(now())
+
+  follower User            @relation(fields: [followerId], references: [id], onDelete: Cascade)
+  followee TravelerProfile @relation(fields: [followeeId], references: [userId], onDelete: Cascade)
+
+  @@id([followerId, followeeId])
+  @@index([followeeId, createdAt(sort: Desc)])
+  @@map("follows")
+}
+
+model TripComment {
+  id        String        @id @default(uuid())
+  tripId    String
+  // Null once the author's account is deleted; shown as "deleted user"
+  authorId  String?
+  // Plain text, rendered escaped
+  body      String
+  kind      CommentKind   @default(TIP)
+  status    ContentStatus @default(ACTIVE)
+  editedAt  DateTime?
+  createdAt DateTime      @default(now())
+
+  trip   PublishedTrip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  author User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([tripId, status, createdAt(sort: Desc)])
+  @@index([authorId, createdAt])
+  @@map("trip_comments")
+}
+
+// targetId points at a PublishedTrip, TripComment or TravelerProfile by targetType,
+// so it has no foreign key
+model ContentReport {
+  id         String       @id @default(uuid())
+  reporterId String?
+  targetType ReportTarget
+  targetId   String
+  // spam, unsafe, personal_info, offensive, other
+  reason     String
+  note       String?
+  status     ReportStatus @default(OPEN)
+  resolvedBy String?
+  resolvedAt DateTime?
+  createdAt  DateTime     @default(now())
+
+  reporter User? @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+
+  // One report per user and target
+  @@unique([reporterId, targetType, targetId])
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("content_reports")
 }

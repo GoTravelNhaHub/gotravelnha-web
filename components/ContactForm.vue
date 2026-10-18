@@ -1,17 +1,17 @@
 <template>
-  <div class="rounded-2xl border border-[#E2E8F0] bg-white p-5 font-brand shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-8">
+  <div class="rounded-2xl border border-[#E2E8F0] bg-white p-5 font-brand shadow-[0_24px_60px_-28px_rgba(10,16,36,0.45)] sm:p-8">
     <div v-if="sent" class="py-6 text-center" role="status">
       <span class="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#ECFDF5] text-[#059669]" aria-hidden="true">
         <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12.5 4.5 4.5L19 7.5" /></svg>
       </span>
-      <h2 class="mt-4 text-[22px] font-bold leading-8 tracking-[-0.02em] text-[#101D3A]">{{ t('info.form.sentTitle') }}</h2>
+      <h2 class="mt-4 text-[22px] font-bold leading-8 tracking-[-0.02em] text-[#0A1024]">{{ t('info.form.sentTitle') }}</h2>
       <p class="mx-auto mt-2 max-w-sm text-[15px] leading-6 text-[#64748B]">{{ t('info.form.sentText') }}</p>
       <button type="button" class="btn-secondary mx-auto mt-6 w-auto px-6" @click="sent = false">{{ t('info.form.another') }}</button>
     </div>
 
     <form v-else class="space-y-5" @submit.prevent="submitForm">
       <div>
-        <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">{{ t('info.form.title') }}</h2>
+        <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#0A1024]">{{ t('info.form.title') }}</h2>
         <p class="mt-1 text-[14px] leading-[22px] text-[#64748B]">
           {{ t('info.form.requiredBefore') }} <span class="text-[#B91C1C]" aria-hidden="true">*</span><span class="sr-only">{{ t('info.form.withAsterisk') }}</span> {{ t('info.form.requiredAfter') }}
         </p>

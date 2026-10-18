@@ -31,7 +31,13 @@ export default {
     children_one: '{count} child'
   },
   pace: { relaxed: 'Relaxed', balanced: 'Balanced', packed: 'Packed' },
+  adapt: {
+    basedOn: 'Based on',
+    remove: 'Plan without this trip'
+  },
   chat: {
+    adaptReady: 'Let’s make “{title}” yours. Add your dates and who is coming, then press Plan trip. The original stays as it is.',
+    adaptRequest: 'Customize “{title}” for my family.',
     you: 'You',
     agent: 'GoTravelNha AI',
     briefUpdated: 'Brief updated',

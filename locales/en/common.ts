@@ -1,6 +1,7 @@
 export default {
   nav: {
     explore: 'Explore',
+    community: 'Community',
     planner: 'AI Travel Agent',
     plannerShort: 'Planner',
     guides: 'Guides',

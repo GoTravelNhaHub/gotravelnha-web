@@ -62,8 +62,9 @@ export function tripFlightUrl(search: FlightSearch) {
 
 export interface HotelSearch {
   cityId: number
-  checkIn: string
-  checkOut: string
+  /** Optional: without dates Trip.com opens the city list and the visitor picks dates there */
+  checkIn?: string
+  checkOut?: string
   adults: number
   children: number
   rooms: number
@@ -72,8 +73,7 @@ export interface HotelSearch {
 export function tripHotelUrl(search: HotelSearch) {
   const params = new URLSearchParams({
     city: String(search.cityId),
-    checkIn: search.checkIn,
-    checkOut: search.checkOut,
+    ...(search.checkIn && search.checkOut ? { checkIn: search.checkIn, checkOut: search.checkOut } : {}),
     adult: String(search.adults),
     children: String(search.children),
     crn: String(search.rooms),

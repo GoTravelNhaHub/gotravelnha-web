@@ -10,7 +10,7 @@
       overlap
     >
       <template #badge>
-        <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[#101D3A] shadow-sm">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-[#0A1024] shadow-sm">
           <KlookIcon :size="18" />
           {{ t('partners.klook.badge') }}
         </span>
@@ -18,9 +18,9 @@
     </PageHero>
 
     <section id="klook-search" class="site-shell relative z-20 -mt-20 scroll-mt-24 sm:-mt-24" aria-labelledby="klook-search-title">
-      <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_24px_60px_-28px_rgba(16,29,58,0.45)] sm:p-6">
+      <div class="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-[0_24px_60px_-28px_rgba(10,16,36,0.45)] sm:p-6">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="klook-search-title" class="text-[16px] font-bold leading-6 text-[#101D3A]">{{ t('partners.klook.searchTitle') }}</h2>
+          <h2 id="klook-search-title" class="text-[16px] font-bold leading-6 text-[#0A1024]">{{ t('partners.klook.searchTitle') }}</h2>
           <p class="text-[13px] leading-5 text-[#64748B]">{{ t('partners.klook.searchNote') }}</p>
         </div>
         <ClientOnly>
@@ -50,7 +50,7 @@
     <div class="site-shell mt-12 space-y-14 sm:mt-16 sm:space-y-20">
       <section class="space-y-6">
         <SectionHeading :eyebrow="t('partners.klook.placesEyebrow')" :title="t('partners.klook.placesTitle')" :subtitle="t('partners.klook.placesSubtitle')" />
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 3xl:grid-cols-8 lg:gap-4">
           <CityTile
             v-for="place in places"
             :key="place.name"
@@ -72,8 +72,8 @@
                 type="button"
                 role="tab"
                 :aria-selected="selectedTab === tab.id"
-                class="min-h-11 whitespace-nowrap rounded-lg px-4 text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B] sm:min-h-10"
-                :class="selectedTab === tab.id ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
+                class="min-h-11 whitespace-nowrap rounded-lg px-4 text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:min-h-10"
+                :class="selectedTab === tab.id ? 'bg-white text-[#0A1024] shadow-[0_1px_3px_rgba(10,16,36,0.12)]' : 'text-[#64748B] hover:text-[#0A1024]'"
                 @click="selectedTab = tab.id"
               >
                 {{ t(tab.label) }}
@@ -82,21 +82,21 @@
           </template>
         </SectionHeading>
 
-        <div v-if="selectedTab === 'things_to_do'" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div v-if="selectedTab === 'things_to_do'" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5">
           <button
             v-for="category in categories"
             :key="category.slug"
             type="button"
-            class="group flex items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#008A9B]/40 hover:shadow-[0_16px_32px_-20px_rgba(16,29,58,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+            class="group flex items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#0066E4]/40 hover:shadow-[0_16px_32px_-20px_rgba(10,16,36,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
             @click="scrollToWidget(category)"
           >
-            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F7FA] text-[#008A9B]" aria-hidden="true">
+            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF2FC] text-[#0066E4]" aria-hidden="true">
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" :d="categoryIcon(category.slug)" />
               </svg>
             </span>
             <span class="min-w-0">
-              <span class="block text-[15px] font-semibold leading-6 text-[#101D3A]">{{ t(`partners.klook.categories.${category.slug}.name`) }}</span>
+              <span class="block text-[15px] font-semibold leading-6 text-[#0A1024]">{{ t(`partners.klook.categories.${category.slug}.name`) }}</span>
               <span class="mt-0.5 block text-[13px] leading-5 text-[#64748B]">{{ t(`partners.klook.categories.${category.slug}.description`) }}</span>
             </span>
           </button>
@@ -122,7 +122,7 @@
               <div class="flex items-center gap-3 border-b border-[#F1F5F9] px-4 py-4 sm:px-6">
                 <KlookIcon :size="20" class="shrink-0" />
                 <div class="min-w-0">
-                  <h3 class="text-[17px] font-bold leading-6 text-[#101D3A]">{{ widget.name }}</h3>
+                  <h3 class="text-[17px] font-bold leading-6 text-[#0A1024]">{{ widget.name }}</h3>
                   <p v-if="widget.description" class="text-[13px] leading-5 text-[#64748B]">{{ widget.description }}</p>
                 </div>
               </div>
@@ -143,11 +143,11 @@
         </ClientOnly>
 
         <div v-if="!loadingWidgets && widgetsFailed" class="rounded-2xl border border-[#E2E8F0] bg-white px-6 py-10 text-center">
-          <p class="font-semibold text-[#101D3A]">{{ t('partners.klook.failedTitle') }}</p>
+          <p class="font-semibold text-[#0A1024]">{{ t('partners.klook.failedTitle') }}</p>
           <p class="mt-1 text-sm text-[#64748B]">{{ t('partners.klook.failedText') }}</p>
         </div>
         <div v-else-if="!loadingWidgets && !filteredWidgets.length" class="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-10 text-center">
-          <p class="font-semibold text-[#101D3A]">{{ t(selectedTab === 'hotels' ? 'partners.klook.emptyHotels' : 'partners.klook.emptyActivities') }}</p>
+          <p class="font-semibold text-[#0A1024]">{{ t(selectedTab === 'hotels' ? 'partners.klook.emptyHotels' : 'partners.klook.emptyActivities') }}</p>
           <p class="mt-1 text-sm text-[#64748B]">{{ t('partners.klook.emptyText') }}</p>
         </div>
       </section>

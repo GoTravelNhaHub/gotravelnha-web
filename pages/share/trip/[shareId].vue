@@ -1,26 +1,26 @@
 <template>
   <div class="mx-auto max-w-[1200px] space-y-6 pb-12 font-brand">
     <div v-if="!trip" class="rounded-2xl border border-[#E2E8F0] bg-white px-6 py-14 text-center">
-      <p class="text-[18px] font-bold text-[#101D3A]">{{ t('trips.shared.goneTitle') }}</p>
+      <p class="text-[18px] font-bold text-[#0A1024]">{{ t('trips.shared.goneTitle') }}</p>
       <p class="mx-auto mt-1 max-w-sm text-[14px] leading-[22px] text-[#64748B]">{{ t('trips.shared.goneText') }}</p>
       <NuxtLink :to="planOwnLink" class="btn-primary mx-auto mt-5 w-auto px-6">{{ t('trips.shared.planFamily') }}</NuxtLink>
     </div>
 
     <template v-else>
       <!-- Invite: the reason someone opened this link -->
-      <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#99E3EC] bg-[#E8F7FA] px-5 py-3 print:hidden">
-        <p class="flex items-center gap-2 text-[14px] text-[#005F6B]">
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#CFE0F7] bg-[#EAF2FC] px-5 py-3 print:hidden">
+        <p class="flex items-center gap-2 text-[14px] text-[#0642D2]">
           <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3l1.9 4.8L19 9.5l-4.4 2.9L15.6 18 12 15l-3.6 3 1-5.6L5 9.5l5.1-1.7L12 3Z" /></svg>
           {{ t('trips.shared.banner') }}
         </p>
         <NuxtLink :to="planOwnLink" class="text-link text-[14px]" @click="trackCta('banner')">{{ t('trips.shared.planOwn') }}</NuxtLink>
       </div>
 
-      <section class="relative isolate overflow-hidden rounded-2xl bg-[#101D3A] text-white">
+      <section class="relative isolate overflow-hidden rounded-2xl bg-[#0A1024] text-white">
         <img v-if="cover" :src="cover" alt="" width="1600" height="700" class="absolute inset-0 h-full w-full object-cover print:hidden" />
-        <div class="absolute inset-0 bg-gradient-to-t from-[#101D3A] via-[#101D3A]/70 to-[#101D3A]/20 print:hidden"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0A1024] via-[#0A1024]/70 to-[#0A1024]/20 print:hidden"></div>
         <div class="relative px-5 pb-6 pt-24 sm:px-8 sm:pt-32">
-          <p class="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#5EEAD4]">{{ t('trips.shared.eyebrow') }}</p>
+          <p class="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#7DB4FF]">{{ t('trips.shared.eyebrow') }}</p>
           <h1 class="mt-2 text-[28px] font-extrabold leading-9 tracking-[-0.025em] sm:text-[36px] sm:leading-[44px]">{{ trip.title }}</h1>
           <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-[14px] text-white/85">
             <li>{{ placeName(trip.destination) }}</li>
@@ -32,8 +32,8 @@
 
       <ItineraryView :itinerary="trip.itinerary" :activities="activities" />
 
-      <section class="relative isolate overflow-hidden rounded-3xl bg-[#101D3A] p-6 text-white sm:p-10 print:hidden" aria-labelledby="own-title">
-        <div class="absolute inset-0 bg-gradient-to-br from-[#008A9B]/40 to-transparent" aria-hidden="true"></div>
+      <section class="relative isolate overflow-hidden rounded-3xl bg-[#0A1024] p-6 text-white sm:p-10 print:hidden" aria-labelledby="own-title">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#0066E4]/40 to-transparent" aria-hidden="true"></div>
         <div class="relative flex flex-wrap items-center justify-between gap-6">
           <div class="max-w-xl">
             <h2 id="own-title" class="text-[24px] font-bold leading-8 tracking-[-0.02em] sm:text-[28px] sm:leading-9">{{ t('trips.shared.ownTitle') }}</h2>

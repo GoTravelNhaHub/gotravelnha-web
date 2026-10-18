@@ -7,15 +7,15 @@
           <button
             v-if="booking.reference"
             type="button"
-            class="inline-flex h-7 items-center rounded-md px-1.5 text-[11px] font-semibold text-[#007789] hover:bg-[#E8F7FA]"
+            class="inline-flex h-7 items-center rounded-md px-1.5 text-[11px] font-semibold text-[#0057C8] hover:bg-[#EAF2FC]"
             :aria-label="t('account.card.copyReference', { reference: booking.reference })"
             @click="copyReference"
           >
             {{ copied ? t('account.card.copied') : t('account.card.copy') }}
           </button>
         </div>
-        <h3 class="text-[17px] font-bold leading-6 text-[#101D3A]">
-          <NuxtLink v-if="booking.eventSlug" :to="`/attractionsg/${booking.eventSlug}`" class="hover:text-[#007789] hover:underline">{{ booking.eventTitle }}</NuxtLink>
+        <h3 class="text-[17px] font-bold leading-6 text-[#0A1024]">
+          <NuxtLink v-if="booking.eventSlug" :to="`/attractionsg/${booking.eventSlug}`" class="hover:text-[#0057C8] hover:underline">{{ booking.eventTitle }}</NuxtLink>
           <template v-else>{{ booking.eventTitle }}</template>
         </h3>
         <p class="mt-0.5 text-[14px] text-[#475569]">
@@ -51,25 +51,25 @@
     <dl class="mx-5 mt-4 grid grid-cols-2 gap-3 border-t border-[#F1F5F9] py-4 text-[13px] sm:grid-cols-4">
       <div>
         <dt class="text-[#64748B]">{{ t('account.card.paid') }}</dt>
-        <dd class="font-semibold tabular-nums text-[#101D3A]">{{ money(booking.amount) }}</dd>
+        <dd class="font-semibold tabular-nums text-[#0A1024]">{{ money(booking.amount) }}</dd>
       </div>
       <div>
         <dt class="text-[#64748B]">{{ t('account.card.booked') }}</dt>
-        <dd class="font-semibold text-[#101D3A]">{{ formatDate(booking.paidAt || booking.createdAt) }}</dd>
+        <dd class="font-semibold text-[#0A1024]">{{ formatDate(booking.paidAt || booking.createdAt) }}</dd>
       </div>
       <div v-if="booking.discountAmount">
         <dt class="text-[#64748B]">{{ t('account.card.discount') }}</dt>
-        <dd class="font-semibold tabular-nums text-[#101D3A]">{{ money(booking.discountAmount) }}</dd>
+        <dd class="font-semibold tabular-nums text-[#0A1024]">{{ money(booking.discountAmount) }}</dd>
       </div>
       <div v-if="booking.refundedAmount">
         <dt class="text-[#64748B]">{{ t('account.card.refunded') }}</dt>
-        <dd class="font-semibold tabular-nums text-[#101D3A]">{{ money(booking.refundedAmount) }}</dd>
+        <dd class="font-semibold tabular-nums text-[#0A1024]">{{ money(booking.refundedAmount) }}</dd>
       </div>
     </dl>
 
     <div class="flex flex-wrap items-center justify-between gap-2 border-t border-[#F1F5F9] bg-[#F8FAFC] px-5 py-3 text-[13px]">
       <NuxtLink :to="`/contact?ref=${booking.reference}`" class="text-link">{{ t('account.card.help') }}</NuxtLink>
-      <NuxtLink to="/refund-policy" class="text-[#64748B] hover:text-[#101D3A]">{{ t('account.card.refundPolicy') }}</NuxtLink>
+      <NuxtLink to="/refund-policy" class="text-[#64748B] hover:text-[#0A1024]">{{ t('account.card.refundPolicy') }}</NuxtLink>
     </div>
   </article>
 </template>
@@ -113,7 +113,7 @@ const BADGES = {
   },
   refunded: {
     label: 'Refunded',
-    pill: 'bg-[#E8F7FA] text-[#007789]',
+    pill: 'bg-[#EAF2FC] text-[#0057C8]',
     border: 'border-[#E2E8F0]',
     icon: ICON.refund,
     detail: 'This booking was refunded to your original payment method.'

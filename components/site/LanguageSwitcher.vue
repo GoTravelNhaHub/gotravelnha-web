@@ -2,7 +2,7 @@
   <div ref="root" class="relative">
     <button
       type="button"
-      class="inline-flex items-center gap-1.5 rounded-lg font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A9B]"
+      class="inline-flex items-center gap-1.5 rounded-lg font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
       :class="variant === 'footer' ? 'min-h-9 text-[13px] text-white/85 hover:text-white' : 'h-10 border border-[#E2E8F0] px-2.5 text-[13px] text-[#334155] hover:bg-[#F1F5F9]'"
       :aria-expanded="open"
       aria-haspopup="listbox"
@@ -27,12 +27,12 @@
           role="option"
           :aria-selected="item.code === locale"
           :lang="item.code === 'zh' ? 'zh-Hans' : item.code"
-          class="flex w-full items-center justify-between px-4 py-2.5 text-left text-[14px] text-[#101D3A] hover:bg-[#F1F5F9]"
+          class="flex w-full items-center justify-between px-4 py-2.5 text-left text-[14px] text-[#0A1024] hover:bg-[#F1F5F9]"
           :class="item.code === locale ? 'font-semibold' : ''"
           @click="choose(item.code)"
         >
           {{ item.label }}
-          <svg v-if="item.code === locale" class="h-4 w-4 text-[#008A9B]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+          <svg v-if="item.code === locale" class="h-4 w-4 text-[#0066E4]" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 10.5 3 3 7-7" />
           </svg>
         </button>

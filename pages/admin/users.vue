@@ -3,7 +3,7 @@
     <div class="mx-auto max-w-[1400px] space-y-5 px-4 py-6 sm:px-6 lg:px-8">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#101D3A]">Users</h2>
+          <h2 class="text-[20px] font-bold leading-7 tracking-[-0.02em] text-[#0A1024]">Users</h2>
           <p class="text-[14px] text-[#64748B]">Find accounts, change roles, and turn access on or off.</p>
         </div>
         <div class="flex gap-2">
@@ -27,13 +27,13 @@
           v-for="tile in tiles"
           :key="tile.key"
           type="button"
-          class="rounded-2xl border bg-white p-4 text-left transition hover:border-[#008A9B]/40"
-          :class="tile.active ? 'border-[#008A9B] ring-2 ring-[#008A9B]/15' : 'border-[#E2E8F0]'"
+          class="rounded-2xl border bg-white p-4 text-left transition hover:border-[#0066E4]/40"
+          :class="tile.active ? 'border-[#0066E4] ring-2 ring-[#0066E4]/15' : 'border-[#E2E8F0]'"
           :aria-pressed="tile.active"
           @click="applyTile(tile.key)"
         >
           <p class="text-[13px] font-medium text-[#64748B]">{{ tile.label }}</p>
-          <p class="mt-1 text-[24px] font-semibold leading-8 tracking-[-0.02em] text-[#101D3A]">{{ loaded ? tile.value.toLocaleString('en-SG') : '–' }}</p>
+          <p class="mt-1 text-[24px] font-semibold leading-8 tracking-[-0.02em] text-[#0A1024]">{{ loaded ? tile.value.toLocaleString('en-SG') : '–' }}</p>
         </button>
       </div>
 
@@ -51,7 +51,7 @@
               :key="option.value"
               type="button"
               class="min-h-9 rounded-lg px-3 text-[13px] font-semibold"
-              :class="filterRole === option.value ? 'bg-white text-[#101D3A] shadow-[0_1px_3px_rgba(16,29,58,0.12)]' : 'text-[#64748B] hover:text-[#101D3A]'"
+              :class="filterRole === option.value ? 'bg-white text-[#0A1024] shadow-[0_1px_3px_rgba(10,16,36,0.12)]' : 'text-[#64748B] hover:text-[#0A1024]'"
               :aria-pressed="filterRole === option.value"
               @click="filterRole = option.value"
             >
@@ -91,9 +91,9 @@
               <tr v-for="user in paginatedUsers" :key="user.id" class="hover:bg-[#F8FAFC]" :class="user.isActive ? '' : 'bg-[#FAFAFA]'">
                 <td class="px-4 py-3">
                   <div class="flex items-center gap-3">
-                    <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold" :class="user.isActive ? 'bg-[#E8F7FA] text-[#007789]' : 'bg-[#F1F5F9] text-[#94A3B8]'" aria-hidden="true">{{ initialOf(user) }}</span>
+                    <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold" :class="user.isActive ? 'bg-[#EAF2FC] text-[#0057C8]' : 'bg-[#F1F5F9] text-[#94A3B8]'" aria-hidden="true">{{ initialOf(user) }}</span>
                     <div class="min-w-0">
-                      <p class="flex items-center gap-1.5 truncate font-semibold text-[#101D3A]">
+                      <p class="flex items-center gap-1.5 truncate font-semibold text-[#0A1024]">
                         {{ nameOf(user) }}
                         <span v-if="isCurrentUser(user)" class="rounded-full bg-[#F1F5F9] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#64748B]">You</span>
                       </p>
@@ -134,7 +134,7 @@
               </tr>
               <tr v-if="!paginatedUsers.length">
                 <td colspan="6" class="px-4 py-12 text-center">
-                  <p class="font-semibold text-[#101D3A]">No users match</p>
+                  <p class="font-semibold text-[#0A1024]">No users match</p>
                   <p class="mt-1 text-[14px] text-[#64748B]">Try a different search or clear the filters.</p>
                   <button v-if="hasFilters" type="button" class="text-link mt-2 text-[14px]" @click="clearFilters">Clear filters</button>
                 </td>
@@ -147,9 +147,9 @@
         <ul class="space-y-3 md:hidden">
           <li v-for="user in paginatedUsers" :key="user.id" class="rounded-2xl border border-[#E2E8F0] bg-white p-4">
             <div class="flex items-start gap-3">
-              <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[14px] font-bold" :class="user.isActive ? 'bg-[#E8F7FA] text-[#007789]' : 'bg-[#F1F5F9] text-[#94A3B8]'" aria-hidden="true">{{ initialOf(user) }}</span>
+              <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[14px] font-bold" :class="user.isActive ? 'bg-[#EAF2FC] text-[#0057C8]' : 'bg-[#F1F5F9] text-[#94A3B8]'" aria-hidden="true">{{ initialOf(user) }}</span>
               <div class="min-w-0 flex-1">
-                <p class="truncate font-semibold text-[#101D3A]">{{ nameOf(user) }} <span v-if="isCurrentUser(user)" class="text-[12px] font-medium text-[#64748B]">(you)</span></p>
+                <p class="truncate font-semibold text-[#0A1024]">{{ nameOf(user) }} <span v-if="isCurrentUser(user)" class="text-[12px] font-medium text-[#64748B]">(you)</span></p>
                 <p class="truncate text-[13px] text-[#64748B]">{{ user.email }}</p>
                 <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px]">
                   <span class="rounded-full border px-2 py-0.5 font-semibold" :class="roleBadge(user.role)">{{ user.role === 'ADMIN' ? 'Admin' : 'User' }}</span>
@@ -199,10 +199,10 @@
 
     <!-- Dialogs sit outside the space-y list so its margins don't offset the fixed overlays -->
     <!-- Create / edit -->
-    <div v-if="formOpen" class="fixed inset-0 z-50 flex items-end justify-center bg-[#101D3A]/55 p-0 sm:items-center sm:p-4" @click.self="closeForm">
+    <div v-if="formOpen" class="fixed inset-0 z-50 flex items-end justify-center bg-[#0A1024]/55 p-0 sm:items-center sm:p-4" @click.self="closeForm">
       <div class="max-h-[92dvh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl sm:max-w-lg sm:rounded-2xl" role="dialog" aria-modal="true" aria-labelledby="user-form-title">
         <div class="flex items-center justify-between border-b border-[#F1F5F9] px-6 py-4">
-          <h2 id="user-form-title" class="text-[18px] font-bold text-[#101D3A]">{{ editing ? 'Edit user' : 'Add user' }}</h2>
+          <h2 id="user-form-title" class="text-[18px] font-bold text-[#0A1024]">{{ editing ? 'Edit user' : 'Add user' }}</h2>
           <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#64748B] hover:bg-[#F1F5F9]" aria-label="Close" @click="closeForm">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6 6 18" /></svg>
           </button>
@@ -243,7 +243,7 @@
                 class="form-input pr-16"
                 :placeholder="editing ? 'Leave blank to keep the current one' : 'At least 8 characters'"
               />
-              <button type="button" class="absolute inset-y-0 right-0 px-3 text-[12px] font-semibold text-[#007789]" @click="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
+              <button type="button" class="absolute inset-y-0 right-0 px-3 text-[12px] font-semibold text-[#0057C8]" @click="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
             </div>
           </div>
 
@@ -254,21 +254,21 @@
                 v-for="option in [{ value: 'USER', title: 'User', text: 'Uses the site and their own account' }, { value: 'ADMIN', title: 'Admin', text: 'Full access to this admin portal' }]"
                 :key="option.value"
                 class="flex cursor-pointer gap-2.5 rounded-xl border p-3"
-                :class="userForm.role === option.value ? 'border-[#008A9B] bg-[#E8F7FA]' : 'border-[#E2E8F0] hover:bg-[#F8FAFC]'"
+                :class="userForm.role === option.value ? 'border-[#0066E4] bg-[#EAF2FC]' : 'border-[#E2E8F0] hover:bg-[#F8FAFC]'"
               >
-                <input v-model="userForm.role" type="radio" name="role" :value="option.value" class="mt-0.5 h-4 w-4 accent-[#008A9B]" />
+                <input v-model="userForm.role" type="radio" name="role" :value="option.value" class="mt-0.5 h-4 w-4 accent-[#0066E4]" />
                 <span>
-                  <span class="block text-[14px] font-semibold text-[#101D3A]">{{ option.title }}</span>
+                  <span class="block text-[14px] font-semibold text-[#0A1024]">{{ option.title }}</span>
                   <span class="block text-[12px] leading-[18px] text-[#64748B]">{{ option.text }}</span>
                 </span>
               </label>
             </div>
             <label class="mt-3 flex items-center justify-between gap-3 rounded-xl border border-[#E2E8F0] px-3 py-2.5">
               <span>
-                <span class="block text-[14px] font-semibold text-[#101D3A]">Active</span>
+                <span class="block text-[14px] font-semibold text-[#0A1024]">Active</span>
                 <span class="block text-[12px] text-[#64748B]">Inactive accounts can't sign in</span>
               </span>
-              <input v-model="userForm.isActive" type="checkbox" class="h-5 w-5 accent-[#008A9B]" />
+              <input v-model="userForm.isActive" type="checkbox" class="h-5 w-5 accent-[#0066E4]" />
             </label>
             <p v-if="editingSelf" class="mt-2 text-[12px] text-[#64748B]">You can't change your own role or status. Ask another admin.</p>
           </fieldset>
@@ -284,13 +284,13 @@
     </div>
 
     <!-- Delete -->
-    <div v-if="userToDelete" class="fixed inset-0 z-50 flex items-end justify-center bg-[#101D3A]/55 p-0 sm:items-center sm:p-4" @click.self="userToDelete = null">
+    <div v-if="userToDelete" class="fixed inset-0 z-50 flex items-end justify-center bg-[#0A1024]/55 p-0 sm:items-center sm:p-4" @click.self="userToDelete = null">
       <div class="w-full rounded-t-2xl bg-white shadow-2xl sm:max-w-md sm:rounded-2xl" role="alertdialog" aria-modal="true" aria-labelledby="delete-title" aria-describedby="delete-desc">
         <div class="px-6 pt-6">
           <span class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#FEF2F2] text-[#B91C1C]" aria-hidden="true">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3" /></svg>
           </span>
-          <h2 id="delete-title" class="mt-3 text-[18px] font-bold text-[#101D3A]">Delete {{ nameOf(userToDelete) }}?</h2>
+          <h2 id="delete-title" class="mt-3 text-[18px] font-bold text-[#0A1024]">Delete {{ nameOf(userToDelete) }}?</h2>
           <div id="delete-desc" class="mt-2 space-y-2 text-[14px] leading-[22px] text-[#475569]">
             <p>This can't be undone. Deleting the account also deletes:</p>
             <ul class="list-disc space-y-0.5 pl-5">
@@ -379,7 +379,7 @@ const isNew = (user: AdminUser) => new Date(user.createdAt).getTime() >= weekAgo
 const nameOf = (user: AdminUser) => [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username
 const initialOf = (user: AdminUser) => nameOf(user).charAt(0).toUpperCase()
 const isCurrentUser = (user: AdminUser) => !!currentUser.value && user.id === currentUser.value.id
-const roleBadge = (role: AdminUser['role']) => (role === 'ADMIN' ? 'border-[#99E3EC] bg-[#E8F7FA] text-[#007789]' : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]')
+const roleBadge = (role: AdminUser['role']) => (role === 'ADMIN' ? 'border-[#CFE0F7] bg-[#EAF2FC] text-[#0057C8]' : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]')
 const plural = (count = 0, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`
 const activityOf = (user: AdminUser) => {
   const counts = user._count

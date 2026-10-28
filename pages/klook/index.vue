@@ -200,7 +200,7 @@ const categoryIcon = (slug: string) => CATEGORY_ICONS[slug] || CATEGORY_ICONS.at
 
 const { data: loadedWidgets, pending: loadingWidgets } = await useAsyncData('klook-widgets', async () => {
   try {
-    const response = await $fetch<{ success?: boolean; data?: any[] }>('/api/klook/widgets')
+    const response = await $api<{ success?: boolean; data?: any[] }>('/api/klook/widgets')
     if (response.success) return { widgets: response.data || [], failed: false }
   } catch (error) {
     console.error('Failed to load widgets:', error)
@@ -234,7 +234,7 @@ const openKlookCity = (name: string) => {
     searchType: 'activity'
   })
   openTrackedOutbound(async () => {
-    const response = await $fetch<{ outboundUrl?: string }>('/api/affiliate/click', {
+    const response = await $api<{ outboundUrl?: string }>('/api/affiliate/click', {
       method: 'POST',
       body: {
         provider: 'klook',

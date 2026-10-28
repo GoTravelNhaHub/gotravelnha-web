@@ -490,7 +490,7 @@ const ageOn = (birthDate: string, onDate: string) => {
 
 const loadFamily = async () => {
   try {
-    const response = await $fetch<{ data: Array<{ name: string; birthDate: string | null; notes: string | null }> }>(
+    const response = await $api<{ data: Array<{ name: string; birthDate: string | null; notes: string | null }> }>(
       '/api/travellers'
     )
     if (response.data.length) {
@@ -675,7 +675,7 @@ const ask = async () => {
   thinking.value = true
   let turn: AgentTurn | null = null
   try {
-    turn = await $fetch<AgentTurn>('/api/planner/chat', {
+    turn = await $api<AgentTurn>('/api/planner/chat', {
       method: 'POST',
       body: {
         messages: messages.value.slice(1).map((note) => ({ role: note.role, text: (note.key ? t(note.key, note.params) : note.text).slice(0, 800) })),
@@ -736,7 +736,7 @@ const generate = async (revision?: { change: string }) => {
     preferencesOpen.value = false
     partyOpen.value = false
     tab.value = 'plan'
-    const response = await $fetch<PlannerResult & { success: boolean }>('/api/planner/itinerary', {
+    const response = await $api<PlannerResult & { success: boolean }>('/api/planner/itinerary', {
       method: 'POST',
       body: {
         destination: form.destination,
@@ -817,7 +817,7 @@ const saveTrip = async () => {
   try {
     saving.value = true
     error.value = null
-    const response = await $fetch<{ data: { id: string } }>('/api/trips', {
+    const response = await $api<{ data: { id: string } }>('/api/trips', {
       method: 'POST',
       body: { generationId: result.value.generationId }
     })
@@ -865,7 +865,7 @@ const dropAdaptSource = () => {
  * Returns true when it started a plan.
  */
 const startAdaptation = async (slug: string) => {
-  const response = await $fetch<{ data: PublishedTripView }>(`/api/community/trips/${encodeURIComponent(slug)}`).catch(() => null)
+  const response = await $api<{ data: PublishedTripView }>(`/api/community/trips/${encodeURIComponent(slug)}`).catch(() => null)
   const trip = response?.data
   if (!trip || trip.visibility === 'PRIVATE') return false
   adaptSource.value = { id: trip.id, slug: trip.slug, title: trip.title, author: trip.author.displayName }
@@ -947,7 +947,7 @@ onMounted(async () => {
   const pendingId = localStorage.getItem(PENDING_KEY)
   if (pendingId) {
     try {
-      result.value = await $fetch<PlannerResult>(`/api/planner/generations/${pendingId}`)
+      result.value = await $api<PlannerResult>(`/api/planner/generations/${pendingId}`)
       useRequest(result.value.request)
       pushNote('assistant', '', { key: isAuthenticated.value ? 'planner.chat.restored' : 'planner.chat.restoredGuest' })
       tab.value = 'plan'

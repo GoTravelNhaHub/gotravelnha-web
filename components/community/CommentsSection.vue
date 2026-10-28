@@ -127,7 +127,7 @@ const url = (cursor?: string) => `/api/community/trips/${encodeURIComponent(prop
 
 const fetchFirst = async () => {
   try {
-    const page = await $fetch<{ data: CommentView[]; nextCursor: string | null }>(url())
+    const page = await $api<{ data: CommentView[]; nextCursor: string | null }>(url())
     comments.value = page.data
     nextCursor.value = page.nextCursor
     loadFailed.value = false
@@ -147,7 +147,7 @@ const loadMore = async () => {
   if (!nextCursor.value) return
   try {
     loadingMore.value = true
-    const page = await $fetch<{ data: CommentView[]; nextCursor: string | null }>(url(nextCursor.value))
+    const page = await $api<{ data: CommentView[]; nextCursor: string | null }>(url(nextCursor.value))
     comments.value = [...comments.value, ...page.data]
     nextCursor.value = page.nextCursor
   } finally {
@@ -166,7 +166,7 @@ const post = async () => {
   try {
     posting.value = true
     error.value = ''
-    await $fetch(url(), { method: 'POST', body: { body: draft.value, kind: kind.value } })
+    await $api(url(), { method: 'POST', body: { body: draft.value, kind: kind.value } })
     track('comment_posted', { tripId: props.tripId, kind: kind.value })
     draft.value = ''
     total.value += 1
@@ -185,7 +185,7 @@ const startEdit = (comment: CommentView) => {
 
 const saveEdit = async (comment: CommentView) => {
   try {
-    await $fetch(`/api/community/comments/${comment.id}`, { method: 'PATCH', body: { body: editDraft.value } })
+    await $api(`/api/community/comments/${comment.id}`, { method: 'PATCH', body: { body: editDraft.value } })
     comment.body = editDraft.value.trim()
     comment.editedAt = new Date().toISOString()
     editingId.value = ''
@@ -197,7 +197,7 @@ const saveEdit = async (comment: CommentView) => {
 const remove = async (comment: CommentView) => {
   if (!window.confirm(t('community.comments.confirmDelete'))) return
   try {
-    await $fetch(`/api/community/comments/${comment.id}`, { method: 'DELETE' })
+    await $api(`/api/community/comments/${comment.id}`, { method: 'DELETE' })
     comments.value = comments.value.filter((item) => item.id !== comment.id)
     total.value = Math.max(0, total.value - 1)
   } catch (err) {

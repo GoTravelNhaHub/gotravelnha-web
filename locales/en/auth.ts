@@ -11,6 +11,10 @@ export default {
     failedIn: 'Failed to sign in with Google',
     failedUp: 'Failed to sign up with Google'
   },
+  redirect: {
+    opening: 'Taking you to the secure GoTravelNha sign-in page…',
+    failed: "Sign-in didn't finish. Try again."
+  },
   password: {
     show: 'Show password',
     hide: 'Hide password'

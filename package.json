@@ -10,38 +10,18 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "typecheck": "nuxt typecheck",
-        "test": "tsx --test scripts/*.test.ts",
-        "test:affiliate": "tsx --test scripts/affiliate-handoff.test.ts",
-        "vercel-build": "npx prisma generate && npx prisma migrate deploy && nuxt build",
-        "crawl:attractionsg": "tsx scripts/run-attractionsg-crawl.ts"
-    },
-    "prisma": {
-        "seed": "tsx prisma/seed.ts"
+        "vercel-build": "nuxt build"
     },
     "dependencies": {
-        "@anthropic-ai/sdk": "^0.133.0",
-        "@prisma/client": "^5.19.1",
         "@vueuse/core": "^13.1.0",
-        "bcrypt": "^6.0.0",
-        "cheerio": "^1.0.0",
-        "google-auth-library": "^10.5.0",
-        "nodemailer": "^6.10.1",
         "nuxt": "^3.17.1",
-        "papaparse": "^5.5.3",
-        "stripe": "^16.6.0",
         "vue": "^3.5.13",
         "vue-router": "^4.5.1",
-        "vue-toastification": "^2.0.0-rc.5",
-        "zod": "^3.25.76"
+        "vue-toastification": "^2.0.0-rc.5"
     },
     "devDependencies": {
         "@nuxtjs/tailwindcss": "^6.14.0",
-        "@types/bcrypt": "^6.0.0",
         "@types/node": "^22.18.13",
-        "@types/nodemailer": "^7.0.3",
-        "@types/papaparse": "^5.3.16",
-        "prisma": "^5.19.1",
-        "tsx": "^4.20.6",
         "typescript": "~5.9.3",
         "vue-tsc": "^2.2.12"
     }

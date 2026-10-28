@@ -90,7 +90,7 @@ const personalised = ref(false)
 const usedFamily = ref(false)
 
 const { data: initialDestination, error: destinationError } = await useAsyncData(`destination-${slug.value}`, () =>
-  $fetch<{
+  $api<{
     destination: { name: string }
     personalised: boolean
     usedFamily: boolean
@@ -114,7 +114,7 @@ const load = async () => {
   try {
     loading.value = true
     error.value = null
-    const response = await $fetch<{
+    const response = await $api<{
       destination: { name: string }
       personalised: boolean
       usedFamily: boolean

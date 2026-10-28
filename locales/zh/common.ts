@@ -17,14 +17,12 @@ const common: Messages['common'] = {
     logout: '退出登录'
   },
   footer: {
-    tagline: '规划家庭旅行，比较在哪里预订。机票和酒店在 Trip.com 或 Klook 上预订。我们销售的新加坡景点门票在本站付款。',
+    tagline: '规划家庭旅行，比较在哪里预订。机票、酒店和活动在 Trip.com 或 Klook 上预订。',
     plan: '规划',
     help: '帮助',
     products: '我们的产品',
     helpLink: '帮助中心',
-    bookings: '我的预订',
     contact: '联系我们',
-    refunds: '退款',
     rights: '© {year} GoTravelNha。保留所有权利。',
     privacy: '隐私政策',
     terms: '服务条款',

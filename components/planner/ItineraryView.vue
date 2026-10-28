@@ -52,15 +52,8 @@
                 <div v-if="activities[item.activityId].checkedAt" class="text-[12px] text-[#64748B]">
                   {{ t('planner.itinerary.priceChecked', { date: formatShortDate(activities[item.activityId].checkedAt!) }) }}
                 </div>
-                <NuxtLink
-                  v-if="activities[item.activityId].href"
-                  :to="activities[item.activityId].href!"
-                  class="btn-primary mt-2 min-h-10 text-[13px]"
-                >
-                  {{ t('planner.itinerary.seeTickets') }}
-                </NuxtLink>
                 <button
-                  v-else-if="activities[item.activityId].offerId"
+                  v-if="activities[item.activityId].offerId"
                   type="button"
                   class="btn-primary mt-2 min-h-10 text-[13px]"
                   @click="openOffer(activities[item.activityId])"
@@ -122,14 +115,12 @@ const slotStyles = {
   evening: 'bg-[#E0E7FF] text-[#4338CA]'
 } as const
 const kindStyles: Record<string, string> = {
-  kindTicket: 'bg-[#EAF2FC] text-[#0057C8]',
   kindOffer: 'bg-[#EAF2FC] text-[#0057C8]',
   kindSuggestion: 'bg-[#F1F5F9] text-[#64748B]'
 }
 
 const itemKind = (item: ItineraryItem) => {
   const activity = item.activityId ? props.activities[item.activityId] : null
-  if (activity?.verified && activity.href) return 'kindTicket'
   if (activity?.verified && activity.offerId) return 'kindOffer'
   return 'kindSuggestion'
 }

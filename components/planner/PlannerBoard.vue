@@ -125,15 +125,8 @@
                       <span v-if="activityFor(item)!.checkedAt" class="text-xs text-ink/70">
                         {{ t('planner.board.checked', { date: formatShortDate(activityFor(item)!.checkedAt!) }) }}
                       </span>
-                      <NuxtLink
-                        v-if="activityFor(item)!.href"
-                        :to="activityFor(item)!.href!"
-                        class="inline-flex min-h-11 items-center rounded-lg bg-ink px-3 text-sm font-semibold text-white hover:bg-ink/90"
-                      >
-                        {{ t('planner.board.seeTickets') }}
-                      </NuxtLink>
                       <button
-                        v-else-if="activityFor(item)!.offerId"
+                        v-if="activityFor(item)!.offerId"
                         type="button"
                         class="inline-flex min-h-11 items-center rounded-lg bg-ink px-3 text-sm font-semibold text-white hover:bg-ink/90"
                         @click="openOffer(activityFor(item)!)"
@@ -454,20 +447,18 @@ const providerLabel = (provider: string | null) => {
   const name = (provider || '').toLowerCase()
   if (name === 'klook') return 'Klook'
   if (name === 'trip' || name === 'trip.com') return 'Trip.com'
-  if (name === 'attractionsg') return 'GoTravelNha'
   return provider || t('planner.board.partner')
 }
 
 const itemKind = (item: ItineraryItem) => {
   const activity = activityFor(item)
-  if (activity?.verified && activity.href) return t('planner.board.kindTicket')
   if (activity?.verified && activity.offerId) return t('planner.board.kindOffer', { provider: providerLabel(activity.provider) })
   return t('planner.board.kindSuggestion')
 }
 
 const isSuggestion = (item: ItineraryItem) => {
   const activity = activityFor(item)
-  return !(activity?.verified && (activity.href || activity.offerId))
+  return !(activity?.verified && activity.offerId)
 }
 
 const kindTone = (item: ItineraryItem) => (activityFor(item)?.verified ? 'text-sea' : 'text-ink/70')

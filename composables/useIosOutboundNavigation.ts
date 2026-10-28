@@ -1,5 +1,5 @@
 /**
- * After an async affiliate click (`$fetch` then navigate), iOS WebKit often blocks
+ * After an async affiliate click (`$api` then navigate), iOS WebKit often blocks
  * `window.open` or opens a blank tab; `_blank` also breaks universal links into
  * partner apps. Use full-page navigation in the same tab instead.
  *

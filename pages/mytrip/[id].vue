@@ -226,7 +226,7 @@ const setSharing = async (enabled: boolean) => {
   try {
     sharing.value = true
     shareError.value = ''
-    const response = await $fetch<{ shareId: string | null }>(`/api/trips/${trip.value.id}/share`, { method: 'POST', body: { enabled } })
+    const response = await $api<{ shareId: string | null }>(`/api/trips/${trip.value.id}/share`, { method: 'POST', body: { enabled } })
     trip.value.shareId = response.shareId
     if (enabled) trackShare('link_created')
   } catch (err: any) {
@@ -260,7 +260,7 @@ const removeTrip = async () => {
   if (!trip.value || !window.confirm(t('trips.detail.confirmDelete', { title: trip.value.title }))) return
   try {
     deleting.value = true
-    await $fetch(`/api/trips/${trip.value.id}`, { method: 'DELETE' })
+    await $api(`/api/trips/${trip.value.id}`, { method: 'DELETE' })
     router.push('/mytrip')
   } catch (err: any) {
     error.value = t('trips.detail.deleteFailed')
@@ -272,7 +272,7 @@ const removeTrip = async () => {
 onMounted(async () => {
   canNativeShare.value = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
   try {
-    const response = await $fetch<{ data: SavedTrip; activities: Record<string, LiveActivity> }>(`/api/trips/${route.params.id}`)
+    const response = await $api<{ data: SavedTrip; activities: Record<string, LiveActivity> }>(`/api/trips/${route.params.id}`)
     trip.value = response.data
     activities.value = response.activities
   } catch (err: any) {
@@ -284,7 +284,7 @@ onMounted(async () => {
 
   // Extra suggestions are optional; the trip still shows if this fails
   try {
-    const response = await $fetch<{ data: RecommendedActivity[] }>(`/api/trips/${route.params.id}/recommendations`)
+    const response = await $api<{ data: RecommendedActivity[] }>(`/api/trips/${route.params.id}/recommendations`)
     recommendations.value = response.data
   } catch {
     recommendations.value = []

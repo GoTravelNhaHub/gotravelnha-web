@@ -17,7 +17,7 @@ export const useFollows = () => {
     const list = [...new Set(handles)].filter((handle) => /^[a-z0-9_]{3,30}$/.test(handle))
     if (!isAuthenticated.value || !list.length) return
     try {
-      const response = await $fetch<{ data: string[] }>(`/api/community/follow-state?handles=${list.join(',')}`)
+      const response = await $api<{ data: string[] }>(`/api/community/follow-state?handles=${list.join(',')}`)
       const next = new Set(following.value)
       for (const handle of list) next.delete(handle)
       for (const handle of response.data) next.add(handle)
@@ -46,7 +46,7 @@ export const useFollows = () => {
     }
     flip(!was)
     try {
-      const response = await $fetch<{ data: { following: boolean; followers: number } }>(`/api/community/profiles/${handle}/follow`, {
+      const response = await $api<{ data: { following: boolean; followers: number } }>(`/api/community/profiles/${handle}/follow`, {
         method: was ? 'DELETE' : 'PUT'
       })
       flip(response.data.following)

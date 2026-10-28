@@ -24,15 +24,8 @@
       <div class="mt-auto pt-4">
         <div class="text-sm font-semibold text-ink">{{ priceLabel(activity) }}</div>
         <div v-if="activity.checkedAt" class="text-xs text-ink/70">{{ t('planner.activity.priceChecked', { date: formatShortDate(activity.checkedAt) }) }}</div>
-        <NuxtLink
-          v-if="activity.href"
-          :to="activity.href"
-          class="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-ink px-3 py-2 text-sm font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
-        >
-          {{ t('planner.activity.seeTickets') }}
-        </NuxtLink>
         <button
-          v-else-if="activity.verified && activity.offerId"
+          v-if="activity.verified && activity.offerId"
           type="button"
           class="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-ink px-3 py-2 text-sm font-semibold text-white hover:bg-ink/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea"
           @click="openOffer(activity)"

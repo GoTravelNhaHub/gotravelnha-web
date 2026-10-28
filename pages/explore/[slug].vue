@@ -66,7 +66,7 @@ const slug = computed(() => String(route.params.slug || ''))
 const baseUrl = canonicalSiteOrigin(useRuntimeConfig().public.siteUrl)
 
 const { data: templateResponse } = await useAsyncData(`deal-template-${slug.value}`, () =>
-  $fetch<{ success: boolean; data: DealPageTemplate | null }>(`/api/deal-templates/${slug.value}`).catch(() => ({
+  $api<{ success: boolean; data: DealPageTemplate | null }>(`/api/deal-templates/${slug.value}`).catch(() => ({
     success: false,
     data: null
   }))
@@ -88,7 +88,7 @@ const extractShortId = (value: string): string => {
 }
 
 const { data: legacyDeals } = await useAsyncData(`legacy-deals-${slug.value}`, () =>
-  $fetch<{ success: boolean; data: any[] }>('/api/affiliate/deals', { params: { limit: 300 } }).then((res) => (res?.success ? res.data : []))
+  $api<{ success: boolean; data: any[] }>('/api/affiliate/deals', { params: { limit: 300 } }).then((res) => (res?.success ? res.data : []))
 )
 
 const legacyDeal = computed(() => {
@@ -119,7 +119,7 @@ const openLegacyDeal = async () => {
   }
 
   await openTrackedOutbound(async () => {
-    const response: any = await $fetch('/api/affiliate/click', {
+    const response: any = await $api('/api/affiliate/click', {
       method: 'POST',
       body: {
         provider: deal.platform,

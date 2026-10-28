@@ -1,3 +1,0 @@
-ALTER TABLE "attractionsg_bookings"
-  ADD COLUMN IF NOT EXISTS "unitPrice" DOUBLE PRECISION,
-  ADD COLUMN IF NOT EXISTS "cart" JSONB;

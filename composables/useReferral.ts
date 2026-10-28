@@ -19,7 +19,7 @@ export const useReferral = () => {
 
   const createReferral = async (userId: string, email?: string): Promise<any> => {
     try {
-      const response = await $fetch('/api/referrals/create', {
+      const response = await $api('/api/referrals/create', {
         method: 'POST',
         body: {
           userId,
@@ -35,7 +35,7 @@ export const useReferral = () => {
 
   const trackReferralClick = async (code: string, email?: string): Promise<void> => {
     try {
-      await $fetch('/api/referrals/track-click', {
+      await $api('/api/referrals/track-click', {
         method: 'POST',
         body: {
           code,
@@ -49,7 +49,7 @@ export const useReferral = () => {
 
   const getReferralStats = async (userId: string): Promise<any> => {
     try {
-      const response = await $fetch(`/api/referrals/stats?userId=${userId}`)
+      const response = await $api(`/api/referrals/stats?userId=${userId}`)
       return response
     } catch (error) {
       console.error('Error fetching referral stats:', error)
@@ -59,7 +59,7 @@ export const useReferral = () => {
 
   const getMyReferralCode = async (userId: string): Promise<string | null> => {
     try {
-      const response = await $fetch(`/api/referrals/my-code?userId=${userId}`)
+      const response = await $api(`/api/referrals/my-code?userId=${userId}`)
       if (response && typeof response === 'object' && 'code' in response && typeof response.code === 'string') {
         return response.code
       }

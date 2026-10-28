@@ -247,7 +247,7 @@ const cities = DESTINATIONS.filter((city) => city.featured).map((city) => ({
 
 const { data: templateList, pending: loadingTemplates } = await useAsyncData('deal-hub-templates', async () => {
   try {
-    const response = await $fetch<{ success?: boolean; data?: DealPageTemplate[] }>('/api/deal-templates')
+    const response = await $api<{ success?: boolean; data?: DealPageTemplate[] }>('/api/deal-templates')
     const list = response?.success ? (response.data || []) : []
     return list.filter((item) => allowedBuiltinSlugs.has(item.slug))
   } catch (error) {

@@ -1,3 +1,0 @@
--- This migration intentionally left blank.
--- Previous generated SQL attempted to drop the `publishedAt` column,
--- but we want to keep it. No schema changes are applied here.

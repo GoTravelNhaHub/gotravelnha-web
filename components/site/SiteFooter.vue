@@ -67,8 +67,6 @@ const { navItems } = useSiteNav()
 
 const footerHelp = computed(() => [
   { to: '/help', label: t('common.footer.helpLink') },
-  { to: '/bookings', label: t('common.footer.bookings') },
-  { to: '/contact', label: t('common.footer.contact') },
-  { to: '/refund-policy', label: t('common.footer.refunds') }
+  { to: '/contact', label: t('common.footer.contact') }
 ])
 </script>

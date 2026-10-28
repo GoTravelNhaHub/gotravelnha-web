@@ -126,7 +126,7 @@ const resetDraft = () => {
 const load = async () => {
   try {
     loading.value = true
-    const response = await $fetch<{ data: Traveller[] }>('/api/travellers')
+    const response = await $api<{ data: Traveller[] }>('/api/travellers')
     travellers.value = response.data
   } catch (err: any) {
     error.value = t('account.family.loadFailed')
@@ -156,9 +156,9 @@ const save = async () => {
     saving.value = true
     error.value = null
     if (editingId.value) {
-      await $fetch(`/api/travellers/${editingId.value}`, { method: 'PUT', body })
+      await $api(`/api/travellers/${editingId.value}`, { method: 'PUT', body })
     } else {
-      await $fetch('/api/travellers', { method: 'POST', body })
+      await $api('/api/travellers', { method: 'POST', body })
     }
     resetDraft()
     await load()
@@ -172,7 +172,7 @@ const save = async () => {
 const remove = async (traveller: Traveller) => {
   if (!window.confirm(t('account.family.confirmRemove', { name: traveller.name }))) return
   try {
-    await $fetch(`/api/travellers/${traveller.id}`, { method: 'DELETE' })
+    await $api(`/api/travellers/${traveller.id}`, { method: 'DELETE' })
     await load()
   } catch (err: any) {
     error.value = t('account.family.removeFailed')

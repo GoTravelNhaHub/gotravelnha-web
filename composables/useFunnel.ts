@@ -16,7 +16,7 @@ export const useFunnel = () => {
     if (once) onceKeys.add(key)
     const width = window.innerWidth
     const device = width < 768 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop'
-    void $fetch('/api/track-activity', {
+    void $api('/api/track-activity', {
       method: 'POST',
       body: {
         sessionId: getVisitorSessionId(),

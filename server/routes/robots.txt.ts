@@ -12,7 +12,6 @@ export default defineEventHandler((event) => {
     'Disallow: /register',
     'Disallow: /forgot-password',
     'Disallow: /reset-password',
-    'Disallow: /bookings',
     'Disallow: /trips',
     'Disallow: /mytrip',
     'Disallow: /api/',

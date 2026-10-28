@@ -15,14 +15,12 @@ export default {
     logout: 'Log out'
   },
   footer: {
-    tagline: 'Plan family trips and compare where to book. Flight and hotel bookings open on Trip.com or Klook. Singapore attraction tickets that we sell are paid for here.',
+    tagline: 'Plan family trips and compare where to book. Flights, hotels and activities are booked on Trip.com or Klook.',
     plan: 'Plan',
     help: 'Help',
     products: 'Our products',
     helpLink: 'Help',
-    bookings: 'My bookings',
     contact: 'Contact',
-    refunds: 'Refunds',
     rights: '© {year} GoTravelNha. All rights reserved.',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',

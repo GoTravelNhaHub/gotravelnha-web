@@ -262,7 +262,7 @@ const { openSearch } = usePartnerSearch('community_trip_day')
 // and can be cached for public trips. An author's own private trip loads in the browser.
 // `false` for a missing trip: useAsyncData treats null as "not loaded" and would fetch again in the browser
 const { data: loaded } = await useAsyncData(`community-trip-${slug}`, () =>
-  $fetch<TripResponse>(`/api/community/trips/${encodeURIComponent(slug)}`).catch(() => false as const)
+  $api<TripResponse>(`/api/community/trips/${encodeURIComponent(slug)}`).catch(() => false as const)
 )
 const data = computed(() => loaded.value || null)
 const authorView = ref<TripResponse | null>(null)
@@ -361,7 +361,7 @@ onMounted(async () => {
   document.addEventListener('click', closeShare)
   if (isAuthenticated.value) {
     // Same request with the session cookie: tells an author it is their trip, and loads it when private
-    authorView.value = await $fetch<TripResponse>(`/api/community/trips/${encodeURIComponent(slug)}`).catch(() => null)
+    authorView.value = await $api<TripResponse>(`/api/community/trips/${encodeURIComponent(slug)}`).catch(() => null)
     if (authorView.value?.viewerIsAuthor) {
       manageLink.value = authorView.value.sourceTripId ? `/mytrip/${authorView.value.sourceTripId}` : '/mytrip'
     }
@@ -382,7 +382,7 @@ onMounted(async () => {
 
   if (trip.value.visibility !== 'PRIVATE') {
     try {
-      const options = await $fetch<{ data: RecommendedActivity[] }>(`/api/community/trips/${encodeURIComponent(slug)}/booking-options`)
+      const options = await $api<{ data: RecommendedActivity[] }>(`/api/community/trips/${encodeURIComponent(slug)}/booking-options`)
       bookingOptions.value = options.data
     } catch {
       bookingOptions.value = []

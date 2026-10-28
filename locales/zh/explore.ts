@@ -114,7 +114,7 @@ const explore: Messages['explore'] = {
     button: '给我发灵感'
   },
   bookingNote: {
-    text: '机票和酒店在 Trip.com 或 Klook 完成付款。我们销售的新加坡景点门票在 GoTravelNha 付款。如有疑问，请前往帮助中心或联系我们。',
+    text: '机票、酒店和活动在 Trip.com 或 Klook 完成付款。如有疑问，请前往帮助中心或联系我们。',
     help: '帮助中心',
     contact: '联系我们'
   }

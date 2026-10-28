@@ -95,7 +95,7 @@ const { loadState: loadSaved } = useSavedTrips()
 
 // Public data only: the server render never reads the session, so the HTML can be cached
 const { data: loaded } = await useAsyncData(`traveler-${handle}`, () =>
-  $fetch<TravelerResponse>(`/api/community/profiles/${encodeURIComponent(handle)}`).catch(() => false as const)
+  $api<TravelerResponse>(`/api/community/profiles/${encodeURIComponent(handle)}`).catch(() => false as const)
 )
 const traveler = computed(() => (loaded.value ? loaded.value.data : null))
 const trips = ref<CommunityTripCard[]>(loaded.value ? loaded.value.trips.data : [])
@@ -120,7 +120,7 @@ const loadMore = async () => {
   if (!nextCursor.value) return
   try {
     loadingMore.value = true
-    const page = await $fetch<{ data: CommunityTripCard[]; nextCursor: string | null }>(`/api/community/profiles/${handle}/trips?cursor=${encodeURIComponent(nextCursor.value)}`)
+    const page = await $api<{ data: CommunityTripCard[]; nextCursor: string | null }>(`/api/community/profiles/${handle}/trips?cursor=${encodeURIComponent(nextCursor.value)}`)
     trips.value = [...trips.value, ...page.data]
     nextCursor.value = page.nextCursor
     loadSaved(page.data.map((trip) => trip.id))

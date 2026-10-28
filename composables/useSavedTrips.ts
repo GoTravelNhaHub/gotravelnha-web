@@ -18,7 +18,7 @@ export const useSavedTrips = () => {
     const ids = tripIds.filter((id) => /^[0-9a-f-]{36}$/i.test(id))
     if (!isAuthenticated.value || !ids.length) return
     try {
-      const response = await $fetch<{ data: string[] }>(`/api/community/saved/state?ids=${ids.join(',')}`)
+      const response = await $api<{ data: string[] }>(`/api/community/saved/state?ids=${ids.join(',')}`)
       const next = new Set(savedIds.value)
       for (const id of ids) next.delete(id)
       for (const id of response.data) next.add(id)
@@ -49,7 +49,7 @@ export const useSavedTrips = () => {
     }
     flip(!wasSaved)
     try {
-      const response = await $fetch<{ data: { saved: boolean; saveCount: number } }>(`/api/community/trips/${encodeURIComponent(trip.slug)}/save`, {
+      const response = await $api<{ data: { saved: boolean; saveCount: number } }>(`/api/community/trips/${encodeURIComponent(trip.slug)}/save`, {
         method: wasSaved ? 'DELETE' : 'PUT'
       })
       flip(response.data.saved)

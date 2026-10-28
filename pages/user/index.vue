@@ -14,12 +14,12 @@
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3l1.9 4.8L19 9.5l-4.4 2.9L15.6 18 12 15l-3.6 3 1-5.6L5 9.5l5.1-1.7L12 3Z" /></svg>
           {{ t('account.profile.planTrip') }}
         </NuxtLink>
-        <NuxtLink v-if="isAdmin" to="/admin" class="btn-secondary flex-1 sm:w-auto sm:flex-none sm:px-5">{{ t('account.profile.admin') }}</NuxtLink>
+        <NuxtLink v-if="isAdmin" :to="String(useRuntimeConfig().public.adminUrl)" class="btn-secondary flex-1 sm:w-auto sm:flex-none sm:px-5">{{ t('account.profile.admin') }}</NuxtLink>
       </div>
     </section>
 
     <!-- Summary -->
-    <section class="grid grid-cols-3 gap-3" :aria-label="t('account.profile.summary')">
+    <section class="grid grid-cols-2 gap-3" :aria-label="t('account.profile.summary')">
       <NuxtLink
         v-for="tile in tiles"
         :key="tile.label"
@@ -57,31 +57,6 @@
           <div v-else class="px-5 py-8 text-center">
             <p class="text-[14px] text-[#64748B]">{{ loaded ? t('account.profile.noUpcoming') : t('account.profile.loading') }}</p>
             <NuxtLink v-if="loaded" to="/planner" class="text-link mt-1 inline-block text-[14px]">{{ t('account.profile.planOne') }}</NuxtLink>
-          </div>
-        </section>
-
-        <!-- Recent bookings -->
-        <section class="rounded-2xl border border-[#E2E8F0] bg-white" aria-labelledby="bookings-title">
-          <header class="flex items-center justify-between gap-3 border-b border-[#F1F5F9] px-5 py-4">
-            <h2 id="bookings-title" class="text-[16px] font-bold text-[#0A1024]">{{ t('account.profile.recentBookings') }}</h2>
-            <NuxtLink to="/bookings" class="text-link text-[13px]">{{ t('account.profile.allBookings') }}</NuxtLink>
-          </header>
-          <ul v-if="recentBookings.length" class="divide-y divide-[#F1F5F9]">
-            <li v-for="booking in recentBookings" :key="booking.reference || booking.createdAt">
-              <NuxtLink to="/bookings" class="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-[#F8FAFC]">
-                <span class="min-w-0">
-                  <span class="block truncate text-[15px] font-semibold text-[#0A1024]">{{ booking.eventTitle }}</span>
-                  <span class="block text-[13px] text-[#64748B]">
-                    <span class="font-mono">{{ booking.reference }}</span> · {{ booking.currency }} {{ booking.amount.toFixed(2) }} · {{ shortDate(booking.paidAt || booking.createdAt) }}
-                  </span>
-                </span>
-                <span class="shrink-0 rounded-full border px-2.5 py-0.5 text-[12px] font-semibold" :class="stateBadge(booking.state)">{{ t(`account.card.states.${booking.state}.label`) }}</span>
-              </NuxtLink>
-            </li>
-          </ul>
-          <div v-else class="px-5 py-8 text-center">
-            <p class="text-[14px] text-[#64748B]">{{ loaded ? t('account.profile.noBookings') : t('account.profile.loading') }}</p>
-            <NuxtLink v-if="loaded" to="/explore" class="text-link mt-1 inline-block text-[14px]">{{ t('account.profile.findSomething') }}</NuxtLink>
           </div>
         </section>
       </div>
@@ -124,9 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CustomerBooking } from '~/types/booking'
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthState } from '~/composables/useAuthState'
 import ReferralShare from '~/components/ReferralShare.vue'
 import { destinationPhoto } from '~/utils/destination-photos'
@@ -151,11 +124,9 @@ interface Traveller {
   age: number | null
 }
 
-const router = useRouter()
 const { user, isAdmin, clearUser } = useAuthState()
 const { t, localeTag, placeName } = useI18n()
 
-const bookings = ref<CustomerBooking[]>([])
 const trips = ref<SavedTrip[]>([])
 const travellers = ref<Traveller[]>([])
 const loaded = ref(false)
@@ -173,32 +144,21 @@ const profile = computed(() => {
   }
 })
 
-const stateBadge = (state: CustomerBooking['state']) => {
-  if (state === 'confirmed') return 'border-[#A7F3D0] bg-[#ECFDF5] text-[#047857]'
-  if (state === 'processing' || state === 'awaiting_payment') return 'border-[#FDE68A] bg-[#FFFBEB] text-[#B45309]'
-  if (state === 'failed') return 'border-[#FECACA] bg-[#FEF2F2] text-[#B91C1C]'
-  return 'border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]'
-}
-
 const today = new Date().toISOString().slice(0, 10)
 const upcomingTrips = computed(() => trips.value.filter((trip) => trip.endDate.slice(0, 10) >= today).slice(0, 3))
-const recentBookings = computed(() => bookings.value.slice(0, 3))
 
 const tiles = computed(() => [
-  { label: t('account.profile.bookings'), value: bookings.value.filter((b) => ['processing', 'confirmed'].includes(b.state)).length, to: '/bookings', cta: t('account.profile.viewBookings') },
   { label: t('account.profile.savedTrips'), value: trips.value.length, to: '/mytrip', cta: t('account.profile.viewTrips') },
   { label: t('account.profile.family'), value: travellers.value.length, to: '/user/family', cta: t('account.profile.editFamily') }
 ])
 
 const accountLinks = computed(() => [
   { to: '/mytrip', label: t('account.profile.links.trips') },
-  { to: '/bookings', label: t('account.profile.links.bookings') },
   { to: '/user/family', label: t('account.profile.links.family') },
   { to: '/help', label: t('account.profile.links.help') },
   { to: '/contact', label: t('account.profile.links.contact') }
 ])
 
-const shortDate = (value: string) => new Intl.DateTimeFormat(localeTag.value, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(value))
 const dateRange = (start: string, end: string) => {
   const format = new Intl.DateTimeFormat(localeTag.value, { day: 'numeric', month: 'short', timeZone: 'UTC' })
   return `${format.format(new Date(start))} – ${format.format(new Date(end))}`
@@ -220,18 +180,15 @@ const ageOf = (birthDate: string | null) => {
 }
 
 const logout = () => {
-  clearUser()
-  router.push('/')
+  clearUser('/')
 }
 
 onMounted(async () => {
   // Each list loads on its own, so one failing does not blank the page
-  const [bookingRes, tripRes, travellerRes] = await Promise.allSettled([
-    $fetch<{ data: CustomerBooking[] }>('/api/bookings'),
-    $fetch<{ data: SavedTrip[] }>('/api/trips'),
-    $fetch<{ data: Array<{ id: string; name: string; birthDate: string | null }> }>('/api/travellers')
+  const [tripRes, travellerRes] = await Promise.allSettled([
+    $api<{ data: SavedTrip[] }>('/api/trips'),
+    $api<{ data: Array<{ id: string; name: string; birthDate: string | null }> }>('/api/travellers')
   ])
-  if (bookingRes.status === 'fulfilled') bookings.value = bookingRes.value.data
   if (tripRes.status === 'fulfilled') trips.value = tripRes.value.data
   if (travellerRes.status === 'fulfilled') {
     travellers.value = travellerRes.value.data.map((person) => ({ ...person, age: ageOf(person.birthDate) }))

@@ -131,7 +131,7 @@ export const useActivityTracker = () => {
   // Send activity to server endpoint
   const sendActivityToServer = async (activity: UserActivity) => {
     try {
-      await $fetch('/api/track-activity', {
+      await $api('/api/track-activity', {
         method: 'POST',
         body: activity
       })

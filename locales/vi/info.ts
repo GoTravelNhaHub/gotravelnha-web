@@ -10,32 +10,20 @@ const info: Messages['info'] = {
   },
   help: {
     title: 'Trợ giúp & Câu hỏi thường gặp',
-    metaDescription: 'Cách đặt chỗ, nhận vé, hoàn tiền và cách trợ lý lên kế hoạch hoạt động trên GoTravelNha.',
+    metaDescription: 'Cách đặt chỗ qua đối tác và cách trợ lý lên kế hoạch hoạt động trên GoTravelNha.',
     intro: '',
     sections: [
       {
-        heading: 'Hai cách đặt chỗ',
-        html: '<ul><li><strong>Vé tham quan có nút "Đặt ngay" thanh toán trên GoTravelNha.</strong> Bạn thanh toán cho chúng tôi qua Stripe và chúng tôi đặt vé từ nhà cung cấp. Chúng tôi là đầu mối liên hệ cho các đơn đặt này.</li><li><strong>Vé máy bay, khách sạn và hoạt động trên Trip.com, Klook và các đối tác khác.</strong> Các liên kết này mở trang của đối tác; việc đặt chỗ, thanh toán, thay đổi và hoàn tiền do đối tác xử lý theo điều khoản của họ. Chúng tôi có thể nhận hoa hồng mà bạn không phải trả thêm chi phí.</li></ul>'
-      },
-      {
-        heading: 'Khi nào tôi nhận được vé?',
-        html: '<p>Sau khi bạn thanh toán, chúng tôi gửi email xác nhận kèm mã đặt chỗ (GTN-…). Đơn đặt được xác nhận khi nhà cung cấp xuất vé; sau đó chúng tôi gửi vé trong email thứ hai. Trước đó, trạng thái hiển thị là "Đang xác nhận vé".</p>'
-      },
-      {
-        heading: 'Làm sao kiểm tra đơn đặt?',
-        html: '<p>Vào <a href="/bookings">Đơn đặt của tôi</a> và nhập mã đặt chỗ cùng email bạn đã dùng để thanh toán. Nếu bạn đăng nhập khi đặt, các đơn đặt sẽ tự động hiển thị ở đó.</p>'
+        heading: 'Cách đặt chỗ',
+        html: '<p>Vé máy bay, khách sạn và hoạt động được mở trên Trip.com, Klook và các đối tác khác. Việc đặt chỗ, thanh toán, thay đổi và hoàn tiền do đối tác xử lý theo điều khoản của họ. Chúng tôi có thể nhận hoa hồng mà bạn không phải trả thêm chi phí.</p>'
       },
       {
         heading: 'Giá có phải là giá cuối cùng?',
-        html: '<p>Giá khi thanh toán trên GoTravelNha tính bằng đô la Singapore và là số tiền bạn trả. Nếu giá thay đổi giữa lúc bạn mở trang và lúc thanh toán, chúng tôi sẽ yêu cầu bạn xem lại trước khi trừ tiền. Giá của đối tác do đối tác đặt và được xác nhận trên trang của họ trước khi bạn thanh toán.</p>'
+        html: '<p>Giá của đối tác do đối tác quy định và được xác nhận trên trang của họ trước khi bạn thanh toán.</p>'
       },
       {
         heading: 'Tôi có thể hủy hoặc được hoàn tiền không?',
-        html: '<p>Xem <a href="/refund-policy">chính sách hoàn tiền và hủy</a> của chúng tôi. Với đơn đặt qua đối tác, hãy liên hệ trực tiếp với đối tác.</p>'
-      },
-      {
-        heading: 'Tôi đã thanh toán nhưng không nhận được email',
-        html: '<p>Hãy kiểm tra thư mục spam, rồi tra cứu đơn đặt tại <a href="/bookings">Đơn đặt của tôi</a>. Nếu vẫn không tìm thấy, hãy <a href="/contact">liên hệ với chúng tôi</a> kèm email bạn đã dùng để thanh toán.</p>'
+        html: '<p>Hãy liên hệ đối tác bạn đã đặt. Việc thay đổi và hoàn tiền theo chính sách của đối tác đó.</p>'
       },
       {
         heading: 'Trợ lý lên kế hoạch hoạt động thế nào?',
@@ -50,7 +38,7 @@ const info: Messages['info'] = {
     sections: [
       {
         heading: 'Chúng tôi thu thập gì',
-        html: '<ul><li><strong>Tài khoản:</strong> tên, tên đăng nhập, email và mật khẩu đã mã hóa, hoặc hồ sơ Google nếu bạn đăng nhập bằng Google.</li><li><strong>Đơn đặt:</strong> tên, email, số điện thoại, vé bạn mua và số tiền đã thanh toán. Thông tin thẻ do Stripe xử lý, không phải chúng tôi.</li><li><strong>Hồ sơ gia đình (không bắt buộc):</strong> tên, ngày sinh và ghi chú bạn thêm về những người đi cùng.</li><li><strong>Kế hoạch du lịch:</strong> điểm đến, ngày đi, tuổi người đi, ngân sách, sở thích và các kế hoạch bạn lưu.</li><li><strong>Tin nhắn:</strong> nội dung bạn gửi qua biểu mẫu liên hệ.</li><li><strong>Sử dụng:</strong> các trang bạn xem, lượt nhấp vào ưu đãi đối tác, loại thiết bị và trình duyệt, kích thước màn hình, ngôn ngữ trang bạn chọn, và cách bạn đến với chúng tôi (ví dụ thẻ chiến dịch hoặc trang web giới thiệu).</li></ul>'
+        html: '<ul><li><strong>Tài khoản:</strong> tên, tên đăng nhập, email và mật khẩu đã mã hóa, hoặc hồ sơ Google nếu bạn đăng nhập bằng Google.</li><li><strong>Đơn đặt trước đây:</strong> với vé tham quan mua trên GoTravelNha trước ngày 27/10/2026: tên, email, số điện thoại, vé và số tiền đã thanh toán. Thông tin thẻ do Stripe xử lý, không phải chúng tôi.</li><li><strong>Hồ sơ gia đình (không bắt buộc):</strong> tên, ngày sinh và ghi chú bạn thêm về những người đi cùng.</li><li><strong>Kế hoạch du lịch:</strong> điểm đến, ngày đi, tuổi người đi, ngân sách, sở thích và các kế hoạch bạn lưu.</li><li><strong>Tin nhắn:</strong> nội dung bạn gửi qua biểu mẫu liên hệ.</li><li><strong>Sử dụng:</strong> các trang bạn xem, lượt nhấp vào ưu đãi đối tác, loại thiết bị và trình duyệt, kích thước màn hình, ngôn ngữ trang bạn chọn, và cách bạn đến với chúng tôi (ví dụ thẻ chiến dịch hoặc trang web giới thiệu).</li></ul>'
       },
       {
         heading: 'Cookie và bộ nhớ trình duyệt',
@@ -58,7 +46,7 @@ const info: Messages['info'] = {
       },
       {
         heading: 'Chúng tôi chia sẻ dữ liệu với ai',
-        html: '<ul><li><strong>Stripe</strong>, để xử lý thanh toán và gửi biên nhận.</li><li><strong>Nhà cung cấp vé</strong>, với thông tin cần thiết để xuất vé.</li><li><strong>Anthropic (Claude)</strong>, khi bạn dùng trợ lý lên kế hoạch: thông tin chuyến đi, tuổi người đi và ghi chú được gửi để tạo lịch trình.</li><li><strong>Nhà cung cấp dịch vụ email</strong>, để gửi email về đơn đặt và tài khoản.</li><li><strong>Đối tác</strong> như Trip.com và Klook nhận một mã theo dõi khi bạn chuyển sang trang của họ, để ghi nhận lượt giới thiệu.</li></ul><p>Chúng tôi không bán dữ liệu cá nhân của bạn.</p>'
+        html: '<ul><li><strong>Anthropic (Claude)</strong>, khi bạn dùng trợ lý lên kế hoạch: thông tin chuyến đi, tuổi người đi và ghi chú được gửi để tạo lịch trình.</li><li><strong>Nhà cung cấp dịch vụ email</strong>, để gửi email về đơn đặt và tài khoản.</li><li><strong>Đối tác</strong> như Trip.com và Klook nhận một mã theo dõi khi bạn chuyển sang trang của họ, để ghi nhận lượt giới thiệu.</li></ul><p>Chúng tôi không bán dữ liệu cá nhân của bạn.</p>'
       },
       {
         heading: 'Lựa chọn của bạn',
@@ -73,15 +61,7 @@ const info: Messages['info'] = {
     sections: [
       {
         heading: 'GoTravelNha làm gì',
-        html: '<ul><li><strong>Vé tham quan bán qua trang thanh toán của chúng tôi.</strong> Chúng tôi nhận thanh toán và thay bạn đặt vé từ nhà cung cấp. Hợp đồng cho các vé này là giữa bạn và GoTravelNha.</li><li><strong>Liên kết đối tác.</strong> Các liên kết tới Trip.com, Klook và đối tác khác đưa bạn sang trang của họ. Đơn đặt tại đó là hợp đồng giữa bạn và đối tác, theo điều khoản của đối tác. Chúng tôi có thể nhận hoa hồng.</li></ul>'
-      },
-      {
-        heading: 'Giá và thanh toán',
-        html: '<ul><li>Giá khi thanh toán tính bằng đô la Singapore và được xác nhận trên trang thanh toán Stripe trước khi bạn trả tiền.</li><li>Thanh toán do Stripe xử lý. Chúng tôi không xem hoặc lưu đầy đủ thông tin thẻ của bạn.</li><li>Đơn đặt được xác nhận khi nhà cung cấp xuất vé. Chúng tôi gửi vé qua email và hiển thị trên trang đơn đặt của bạn.</li><li>Mã khuyến mãi được áp dụng khi thanh toán và không thể thêm sau đó.</li></ul>'
-      },
-      {
-        heading: 'Hủy và hoàn tiền',
-        html: '<p>Xem <a href="/refund-policy">chính sách hoàn tiền và hủy</a> của chúng tôi.</p>'
+        html: '<ul><li><strong>Liên kết đối tác.</strong> Các liên kết tới Trip.com, Klook và đối tác khác đưa bạn sang trang của họ. Đơn đặt tại đó là hợp đồng giữa bạn và đối tác, theo điều khoản của đối tác. Chúng tôi có thể nhận hoa hồng.</li></ul>'
       },
       {
         heading: 'Trợ lý lên kế hoạch và gợi ý',
@@ -93,38 +73,11 @@ const info: Messages['info'] = {
       }
     ]
   },
-  refund: {
-    title: 'Chính sách hoàn tiền và hủy',
-    metaTitle: 'Chính sách hoàn tiền và hủy | GoTravelNha',
-    intro: 'Chính sách này áp dụng cho vé tham quan mua qua trang thanh toán GoTravelNha. Đơn đặt trên trang đối tác (như Trip.com hoặc Klook) theo chính sách của đối tác đó.',
-    sections: [
-      {
-        heading: 'Điều kiện hủy của từng điểm tham quan',
-        html: '<p>Mỗi điểm tham quan hiển thị điều kiện hủy trên trang của nó trước khi bạn thanh toán. Các điều kiện này do điểm tham quan hoặc nhà cung cấp đặt ra và áp dụng cho đơn đặt của bạn. Nhiều loại vé không thể hủy sau khi đã xuất.</p>'
-      },
-      {
-        heading: 'Nếu chúng tôi không thể xuất vé',
-        html: '<p>Nếu nhà cung cấp không thể xuất vé sau khi bạn đã thanh toán, chúng tôi sẽ liên hệ và hoàn lại số tiền bạn đã trả.</p>'
-      },
-      {
-        heading: 'Yêu cầu hủy hoặc hoàn tiền',
-        html: '<p><a href="/contact">Liên hệ với chúng tôi</a> kèm mã đặt chỗ (GTN-…). Chúng tôi sẽ kiểm tra điều kiện của điểm tham quan với nhà cung cấp và cho bạn biết có thể hoàn tiền hay không.</p>'
-      },
-      {
-        heading: 'Cách hoàn tiền',
-        html: '<p>Tiền được hoàn về thẻ hoặc phương thức thanh toán bạn đã dùng, qua Stripe. Chúng tôi gửi email khi đã hoàn tiền. Ngân hàng có thể mất 5–10 ngày làm việc để hiển thị.</p>'
-      }
-    ]
-  },
   contact: {
     eyebrow: 'Hỗ trợ',
     title: 'Chúng tôi có thể giúp gì?',
     subtitle: 'Gửi tin nhắn về đơn đặt, Trợ lý du lịch AI hoặc bất cứ điều gì. Chúng tôi trả lời qua email.',
     asideLabel: 'Cách khác để được hỗ trợ',
-    ticketsTitle: 'Vé mua trên GoTravelNha',
-    ticketsText: 'Với vé tham quan Singapore, hãy thêm mã đặt chỗ vào biểu mẫu để chúng tôi tìm đơn hàng.',
-    myBookings: 'Đơn đặt của tôi',
-    refund: 'Chính sách hoàn tiền',
     partnerTitle: 'Đặt trên Trip.com hoặc Klook?',
     partnerText: 'Vé máy bay, khách sạn và hoạt động bạn thanh toán trên Trip.com hoặc Klook do đối tác đó quản lý. Hãy liên hệ họ qua email xác nhận để thay đổi hoặc hoàn tiền.',
     quickTitle: 'Trả lời nhanh',
@@ -145,9 +98,6 @@ const info: Messages['info'] = {
     name: 'Họ tên',
     namePlaceholder: 'Họ và tên của bạn',
     email: 'Email',
-    reference: 'Mã đặt chỗ',
-    optional: '(không bắt buộc)',
-    referenceHint: 'Dành cho vé tham quan Singapore mua trên GoTravelNha. Mã có trong email xác nhận.',
     message: 'Nội dung',
     messagePlaceholder: 'Cho chúng tôi biết bạn cần hỗ trợ gì',
     privacyBefore: 'Chúng tôi chỉ dùng thông tin của bạn để trả lời. Xem',

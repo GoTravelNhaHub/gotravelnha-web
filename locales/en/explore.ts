@@ -113,7 +113,7 @@ export default {
     button: 'Send me ideas'
   },
   bookingNote: {
-    text: 'Flight and hotel checkout opens on Trip.com or Klook. Singapore attraction tickets that we sell are paid for on GoTravelNha. Questions go through Help or Contact.',
+    text: 'Flight, hotel and activity checkout opens on Trip.com or Klook. Questions go through Help or Contact.',
     help: 'Help',
     contact: 'Contact'
   }

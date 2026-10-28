@@ -1,6 +1,6 @@
-// One visitor session id shared by the activity tracker, affiliate clicks and
-// checkout, so a page view can be joined to the booking it led to. Mirrored into
-// the gtn_sid cookie so the server can read it at checkout.
+// One visitor session id shared by the activity tracker and affiliate clicks, so a
+// page view can be joined to the partner click it led to. Mirrored into the gtn_sid
+// cookie so the server can read it with the click.
 
 const STORAGE_KEY = 'activity_session_id'
 const COOKIE = 'gtn_sid'

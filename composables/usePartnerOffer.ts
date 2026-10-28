@@ -26,7 +26,7 @@ export const usePartnerOffer = (placementKey: string) => {
     const sessionId = getVisitorSessionId()
 
     openTrackedOutbound(async () => {
-      const response: any = await $fetch('/api/affiliate/click', {
+      const response: any = await $api('/api/affiliate/click', {
         method: 'POST',
         body: {
           offerId: activity.offerId,

@@ -173,7 +173,7 @@ const open = (provider: string, url: string, search: Record<string, string | num
   const fallback = appendTripAffiliateIds(url, String(config.TRIP_ALLIANCE_ID || ''), String(config.TRIP_SID || ''))
 
   openTrackedOutbound(async () => {
-    const response: any = await $fetch('/api/affiliate/click', {
+    const response: any = await $api('/api/affiliate/click', {
       method: 'POST',
       body: {
         provider,

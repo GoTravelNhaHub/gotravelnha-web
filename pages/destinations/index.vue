@@ -89,7 +89,7 @@ interface ActivityCity {
 
 // Cities with bookable activities; the page still works if this is empty or fails
 const { data } = await useAsyncData('destinations', () =>
-  $fetch<{ data: ActivityCity[] }>('/api/destinations').catch(() => ({ data: [] as ActivityCity[] }))
+  $api<{ data: ActivityCity[] }>('/api/destinations').catch(() => ({ data: [] as ActivityCity[] }))
 )
 const activityBySlug = computed(() => new Map((data.value?.data || []).map((item) => [item.slug, item])))
 

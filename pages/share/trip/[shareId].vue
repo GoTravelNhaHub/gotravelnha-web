@@ -75,7 +75,7 @@ const { tripDateRange, tripDayCount, tripPartyLabel } = useTripDisplay()
 
 // Loaded on the server so link previews (WhatsApp, Facebook, Zalo) see the title and photo
 const { data } = await useAsyncData(`shared-trip-${shareId}`, () =>
-  $fetch<{ data: SharedTrip; activities: Record<string, LiveActivity> }>(`/api/share/trips/${shareId}`).catch(() => null)
+  $api<{ data: SharedTrip; activities: Record<string, LiveActivity> }>(`/api/share/trips/${shareId}`).catch(() => null)
 )
 const trip = computed(() => data.value?.data ?? null)
 const activities = computed(() => data.value?.activities ?? {})

@@ -184,7 +184,7 @@ function publicDescription(item: ShortcutItem): string {
 async function loadShortcuts() {
   loading.value = true
   try {
-    const response: any = await $fetch('/api/affiliate/shortcuts')
+    const response: any = await $api('/api/affiliate/shortcuts')
     if (response?.success && Array.isArray(response.data)) {
       shortcuts.value = response.data
       hydrateSelectionFromQuery()
@@ -243,7 +243,7 @@ async function openShortcut(item: ShortcutItem) {
   }
 
   await openTrackedOutbound(async () => {
-    const response: any = await $fetch('/api/affiliate/click', {
+    const response: any = await $api('/api/affiliate/click', {
       method: 'POST',
       body: {
         provider: item.provider,

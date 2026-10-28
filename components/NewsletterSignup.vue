@@ -75,7 +75,7 @@ const handleSubscribe = async () => {
   success.value = null
   error.value = null
   try {
-    const response = await $fetch<{ success: boolean; message?: string; error?: string }>('/api/newsletter/subscribe', {
+    const response = await $api<{ success: boolean; message?: string; error?: string }>('/api/newsletter/subscribe', {
       method: 'POST',
       body: { email: email.value, source: props.source }
     })

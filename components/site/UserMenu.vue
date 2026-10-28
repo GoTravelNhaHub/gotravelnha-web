@@ -44,12 +44,11 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import CmIcon from '~/components/community/feed/CmIcon.vue'
 
 const { t } = useI18n()
 const route = useRoute()
-const router = useRouter()
 const { user, isAuthenticated, isAdmin, clearUser } = useAuthState()
 const { community } = useAppNav()
 const open = ref(false)
@@ -60,15 +59,14 @@ const links = computed(() => [
   { to: '/user', label: t('common.nav.profile'), icon: 'user' },
   ...(community.value ? [{ to: '/travelers/me', label: t('community.profile.menu'), icon: 'users' }] : []),
   { to: '/mytrip', label: t('account.profile.links.trips'), icon: 'trips' },
-  { to: '/bookings', label: t('account.profile.links.bookings'), icon: 'calendar' },
   { to: '/user/family', label: t('account.profile.links.family'), icon: 'users' },
-  ...(isAdmin.value ? [{ to: '/admin', label: t('common.nav.admin'), icon: 'lock' }] : [])
+  ...(isAdmin.value ? [{ to: String(useRuntimeConfig().public.adminUrl), label: t('common.nav.admin'), icon: 'lock' }] : [])
 ])
 
 const logout = () => {
   open.value = false
-  clearUser()
-  router.push('/')
+  // Navigates to the API logout, which ends the Keycloak session and returns home
+  clearUser('/')
 }
 
 watch(() => route.fullPath, () => (open.value = false))

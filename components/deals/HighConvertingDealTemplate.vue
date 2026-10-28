@@ -348,13 +348,17 @@ const onPartnerTap = (ev: MouseEvent, option: DealComparisonOption) => {
         }
       }
       const body = JSON.stringify(payload)
+      // The API is cross-origin (api.gotravelnha.com): text/plain keeps the beacon a simple
+      // request with no preflight; the handler still parses the JSON body
+      const clickUrl = apiUrl('/api/affiliate/click')
       if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
-        navigator.sendBeacon('/api/affiliate/click', new Blob([body], { type: 'application/json' }))
+        navigator.sendBeacon(clickUrl, new Blob([body], { type: 'text/plain' }))
       } else if (typeof fetch !== 'undefined') {
-        fetch('/api/affiliate/click', {
+        fetch(clickUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain' },
           body,
+          credentials: 'include',
           keepalive: true
         }).catch(() => {})
       }
@@ -371,7 +375,7 @@ const onPartnerTap = (ev: MouseEvent, option: DealComparisonOption) => {
 const openAffiliate = (provider: string, baseUrl: string, label: string, placementKey: string) => {
   const sessionId = getSessionId()
   void openTrackedOutbound(async () => {
-    const response: any = await $fetch('/api/affiliate/click', {
+    const response: any = await $api('/api/affiliate/click', {
       method: 'POST',
       body: {
         provider,

@@ -11,91 +11,13 @@
       {{ t('auth.register.referral') }}
     </p>
 
-    <button type="button" class="btn-secondary" :disabled="loadingGoogle" @click="handleGoogleSignUp">
-      <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-      </svg>
-      {{ loadingGoogle ? t('auth.google.opening') : t('auth.google.signUp') }}
-    </button>
+    <p v-if="failed" class="alert-error mb-5" role="alert">{{ t('auth.redirect.failed') }}</p>
+    <p v-else class="mb-5 flex items-center gap-2.5 text-[14px] text-[#64748B]" role="status">
+      <span class="h-4 w-4 animate-spin rounded-full border-2 border-[#CBD5E1] border-t-[#0066E4]" aria-hidden="true"></span>
+      {{ t('auth.redirect.opening') }}
+    </p>
 
-    <div class="form-divider">{{ t('auth.register.divider') }}</div>
-
-    <form class="space-y-4" @submit.prevent="handleRegister">
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label for="register-first" class="form-label">{{ t('auth.register.firstName') }}</label>
-          <input id="register-first" v-model="registerForm.firstName" type="text" autocomplete="given-name" required class="form-input" placeholder="Mai" />
-        </div>
-        <div>
-          <label for="register-last" class="form-label">{{ t('auth.register.lastName') }}</label>
-          <input id="register-last" v-model="registerForm.lastName" type="text" autocomplete="family-name" required class="form-input" placeholder="Nguyen" />
-        </div>
-      </div>
-
-      <div>
-        <label for="register-username" class="form-label">{{ t('auth.register.username') }}</label>
-        <input id="register-username" v-model="registerForm.username" type="text" autocomplete="username" required class="form-input" placeholder="mainguyen" />
-      </div>
-
-      <div>
-        <label for="register-email" class="form-label">{{ t('auth.register.email') }}</label>
-        <input id="register-email" v-model="registerForm.email" type="email" autocomplete="email" required class="form-input" placeholder="you@example.com" />
-      </div>
-
-      <div>
-        <label for="register-password" class="form-label">{{ t('auth.register.password') }}</label>
-        <div class="relative">
-          <input
-            id="register-password"
-            v-model="registerForm.password"
-            :type="showPassword ? 'text' : 'password'"
-            autocomplete="new-password"
-            required
-            minlength="8"
-            aria-describedby="register-password-hint"
-            class="form-input pr-12"
-            :placeholder="t('auth.register.passwordPlaceholder')"
-          />
-          <button
-            type="button"
-            class="absolute inset-y-0 right-0 inline-flex w-12 items-center justify-center rounded-r-xl text-[#64748B] hover:text-[#0A1024] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4]"
-            :aria-label="showPassword ? t('auth.password.hide') : t('auth.password.show')"
-            :aria-pressed="showPassword"
-            @click="showPassword = !showPassword"
-          >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <path v-if="showPassword" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 8.5 4.5 9.5 7a13 13 0 0 1-2.7 3.9M6.2 6.2C4.3 7.6 3 9.6 2.5 12c1 2.5 4.5 7 9.5 7 1.7 0 3.2-.5 4.5-1.2" />
-              <template v-else>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.5 12C3.5 9.5 7 5 12 5s8.5 4.5 9.5 7c-1 2.5-4.5 7-9.5 7s-8.5-4.5-9.5-7Z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-              </template>
-            </svg>
-          </button>
-        </div>
-        <p id="register-password-hint" class="mt-1.5 text-[12px] text-[#64748B]">{{ t('auth.register.passwordHint') }}</p>
-      </div>
-
-      <label class="flex items-start gap-2.5 text-[14px] leading-5 text-[#334155]">
-        <input v-model="registerForm.agreedToTerms" type="checkbox" required class="mt-0.5 h-4 w-4 shrink-0 rounded accent-[#0066E4]" />
-        <span>
-          {{ t('auth.register.agreeBefore') }}
-          <NuxtLink to="/terms" target="_blank" class="text-link">{{ t('auth.register.terms') }}</NuxtLink>
-          {{ t('auth.register.and') }}
-          <NuxtLink to="/privacy" target="_blank" class="text-link">{{ t('auth.register.privacy') }}</NuxtLink>
-        </span>
-      </label>
-
-      <p v-if="error" class="alert-error" role="alert">{{ error }}</p>
-      <p v-if="success" class="alert-success" role="status">{{ success }}</p>
-
-      <button type="submit" class="btn-primary" :disabled="loading">
-        <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
-        {{ loading ? t('auth.register.submitting') : t('auth.register.submit') }}
-      </button>
-    </form>
+    <a :href="href" class="btn-primary">{{ t('auth.register.submit') }}</a>
 
     <p class="mt-8 text-center text-[14px] text-[#64748B]">
       {{ t('auth.register.haveAccount') }}
@@ -105,100 +27,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useAuthState } from '~/composables/useAuthState'
+import { computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useReferral } from '~/composables/useReferral'
 import AuthShell from '~/components/site/AuthShell.vue'
 
+// Accounts are created on auth.gotravelnha.com (Keycloak registration page). A ?ref= code rides
+// along through the login and is credited by the API when the new account is created.
 definePageMeta({
   layout: 'auth'
 })
 
-const router = useRouter()
 const route = useRoute()
 const { t, tm } = useI18n()
-const { setUser } = useAuthState()
 const { trackReferralClick } = useReferral()
 const rawReferral = route.query.ref
 const referralCode = typeof rawReferral === 'string' ? rawReferral : ''
 
-const registerForm = ref({
-  firstName: '',
-  lastName: '',
-  username: '',
-  email: '',
-  password: '',
-  agreedToTerms: false
-})
-
-const loading = ref(false)
-const loadingGoogle = ref(false)
-const showPassword = ref(false)
-const error = ref<string | null>(null)
-const success = ref<string | null>(null)
-
-const handleGoogleSignUp = async () => {
-  loadingGoogle.value = true
-  error.value = null
-  success.value = null
-
-  try {
-    // Redirect to Google OAuth (same endpoint as sign-in)
-    window.location.href = '/api/auth/google?redirect=' + encodeURIComponent('/user')
-  } catch (err: any) {
-    error.value = t('auth.google.failedUp')
-    console.error('Google sign-up error:', err)
-    loadingGoogle.value = false
-  }
+const safeRedirect = () => {
+  const redirect = route.query.redirect
+  return typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//') && !redirect.startsWith('/\\') ? redirect : '/user'
 }
 
-const handleRegister = async () => {
-  loading.value = true
-  error.value = null
-  success.value = null
-
-  try {
-    // Track referral click if code exists (before signup)
-    if (referralCode) {
-      await trackReferralClick(referralCode, registerForm.value.email)
-    }
-
-    // Call registration API
-    const response = await $fetch('/api/auth/register', {
-      method: 'POST',
-      body: {
-        firstName: registerForm.value.firstName,
-        lastName: registerForm.value.lastName,
-        username: registerForm.value.username,
-        email: registerForm.value.email,
-        password: registerForm.value.password,
-        referralCode: referralCode || null
-      }
-    })
-
-    // Set user in auth state
-    setUser(response.user)
-    
-    success.value = t('auth.register.success')
-    
-    // Redirect after 2 seconds
-    setTimeout(() => {
-      router.push('/user')
-    }, 2000)
-  } catch (err: any) {
-    error.value = err.data?.message || t('auth.register.failed')
-    console.error('Registration error:', err)
-  } finally {
-    loading.value = false
-  }
-}
+const failed = computed(() => Boolean(route.query.auth_error))
+const href = computed(() => loginUrl(safeRedirect(), { register: true, ref: referralCode || undefined }))
 
 onMounted(async () => {
-  // Track referral click if code exists in URL (before user fills form)
-  if (referralCode) {
-    await trackReferralClick(referralCode)
-  }
+  if (failed.value) return
+  if (referralCode) await trackReferralClick(referralCode)
+  window.location.replace(href.value)
 })
 </script>
-

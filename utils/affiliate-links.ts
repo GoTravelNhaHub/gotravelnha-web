@@ -86,9 +86,6 @@ export function generateAffiliateLink(url: string, platform: string): string {
     case 'trip':
     case 'trip.com':
       return appendTripAffiliateIds(url)
-    case 'attractionsg':
-      // AttractionsSG doesn't use affiliate tracking
-      return url
     default:
       return url
   }

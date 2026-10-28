@@ -75,7 +75,7 @@ const submit = async () => {
   try {
     sending.value = true
     error.value = ''
-    await $fetch('/api/community/reports', { method: 'POST', body: { targetType: props.targetType, target: props.target, reason: reason.value, note: note.value.trim() || undefined } })
+    await $api('/api/community/reports', { method: 'POST', body: { targetType: props.targetType, target: props.target, reason: reason.value, note: note.value.trim() || undefined } })
     sent.value = true
   } catch (err: any) {
     error.value = err?.statusCode === 429 || err?.status === 429 ? t('community.report.tooMany') : t('community.report.failed')

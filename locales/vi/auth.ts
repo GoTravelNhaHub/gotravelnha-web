@@ -13,6 +13,10 @@ const auth: Messages['auth'] = {
     failedIn: 'Không thể đăng nhập bằng Google',
     failedUp: 'Không thể đăng ký bằng Google'
   },
+  redirect: {
+    opening: 'Đang chuyển bạn đến trang đăng nhập bảo mật của GoTravelNha…',
+    failed: 'Đăng nhập chưa hoàn tất. Vui lòng thử lại.'
+  },
   password: {
     show: 'Hiện mật khẩu',
     hide: 'Ẩn mật khẩu'

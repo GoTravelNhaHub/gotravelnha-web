@@ -25,7 +25,7 @@ export const usePartnerSearch = (placement: string) => {
         ? appendKlookAffiliateId(url, String(config.KLOOK_AD_ID || ''))
         : appendTripAffiliateIds(url, String(config.TRIP_ALLIANCE_ID || ''), String(config.TRIP_SID || ''))
     openTrackedOutbound(async () => {
-      const response = await $fetch<{ outboundUrl?: string }>('/api/affiliate/click', {
+      const response = await $api<{ outboundUrl?: string }>('/api/affiliate/click', {
         method: 'POST',
         body: {
           provider,

@@ -17,14 +17,12 @@ const common: Messages['common'] = {
     logout: 'Đăng xuất'
   },
   footer: {
-    tagline: 'Lên kế hoạch du lịch gia đình và so sánh nơi đặt. Vé máy bay và khách sạn được đặt trên Trip.com hoặc Klook. Vé tham quan Singapore do chúng tôi bán được thanh toán ngay tại đây.',
+    tagline: 'Lên kế hoạch du lịch gia đình và so sánh nơi đặt. Vé máy bay, khách sạn và hoạt động được đặt trên Trip.com hoặc Klook.',
     plan: 'Lên kế hoạch',
     help: 'Hỗ trợ',
     products: 'Sản phẩm của chúng tôi',
     helpLink: 'Trợ giúp',
-    bookings: 'Đơn đặt của tôi',
     contact: 'Liên hệ',
-    refunds: 'Hoàn tiền',
     rights: '© {year} GoTravelNha. Bảo lưu mọi quyền.',
     privacy: 'Chính sách bảo mật',
     terms: 'Điều khoản dịch vụ',

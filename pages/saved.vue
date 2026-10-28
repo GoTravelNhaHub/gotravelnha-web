@@ -48,7 +48,7 @@ const loadingMore = ref(false)
 const failed = ref(false)
 
 const fetchPage = (cursor?: string) =>
-  $fetch<{ data: CommunityTripCard[]; nextCursor: string | null }>(`/api/community/saved${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''}`)
+  $api<{ data: CommunityTripCard[]; nextCursor: string | null }>(`/api/community/saved${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''}`)
 
 onMounted(async () => {
   try {

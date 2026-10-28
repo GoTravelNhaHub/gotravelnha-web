@@ -13,6 +13,10 @@ const auth: Messages['auth'] = {
     failedIn: 'Google 登录失败',
     failedUp: 'Google 注册失败'
   },
+  redirect: {
+    opening: '正在前往 GoTravelNha 安全登录页面…',
+    failed: '登录未完成，请重试。'
+  },
   password: {
     show: '显示密码',
     hide: '隐藏密码'

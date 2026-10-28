@@ -246,7 +246,7 @@ const monthName = (month: number) =>
 const serverMessage = (err: any, fallback: string) => (locale.value === 'en' && err?.data?.message) || t(fallback)
 
 const fetchPreview = () =>
-  $fetch<Preview>('/api/community/publications/preview', { method: 'POST', body: { tripId: props.tripId, alsoReplace: alsoReplace.value } })
+  $api<Preview>('/api/community/publications/preview', { method: 'POST', body: { tripId: props.tripId, alsoReplace: alsoReplace.value } })
 
 // Fields the author has not edited follow the sanitized plan
 const fillForm = (value: Preview) => {
@@ -287,13 +287,13 @@ const submit = async () => {
     saving.value = true
     saveError.value = ''
     if (needsProfile.value) {
-      await $fetch('/api/community/profile', {
+      await $api('/api/community/profile', {
         method: 'PUT',
         body: { handle: normaliseHandle(profile.handle), displayName: profile.displayName.trim() }
       })
       needsProfile.value = false
     }
-    const response = await $fetch<{ data: OwnPublication }>('/api/community/publications', {
+    const response = await $api<{ data: OwnPublication }>('/api/community/publications', {
       method: 'POST',
       body: {
         tripId: props.tripId,
@@ -324,7 +324,7 @@ const removePublication = async () => {
   if (!id || !window.confirm(t('community.publish.confirmRemove'))) return
   try {
     removing.value = true
-    await $fetch(`/api/community/publications/${id}`, { method: 'DELETE' })
+    await $api(`/api/community/publications/${id}`, { method: 'DELETE' })
     emit('removed')
     emit('close')
   } catch {
@@ -343,7 +343,7 @@ onMounted(async () => {
   window.addEventListener('keydown', onKeydown)
   try {
     const [profileResponse, first] = await Promise.all([
-      $fetch<{ data: { handle: string } | null; suggestion: { handle: string; displayName: string } | null }>('/api/community/profile'),
+      $api<{ data: { handle: string } | null; suggestion: { handle: string; displayName: string } | null }>('/api/community/profile'),
       fetchPreview()
     ])
     needsProfile.value = !profileResponse.data

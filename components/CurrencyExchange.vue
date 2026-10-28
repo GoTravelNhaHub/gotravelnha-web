@@ -122,7 +122,7 @@ const formattedConvertedAmount = computed(() => {
 
 const submitForm = async () => {
   try {
-    await $fetch('/api/exchange', {
+    await $api('/api/exchange', {
       method: 'POST',
       body: {
         name: form.value.name,

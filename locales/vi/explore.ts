@@ -114,7 +114,7 @@ const explore: Messages['explore'] = {
     button: 'Gửi ý tưởng cho tôi'
   },
   bookingNote: {
-    text: 'Thanh toán vé máy bay và khách sạn diễn ra trên Trip.com hoặc Klook. Vé tham quan Singapore do chúng tôi bán được thanh toán trên GoTravelNha. Nếu có câu hỏi, hãy vào Trợ giúp hoặc Liên hệ.',
+    text: 'Thanh toán vé máy bay, khách sạn và hoạt động diễn ra trên Trip.com hoặc Klook. Nếu có câu hỏi, hãy vào Trợ giúp hoặc Liên hệ.',
     help: 'Trợ giúp',
     contact: 'Liên hệ'
   }

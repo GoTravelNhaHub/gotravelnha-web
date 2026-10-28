@@ -28,19 +28,6 @@
         </div>
       </div>
 
-      <div>
-        <label for="contact-reference" class="form-label">{{ t('info.form.reference') }} <span class="font-normal text-[#64748B]">{{ t('info.form.optional') }}</span></label>
-        <input
-          id="contact-reference"
-          v-model="form.reference"
-          type="text"
-          maxlength="20"
-          aria-describedby="contact-reference-hint"
-          class="form-input font-mono uppercase placeholder:font-brand placeholder:normal-case"
-          placeholder="GTN-XXXXXXXX"
-        />
-        <p id="contact-reference-hint" class="mt-1.5 text-[12px] leading-[18px] text-[#64748B]">{{ t('info.form.referenceHint') }}</p>
-      </div>
 
       <div>
         <div class="flex items-baseline justify-between gap-2">
@@ -79,15 +66,12 @@
 
 <script setup>
   import { ref } from 'vue'
-  import { useRoute } from 'vue-router'
 
-  const route = useRoute()
   const { t } = useI18n()
 
   const form = ref({
     name: '',
     email: '',
-    reference: typeof route.query.ref === 'string' ? route.query.ref.slice(0, 20) : '',
     message: ''
   })
 
@@ -99,12 +83,12 @@
     try {
       submitting.value = true
       error.value = ''
-      await $fetch('/api/contact', {
+      await $api('/api/contact', {
         method: 'POST',
         body: form.value
       })
       sent.value = true
-      form.value = { name: '', email: '', reference: '', message: '' }
+      form.value = { name: '', email: '', message: '' }
     } catch (e) {
       error.value = e?.data?.message || t('info.form.failed')
     } finally {

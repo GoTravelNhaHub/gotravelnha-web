@@ -135,7 +135,7 @@ const listQuery = computed(() => {
   if (activeTab.value === 'trending' || activeTab.value === 'saved') query.sort = activeTab.value
   return query
 })
-const fetchPage = (query: Record<string, string>) => $fetch<TripPage>(`/api/community/trips?${new URLSearchParams(query).toString()}`)
+const fetchPage = (query: Record<string, string>) => $api<TripPage>(`/api/community/trips?${new URLSearchParams(query).toString()}`)
 
 const { data: feed, error: feedError } = await useAsyncData(
   'community-feed',
@@ -146,8 +146,8 @@ const { data: feed, error: feedError } = await useAsyncData(
 // The sidebar is not essential: a failure leaves it with its fallbacks
 const { data: sidebar } = await useAsyncData('community-sidebar', async () => {
   const [places, people] = await Promise.all([
-    $fetch<{ data: CommunityDestination[] }>('/api/community/destinations').catch(() => ({ data: [] })),
-    $fetch<{ data: CommunityCreator[] }>('/api/community/creators').catch(() => ({ data: [] }))
+    $api<{ data: CommunityDestination[] }>('/api/community/destinations').catch(() => ({ data: [] })),
+    $api<{ data: CommunityCreator[] }>('/api/community/creators').catch(() => ({ data: [] }))
   ])
   return { destinations: places.data, creators: people.data }
 })

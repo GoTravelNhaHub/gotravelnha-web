@@ -31,7 +31,7 @@ const unsubscribe = async () => {
   try {
     loading.value = true
     error.value = ''
-    await $fetch('/api/newsletter/unsubscribe', { method: 'POST', body: { email, token } })
+    await $api('/api/newsletter/unsubscribe', { method: 'POST', body: { email, token } })
     done.value = true
   } catch (err: any) {
     error.value = t('info.unsubscribe.failed')

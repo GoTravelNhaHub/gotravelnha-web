@@ -140,7 +140,7 @@ const status = (trip: TripSummary) => tripStatus(trip.startDate, trip.endDate)
 
 onMounted(async () => {
   try {
-    const response = await $fetch<{ data: TripSummary[] }>('/api/trips')
+    const response = await $api<{ data: TripSummary[] }>('/api/trips')
     trips.value = response.data
     // Open on past trips when there is nothing coming up
     if (!upcoming.value.length && past.value.length) tab.value = 'past'

@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const ADMIN_URL = (process.env.NUXT_PUBLIC_ADMIN_URL || 'https://admin.gotravelnha.com').replace(/\/$/, '')
+
 export default defineNuxtConfig({
     compatibilityDate: '2024-11-01',
     devtools: { enabled: true },
@@ -7,16 +9,6 @@ export default defineNuxtConfig({
     typescript: {
       tsConfig: {
         exclude: ['../scripts', '../prisma/migrations']
-      }
-    },
-    nitro: {
-      externals: {
-        external: ['playwright']
-      },
-      vercel: {
-        // The trip planner's model call can take up to a minute. Applies to the whole
-        // server function; Vercel caps it at the plan's maximum.
-        functions: { maxDuration: 120 }
       }
     },
     app: {
@@ -28,8 +20,8 @@ export default defineNuxtConfig({
           meta: [
             { charset: 'utf-8' },
             { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-            { name: 'description', content: 'Search flights and hotels, then continue on Trip.com or Klook. Plan a family trip with the AI Travel Agent. Singapore attraction tickets are sold here only when a current price is listed.' },
-            { name: 'keywords', content: 'travel deals, compare travel prices, trip.com deals, klook deals, vietnam travel, singapore attractions, hotel bookings, flight bookings, travel comparison' },
+            { name: 'description', content: 'Search flights and hotels, then continue on Trip.com or Klook. Plan a family trip with the AI Travel Agent.' },
+            { name: 'keywords', content: 'family trip planner, AI travel planner, trip.com deals, klook deals, vietnam travel, singapore travel, hotel bookings, flight bookings' },
             { name: 'author', content: 'GoTravelNha' },
             { name: 'robots', content: 'index, follow', key: 'robots' },
             { name: 'language', content: 'English' },
@@ -37,7 +29,7 @@ export default defineNuxtConfig({
     
             // Social: Open Graph (Facebook, WhatsApp, Zalo, Telegram, LinkedIn — use raster, not SVG)
             { property: 'og:title', content: 'GoTravelNha - Search trips, then book with the partner' },
-            { property: 'og:description', content: 'Search flights and hotels, then continue on Trip.com or Klook. Singapore attraction tickets are sold here only when a current price is listed.' },
+            { property: 'og:description', content: 'Search flights and hotels, then continue on Trip.com or Klook.' },
             // 1200x630 branded card in public/ (rendered from the logo; under 300 KB so WhatsApp shows it)
             { property: 'og:image', content: 'https://www.gotravelnha.com/og-image.jpg', key: 'og-image' },
             { property: 'og:image:secure_url', content: 'https://www.gotravelnha.com/og-image.jpg', key: 'og-image-secure' },
@@ -74,7 +66,7 @@ export default defineNuxtConfig({
                 name: 'GoTravelNha',
                 url: 'https://www.gotravelnha.com',
                 logo: 'https://www.gotravelnha.com/apple-touch-icon.png',
-                description: 'Search flights and hotels on Trip.com and Klook, and plan a family trip. Singapore attraction tickets are sold here only when a current price is listed.',
+                description: 'Search flights and hotels on Trip.com and Klook, and plan a family trip.',
                 sameAs: [],
                 contactPoint: {
                   '@type': 'ContactPoint',
@@ -97,15 +89,22 @@ export default defineNuxtConfig({
       '/search': { redirect: { to: '/explore#deals', statusCode: 301 } },
       '/privacy': { prerender: true },
       '/terms': { prerender: true },
-      '/refund-policy': { prerender: true },
+      // AttractionsSG ticket sales and self-checkout bookings were retired on 2026-10-27
+      '/attractionsg': { redirect: { to: '/explore', statusCode: 301 } },
+      '/attractionsg/**': { redirect: { to: '/explore', statusCode: 301 } },
+      '/bookings': { redirect: { to: '/user', statusCode: 302 } },
+      '/bookings/**': { redirect: { to: '/user', statusCode: 302 } },
+      '/refund-policy': { redirect: { to: '/help', statusCode: 301 } },
       '/help': { prerender: true },
-      '/admin/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
+      // Admin moved to its own app (../admin); the backend to api.gotravelnha.com (../backend)
+      '/admin': { redirect: { to: `${ADMIN_URL}/`, statusCode: 301 } },
+      '/admin/**': { redirect: { to: `${ADMIN_URL}/**`, statusCode: 301 } },
+      // Password reset happens on the Keycloak sign-in page (auth.gotravelnha.com)
+      '/forgot-password': { redirect: { to: '/login', statusCode: 302 } },
+      '/reset-password': { redirect: { to: '/login', statusCode: 302 } },
       '/user/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
       '/login': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
       '/register': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
-      '/forgot-password': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
-      '/reset-password': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
-      '/bookings/**': { headers: { 'x-robots-tag': 'noindex, nofollow' } },
       // Saved trips moved from /trips (too close to /trip, the Trip.com page)
       '/trips': { redirect: { to: '/mytrip', statusCode: 301 } },
       '/trips/**': { redirect: { to: '/mytrip/**', statusCode: 301 } },
@@ -120,42 +119,18 @@ export default defineNuxtConfig({
       routeRules: {
         '/explore': { swr: 3600 },
         '/explore/**': { swr: 3600 },
-        '/attractionsg': { swr: 3600 },
-        '/attractionsg/**': { swr: 1800 },
         '/destinations': { swr: 3600 },
         '/destinations/**': { swr: 3600 },
-        '/klook': { swr: 3600 },
-        '/compare': { swr: 600 }
+        '/klook': { swr: 3600 }
       }
     },
     runtimeConfig: {
-      SMTP_HOST: process.env.SMTP_HOST,
-      SMTP_PORT: process.env.SMTP_PORT,
-      SMTP_USER: process.env.SMTP_USER,
-      SMTP_PASS: process.env.SMTP_PASS,
-      ATTRACTIONSG_EMAIL: process.env.ATTRACTIONSG_EMAIL,
-      ATTRACTIONSG_PASSWORD: process.env.ATTRACTIONSG_PASSWORD,
-      ATTRACTIONSG_BACKGROUND_SYNC: process.env.ATTRACTIONSG_BACKGROUND_SYNC,
-      ATTRACTIONSG_SYNC_INTERVAL: process.env.ATTRACTIONSG_SYNC_INTERVAL,
-      ATTRACTIONSG_CRAWLER_WEBHOOK: process.env.ATTRACTIONSG_CRAWLER_WEBHOOK,
-      ATTRACTIONSG_CRAWLER_WEBHOOK_SECRET: process.env.ATTRACTIONSG_CRAWLER_WEBHOOK_SECRET,
-      ATTRACTIONSG_CRAWL_ENABLED: process.env.ATTRACTIONSG_CRAWL_ENABLED,
-             ATTRACTIONSG_SUPPLIER_WEBHOOK: process.env.ATTRACTIONSG_SUPPLIER_WEBHOOK,
-             ATTRACTIONSG_SUPPLIER_WEBHOOK_SECRET: process.env.ATTRACTIONSG_SUPPLIER_WEBHOOK_SECRET,
-             ATTRACTIONSG_SUPPLIER_AUTOMATION_ENABLED: process.env.ATTRACTIONSG_SUPPLIER_AUTOMATION_ENABLED,
-      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-      /** Seals the login session cookie. At least 32 random characters. */
-      SESSION_PASSWORD: process.env.SESSION_PASSWORD,
-      SELF_BOOKING_NOTIFY_EMAIL: process.env.SELF_BOOKING_NOTIFY_EMAIL || process.env.SMTP_USER,
-      /** Shared secret partners put in the conversion postback URL. Postbacks are off when unset. */
-      AFFILIATE_POSTBACK_SECRET: process.env.AFFILIATE_POSTBACK_SECRET,
       public: {
         exchangeApiKey: process.env.EXCHANGE_API_KEY,
-        apiBase: process.env.NUXT_PUBLIC_API_BASE,
-        auth0Domain: process.env.AUTH0_DOMAIN,
-        auth0ClientId: process.env.AUTH0_CLIENT_ID,
-        auth0RedirectUri: process.env.AUTH0_REDIRECT_URI,
+        /** Backend origin (api.gotravelnha.com), no trailing slash. All /api calls and the login/logout redirects go here. */
+        apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api.gotravelnha.com',
+        /** Admin app origin */
+        adminUrl: ADMIN_URL,
         TRIP_ALLIANCE_ID: process.env.TRIP_ALLIANCE_ID || '3883416',
         TRIP_SID: process.env.TRIP_SID || '22874365',
         TRIP_BASE_URL: process.env.TRIP_BASE_URL || 'https://www.trip.com',
@@ -165,7 +140,6 @@ export default defineNuxtConfig({
         KLOOK_AFFILIATE_FLIGHT_REDIRECT_URL: process.env.KLOOK_AFFILIATE_FLIGHT_REDIRECT_URL,
         KLOOK_AFFILIATE_HOTEL_REDIRECT_URL: process.env.KLOOK_AFFILIATE_HOTEL_REDIRECT_URL,
         KLOOK_AFFILIATE_ATTRACTION_REDIRECT_URL: process.env.KLOOK_AFFILIATE_ATTRACTION_REDIRECT_URL,
-        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
              siteUrl: process.env.NUXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.gotravelnha.com',
              /** Customer support address shown on contact, help and booking pages. Hidden when unset. */
              supportEmail: process.env.NUXT_PUBLIC_SUPPORT_EMAIL || '',
@@ -173,9 +147,7 @@ export default defineNuxtConfig({
              /** Community pages, APIs and nav item. Off until the community launch. */
              enableCommunity: process.env.NUXT_PUBLIC_ENABLE_COMMUNITY ?? 'false',
              /** Labelled sample trips on /community for design review. Never on in production. */
-             communityDemo: process.env.NUXT_PUBLIC_COMMUNITY_DEMO ?? 'false',
-             stripeFeePercent: process.env.NUXT_PUBLIC_STRIPE_FEE_PERCENT || '0.034',
-             stripeFeeFixed: process.env.NUXT_PUBLIC_STRIPE_FEE_FIXED || '0.5'
+             communityDemo: process.env.NUXT_PUBLIC_COMMUNITY_DEMO ?? 'false'
       }
     }  
 })

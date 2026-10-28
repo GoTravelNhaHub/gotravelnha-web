@@ -1,14 +1,15 @@
 // General auth middleware - Protect user pages
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   // Only run on client side
   if (process.server) return
 
-  // Import composable to check auth
-  const { isAuthenticated } = useAuthState()
+  const { isAuthenticated, refreshUser } = useAuthState()
 
-  // If user is not authenticated, redirect to login
+  // Right after a Keycloak login the session cookie is set but the localStorage cache is still empty;
+  // ask the API before sending the visitor to /login (which would bounce straight back here, forever)
+  if (!isAuthenticated.value) await refreshUser()
+
   if (!isAuthenticated.value) {
-    return navigateTo('/login')
+    return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
   }
 })
-

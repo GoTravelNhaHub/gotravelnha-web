@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AuthShell from '~/components/site/AuthShell.vue'
 
@@ -43,10 +43,36 @@ const safeRedirect = () => {
   return typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//') && !redirect.startsWith('/\\') ? redirect : '/user'
 }
 
-const failed = computed(() => Boolean(route.query.auth_error))
+const { refreshUser } = useAuthState()
+// Set when this page forwards to Keycloak; a second arrival within this window means the sign-in
+// came back without a working session, so show the button instead of looping
+const FORWARDED_KEY = 'gotravelnha_login_forwarded'
+const LOOP_WINDOW_MS = 30_000
+
+const bounced = ref(false)
+const failed = computed(() => Boolean(route.query.auth_error) || bounced.value)
 const href = computed(() => loginUrl(safeRedirect()))
 
-onMounted(() => {
-  if (!failed.value) window.location.replace(href.value)
+onMounted(async () => {
+  if (route.query.auth_error) return
+
+  // Already signed in (e.g. back from Keycloak): go where the visitor was heading
+  if (await refreshUser()) {
+    sessionStorage.removeItem(FORWARDED_KEY)
+    return navigateTo(safeRedirect(), { replace: true })
+  }
+
+  let forwardedAt = 0
+  try {
+    forwardedAt = Number(sessionStorage.getItem(FORWARDED_KEY)) || 0
+  } catch {}
+  if (Date.now() - forwardedAt < LOOP_WINDOW_MS) {
+    bounced.value = true
+    return
+  }
+  try {
+    sessionStorage.setItem(FORWARDED_KEY, String(Date.now()))
+  } catch {}
+  window.location.replace(href.value)
 })
 </script>

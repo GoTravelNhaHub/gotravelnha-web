@@ -21,7 +21,7 @@
 
     <p class="mt-8 text-center text-[14px] text-[#64748B]">
       {{ t('auth.register.haveAccount') }}
-      <NuxtLink to="/login" class="text-link">{{ t('auth.register.signIn') }}</NuxtLink>
+      <a href="/login" class="text-link" @click.prevent="goToLogin('/user')">{{ t('auth.register.signIn') }}</a>
     </p>
   </AuthShell>
 </template>

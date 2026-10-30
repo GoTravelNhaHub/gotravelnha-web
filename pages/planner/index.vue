@@ -27,7 +27,7 @@
                 <span class="sr-only sm:not-sr-only">{{ t('planner.header.newTrip') }}</span>
               </button>
               <NuxtLink
-                :to="tripsTo"
+                to="/mytrip"
                 :title="t('planner.header.myTrips')"
                 class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-semibold leading-5 text-[#0A1024] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:min-h-9 sm:min-w-0 sm:px-2.5"
               >
@@ -309,7 +309,6 @@ const { t, tm, locale, localeTag, placeName } = useI18n()
 // Object-literal generics do not parse inside template attributes, so typed lists are read here
 const howSteps = computed(() => tm<{ title: string; text: string }[]>('planner.start.how'))
 const { isAuthenticated } = useAuthState()
-const tripsTo = computed(() => (isAuthenticated.value ? '/mytrip' : '/login?redirect=/mytrip'))
 
 const today = new Date().toISOString().slice(0, 10)
 const form = reactive({

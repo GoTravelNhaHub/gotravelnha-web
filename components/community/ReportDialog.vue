@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const REASONS = ['spam', 'unsafe', 'personal_info', 'offensive', 'other'] as const
 
@@ -43,7 +43,6 @@ const emit = defineEmits<{ close: [] }>()
 const { t } = useI18n()
 const { isAuthenticated } = useAuthState()
 const route = useRoute()
-const router = useRouter()
 
 const reason = ref<(typeof REASONS)[number] | ''>('')
 const note = ref('')
@@ -58,7 +57,7 @@ watch(
     // Reporting needs an account (one report per person, and abuse limits)
     if (!isAuthenticated.value) {
       emit('close')
-      router.push({ path: '/login', query: { redirect: route.fullPath } })
+      goToLogin(route.fullPath)
       return
     }
     reason.value = ''

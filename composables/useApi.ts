@@ -40,6 +40,28 @@ export function loginUrl(returnTo = '/', extra: { register?: boolean; ref?: stri
   return apiUrl(`/auth/login?${params}`)
 }
 
+// Set each time goToLogin leaves for Keycloak. Another send within the window means the last sign-in
+// came back without a session, so show /login's retry page instead of looping. Cleared by useAuthState once signed in.
+export const LOGIN_FORWARDED_KEY = 'gotravelnha_login_forwarded'
+const LOGIN_LOOP_WINDOW_MS = 30_000
+
+/** Sends the browser straight to Keycloak (auth.gotravelnha.com), coming back to `returnTo`. Works in middleware and handlers. */
+export function goToLogin(returnTo = '/') {
+  if (import.meta.client) {
+    let forwardedAt = 0
+    try {
+      forwardedAt = Number(sessionStorage.getItem(LOGIN_FORWARDED_KEY)) || 0
+    } catch {}
+    if (Date.now() - forwardedAt < LOGIN_LOOP_WINDOW_MS) {
+      return navigateTo({ path: '/login', query: { redirect: returnTo, auth_error: 'failed' } })
+    }
+    try {
+      sessionStorage.setItem(LOGIN_FORWARDED_KEY, String(Date.now()))
+    } catch {}
+  }
+  return navigateTo(loginUrl(returnTo), { external: true })
+}
+
 /** Ends the API session and the Keycloak SSO session, then comes back to `returnTo`. */
 export function logoutUrl(returnTo = '/') {
   const siteOrigin = import.meta.client ? window.location.origin : String(useRuntimeConfig().public.siteUrl).replace(/\/$/, '')

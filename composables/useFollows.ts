@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 // Which travelers the signed-in visitor follows, shared by every Follow button on the page.
 // Loaded in the browser after render, so cached HTML never contains viewer state.
@@ -10,7 +10,6 @@ const pending = ref(new Set<string>())
 export const useFollows = () => {
   const { isAuthenticated } = useAuthState()
   const route = useRoute()
-  const router = useRouter()
   const { track } = useFunnel()
 
   const loadState = async (handles: string[]) => {
@@ -32,7 +31,7 @@ export const useFollows = () => {
 
   const toggle = async (handle: string, placement: string) => {
     if (!isAuthenticated.value) {
-      router.push({ path: '/login', query: { redirect: route.fullPath } })
+      goToLogin(route.fullPath)
       return
     }
     if (pending.value.has(handle)) return
@@ -54,7 +53,7 @@ export const useFollows = () => {
       if (response.data.following) track('creator_follow', { handle, placement })
     } catch (error: any) {
       flip(was)
-      if (error?.statusCode === 401 || error?.status === 401) router.push({ path: '/login', query: { redirect: route.fullPath } })
+      if (error?.statusCode === 401 || error?.status === 401) goToLogin(route.fullPath)
     } finally {
       const next = new Set(pending.value)
       next.delete(handle)

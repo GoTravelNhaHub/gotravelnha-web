@@ -6,10 +6,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { isAuthenticated, refreshUser } = useAuthState()
 
   // Right after a Keycloak login the session cookie is set but the localStorage cache is still empty;
-  // ask the API before sending the visitor to /login (which would bounce straight back here, forever)
+  // ask the API before sending the visitor to Keycloak
   if (!isAuthenticated.value) await refreshUser()
 
   if (!isAuthenticated.value) {
-    return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
+    return goToLogin(to.fullPath)
   }
 })

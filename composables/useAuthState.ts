@@ -38,6 +38,11 @@ export const useAuthState = () => {
     try {
       const response = await $api<{ user: any }>('/api/auth/me')
       setUser(response.user)
+      if (process.client) {
+        try {
+          sessionStorage.removeItem(LOGIN_FORWARDED_KEY)
+        } catch {}
+      }
       return response.user
     } catch (error: any) {
       // Only a definite "not signed in" clears the cache; a network blip keeps it

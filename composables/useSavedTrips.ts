@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 // Which community trips the signed-in visitor has saved, shared by every card and trip page.
 // Loaded in the browser after the page renders, so cached HTML never contains viewer state.
@@ -10,7 +10,6 @@ const pending = ref(new Set<string>())
 export const useSavedTrips = () => {
   const { isAuthenticated } = useAuthState()
   const route = useRoute()
-  const router = useRouter()
   const { track } = useFunnel()
 
   /** Asks the server which of these trips are saved (signed-in visitors only). */
@@ -34,7 +33,7 @@ export const useSavedTrips = () => {
   /** Saves or unsaves. Signed-out visitors go to sign in and come back to this page. */
   const toggle = async (trip: { id: string; slug: string }, placement: string) => {
     if (!isAuthenticated.value) {
-      router.push({ path: '/login', query: { redirect: route.fullPath } })
+      goToLogin(route.fullPath)
       return
     }
     if (pending.value.has(trip.id)) return
@@ -58,7 +57,7 @@ export const useSavedTrips = () => {
     } catch (error: any) {
       flip(wasSaved)
       // Session expired: sign in again
-      if (error?.statusCode === 401 || error?.status === 401) router.push({ path: '/login', query: { redirect: route.fullPath } })
+      if (error?.statusCode === 401 || error?.status === 401) goToLogin(route.fullPath)
     } finally {
       const next = new Set(pending.value)
       next.delete(trip.id)

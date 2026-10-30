@@ -27,14 +27,15 @@
           <PlannerIcon name="bookmark" class="h-4 w-4" />
           {{ saving ? t('planner.board.saving') : t('planner.board.save') }}
         </button>
-        <NuxtLink
+        <a
           v-else
-          to="/login?redirect=/planner"
+          href="/login?redirect=/planner"
+          @click.prevent="goToLogin('/planner')"
           class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#0A1024] hover:bg-[#F1F5F9] sm:min-h-9"
         >
           <PlannerIcon name="bookmark" class="h-4 w-4" />
           {{ t('planner.board.signInToSave') }}
-        </NuxtLink>
+        </a>
         <button
           type="button"
           class="inline-flex h-10 min-h-11 items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3 text-[13px] font-semibold leading-5 text-[#0A1024] hover:bg-[#F1F5F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066E4] sm:min-h-9"

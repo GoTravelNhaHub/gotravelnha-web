@@ -35,7 +35,7 @@
         </div>
       </Transition>
     </div>
-    <NuxtLink v-else to="/login" class="cm-btn-primary h-10 whitespace-nowrap px-4 text-[14px] sm:px-5">{{ t('common.nav.login') }}</NuxtLink>
+    <a v-else href="/login" class="cm-btn-primary h-10 whitespace-nowrap px-4 text-[14px] sm:px-5" @click.prevent="goToLogin('/user')">{{ t('common.nav.login') }}</a>
     <template #fallback>
       <span class="block h-11 w-11 rounded-full bg-cm-soft"></span>
     </template>

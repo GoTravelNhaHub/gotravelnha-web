@@ -23,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AuthShell from '~/components/site/AuthShell.vue'
 
-// Sign-in happens on auth.gotravelnha.com (Keycloak), through the API. This page keeps the
-// /login?redirect= links working: it forwards to Keycloak, and shows a retry button when the
-// API sends the visitor back with ?auth_error= (cancelled or failed).
+// Sign-in happens on auth.gotravelnha.com (Keycloak), through the API. The site sends visitors there
+// directly with goToLogin(); this page only keeps old /login?redirect= links working, and shows a
+// retry button when a sign-in keeps coming back without a session (goToLogin's loop guard).
 definePageMeta({
   layout: 'auth'
 })
@@ -44,35 +44,13 @@ const safeRedirect = () => {
 }
 
 const { refreshUser } = useAuthState()
-// Set when this page forwards to Keycloak; a second arrival within this window means the sign-in
-// came back without a working session, so show the button instead of looping
-const FORWARDED_KEY = 'gotravelnha_login_forwarded'
-const LOOP_WINDOW_MS = 30_000
-
-const bounced = ref(false)
-const failed = computed(() => Boolean(route.query.auth_error) || bounced.value)
+const failed = computed(() => Boolean(route.query.auth_error))
 const href = computed(() => loginUrl(safeRedirect()))
 
 onMounted(async () => {
-  if (route.query.auth_error) return
-
+  if (failed.value) return
   // Already signed in (e.g. back from Keycloak): go where the visitor was heading
-  if (await refreshUser()) {
-    sessionStorage.removeItem(FORWARDED_KEY)
-    return navigateTo(safeRedirect(), { replace: true })
-  }
-
-  let forwardedAt = 0
-  try {
-    forwardedAt = Number(sessionStorage.getItem(FORWARDED_KEY)) || 0
-  } catch {}
-  if (Date.now() - forwardedAt < LOOP_WINDOW_MS) {
-    bounced.value = true
-    return
-  }
-  try {
-    sessionStorage.setItem(FORWARDED_KEY, String(Date.now()))
-  } catch {}
-  window.location.replace(href.value)
+  if (await refreshUser()) return navigateTo(safeRedirect(), { replace: true })
+  await goToLogin(safeRedirect())
 })
 </script>

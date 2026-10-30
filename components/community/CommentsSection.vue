@@ -8,7 +8,7 @@
       <ClientOnly>
         <template v-if="!isAuthenticated">
           <p class="text-[14.5px] text-cm-body">
-            <NuxtLink :to="{ path: '/login', query: { redirect: `${route.path}#comments` } }" class="text-link">{{ t('community.comments.signIn') }}</NuxtLink>
+            <a :href="`/login?redirect=${encodeURIComponent(`${route.path}#comments`)}`" class="text-link" @click.prevent="goToLogin(`${route.path}#comments`)">{{ t('community.comments.signIn') }}</a>
             {{ t('community.comments.signInText') }}
           </p>
         </template>

@@ -51,6 +51,6 @@ onMounted(async () => {
   if (failed.value) return
   // Already signed in (e.g. back from Keycloak): go where the visitor was heading
   if (await refreshUser()) return navigateTo(safeRedirect(), { replace: true })
-  await goToLogin(safeRedirect())
+  await goToLogin(safeRedirect(), { automatic: true })
 })
 </script>

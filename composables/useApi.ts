@@ -40,23 +40,29 @@ export function loginUrl(returnTo = '/', extra: { register?: boolean; ref?: stri
   return apiUrl(`/auth/login?${params}`)
 }
 
-// Set each time goToLogin leaves for Keycloak. Another send within the window means the last sign-in
-// came back without a session, so show /login's retry page instead of looping. Cleared by useAuthState once signed in.
+// Counts the automatic sends to Keycloak (`{ at, count }`). Several in quick succession mean sign-ins keep
+// coming back without a session (e.g. cookies blocked), so show /login's retry page instead of looping.
+// A click starts the count again; useAuthState clears it once signed in.
 export const LOGIN_FORWARDED_KEY = 'gotravelnha_login_forwarded'
 const LOGIN_LOOP_WINDOW_MS = 30_000
+const LOGIN_LOOP_MAX = 3
 
-/** Sends the browser straight to Keycloak (auth.gotravelnha.com), coming back to `returnTo`. Works in middleware and handlers. */
-export function goToLogin(returnTo = '/') {
+/**
+ * Sends the browser straight to Keycloak (auth.gotravelnha.com), coming back to `returnTo`. Works in middleware and handlers.
+ * Pass `automatic` when no click caused it (route middleware, page load): only those can loop.
+ */
+export function goToLogin(returnTo = '/', { automatic = false } = {}) {
   if (import.meta.client) {
-    let forwardedAt = 0
+    let last = { at: 0, count: 0 }
     try {
-      forwardedAt = Number(sessionStorage.getItem(LOGIN_FORWARDED_KEY)) || 0
+      last = { ...last, ...JSON.parse(sessionStorage.getItem(LOGIN_FORWARDED_KEY) || '{}') }
     } catch {}
-    if (Date.now() - forwardedAt < LOGIN_LOOP_WINDOW_MS) {
+    const count = automatic && Date.now() - last.at < LOGIN_LOOP_WINDOW_MS ? Number(last.count) || 0 : 0
+    if (count >= LOGIN_LOOP_MAX) {
       return navigateTo({ path: '/login', query: { redirect: returnTo, auth_error: 'failed' } })
     }
     try {
-      sessionStorage.setItem(LOGIN_FORWARDED_KEY, String(Date.now()))
+      sessionStorage.setItem(LOGIN_FORWARDED_KEY, JSON.stringify({ at: Date.now(), count: count + 1 }))
     } catch {}
   }
   return navigateTo(loginUrl(returnTo), { external: true })

@@ -10,6 +10,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!isAuthenticated.value) await refreshUser()
 
   if (!isAuthenticated.value) {
-    return goToLogin(to.fullPath)
+    return goToLogin(to.fullPath, { automatic: true })
   }
 })

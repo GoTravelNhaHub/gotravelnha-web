@@ -29,7 +29,7 @@
               class="klk-aff-widget"
               :data-wid="searchWidgetId"
               data-height="340px"
-              :data-adid="klookAdId"
+              :data-adid="searchWidgetAdId"
               :data-lang="klookLang"
               data-prod="search_vertical"
               data-currency=""
@@ -214,6 +214,7 @@ const selectedTab = ref<'things_to_do' | 'hotels'>('things_to_do')
 const runtimeConfig = useRuntimeConfig()
 const klookAdId = computed(() => String(runtimeConfig.public?.KLOOK_AD_ID || '1041352'))
 const searchWidgetId = computed(() => String(runtimeConfig.public?.KLOOK_SEARCH_WIDGET_ID || '89020'))
+const searchWidgetAdId = computed(() => String(runtimeConfig.public?.KLOOK_SEARCH_WIDGET_AD_ID || '1041352'))
 
 const places = [
   { name: 'Singapore', image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=600&q=80' },

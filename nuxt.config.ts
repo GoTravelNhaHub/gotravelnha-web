@@ -136,6 +136,8 @@ export default defineNuxtConfig({
         TRIP_BASE_URL: process.env.TRIP_BASE_URL || 'https://www.trip.com',
         KLOOK_AD_ID: process.env.KLOOK_AD_ID || '1041352',
         KLOOK_SEARCH_WIDGET_ID: process.env.KLOOK_SEARCH_WIDGET_ID || '89020',
+        /** Ad id of the /klook search widget (its `data-adid`). Not the affiliate `aid` in KLOOK_AD_ID */
+        KLOOK_SEARCH_WIDGET_AD_ID: process.env.KLOOK_SEARCH_WIDGET_AD_ID || '1041352',
         /** Full Klook affiliate redirect URLs for hub pages (`/explore/flights`, `/explore/hotels`, `/explore/attractions`) */
         KLOOK_AFFILIATE_FLIGHT_REDIRECT_URL: process.env.KLOOK_AFFILIATE_FLIGHT_REDIRECT_URL,
         KLOOK_AFFILIATE_HOTEL_REDIRECT_URL: process.env.KLOOK_AFFILIATE_HOTEL_REDIRECT_URL,

@@ -68,21 +68,22 @@
               <div class="relative bg-[linear-gradient(135deg,#FFF4EC,#FFE4D2)]" :class="single ? 'aspect-[16/10] sm:aspect-auto sm:min-h-[124px]' : 'aspect-[16/10]'">
                 <img v-if="entry.kind === 'offer' && entry.activity.image" :src="entry.activity.image" alt="" width="320" height="200" loading="lazy" decoding="async" class="h-full w-full object-cover" />
                 <span v-else class="flex h-full w-full items-center justify-center text-[#FC6008]" aria-hidden="true"><CmIcon name="search" :size="30" /></span>
-                <PartnerBadge provider="klook" class="absolute left-2 top-2" />
+                <PartnerBadge :provider="entry.kind === 'search' && entry.link ? entry.link.provider : 'klook'" class="absolute left-2 top-2" />
               </div>
               <div class="flex flex-1 flex-col p-3">
-                <p class="line-clamp-2 text-[14px] font-semibold leading-5 text-cm-ink">{{ entry.kind === 'offer' ? entry.activity.title : entry.label }}</p>
+                <p class="line-clamp-2 text-[14px] font-semibold leading-5 text-cm-ink">{{ entry.kind === 'offer' ? entry.activity.title : entry.link?.title || entry.label }}</p>
                 <template v-if="entry.kind === 'offer'">
                   <p class="mt-1.5 text-[15px] font-bold text-cm-ink">{{ priceLabel(entry.activity) }}</p>
                   <p v-if="entry.activity.checkedAt" class="text-[12px] text-cm-muted">{{ t('planner.itinerary.priceChecked', { date: shortDate(entry.activity.checkedAt) }) }}</p>
                 </template>
+                <p v-else-if="entry.link" class="mt-1.5 text-[12.5px] leading-[18px] text-cm-muted">{{ t('community.booking.matchedHint', { partner: entry.link.provider === 'trip' ? 'Trip.com' : 'Klook' }) }}</p>
                 <p v-else class="mt-1.5 text-[12.5px] leading-[18px] text-cm-muted">{{ t('community.booking.searchHint') }}</p>
                 <div class="mt-auto pt-3">
                   <NuxtLink v-if="entry.kind === 'offer' && entry.activity.href" :to="entry.activity.href" :class="single ? 'sm:w-auto sm:px-6' : ''" class="flex h-9 w-full items-center justify-center rounded-full bg-[#FC6008] text-[13.5px] font-semibold text-white hover:bg-[#E85500]">
                     {{ t('planner.itinerary.seeTickets') }}
                   </NuxtLink>
-                  <button v-else type="button" :class="single ? 'sm:w-auto sm:px-6' : ''" class="flex h-9 w-full items-center justify-center rounded-full bg-[#FC6008] text-[13.5px] font-semibold text-white hover:bg-[#E85500]" @click="entry.kind === 'offer' ? openOffer(entry.activity) : emit('search', entry.query)">
-                    {{ entry.kind === 'offer' ? t('community.booking.viewOnKlook') : t('community.booking.searchKlook') }}
+                  <button v-else type="button" :class="[single ? 'sm:w-auto sm:px-6' : '', entry.kind === 'search' && entry.link?.provider === 'trip' ? 'bg-[#0068FC] hover:bg-[#0057D6]' : 'bg-[#FC6008] hover:bg-[#E85500]']" class="flex h-9 w-full items-center justify-center rounded-full text-[13.5px] font-semibold text-white" @click="entry.kind === 'offer' ? openOffer(entry.activity) : emit('search', entry.query)">
+                    {{ actionLabel(entry) }}
                   </button>
                 </div>
               </div>
@@ -100,7 +101,7 @@ import CmIcon from '~/components/community/feed/CmIcon.vue'
 import PartnerBadge from '~/components/community/detail/PartnerBadge.vue'
 import PartnerPanel from '~/components/community/detail/PartnerPanel.vue'
 import type { ItineraryItem, LiveActivity } from '~/types/trip'
-import type { DaySuggestions } from '~/utils/community-booking'
+import type { DaySuggestions, KlookSuggestion } from '~/utils/community-booking'
 
 const props = defineProps<{
   day: { theme: string; items: ItineraryItem[] }
@@ -123,6 +124,11 @@ const single = computed(() => props.suggestions.activities.length === 1)
 const verifiedPrice = (item: ItineraryItem) => {
   const activity = item.activityId ? props.activities[item.activityId] : null
   return activity?.verified && activity.priceFrom ? priceLabel(activity) : ''
+}
+const actionLabel = (entry: KlookSuggestion) => {
+  if (entry.kind === 'offer') return t('community.booking.viewOnKlook')
+  if (entry.link) return entry.link.provider === 'trip' ? t('community.booking.viewOnTrip') : t('community.booking.viewOnKlook')
+  return t('community.booking.searchKlook')
 }
 const shortDate = (value: string) => new Intl.DateTimeFormat(localeTag.value, { dateStyle: 'medium' }).format(new Date(value))
 </script>

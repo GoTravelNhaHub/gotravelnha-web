@@ -135,9 +135,9 @@
             :suggestions="suggestions[index]"
             :activities="activities"
             :photo="cardPhoto"
-            :map-available="!!map"
+            :map-available="true"
             placement="community_trip_day"
-            @map="mapOpen = true"
+            @map="openMap(index + 1)"
             @hotels="openHotels"
             @activities="openKlook(trip.destination)"
             @search="openKlook"
@@ -191,21 +191,7 @@
       <CustomizeModal :open="customizeOpen" :trip="trip" :cover="cardPhoto" :placement="customizePlacement" @close="customizeOpen = false" />
       <BookingSheet :open="sheetOpen" :suggestions="suggestions" :photo="cardPhoto" placement="community_trip_day" @close="sheetOpen = false" @hotels="openHotels" @activities="openKlook(trip.destination)" @search="openKlook" />
 
-      <!-- City-level map: stops are not pinned (no coordinates are stored) -->
-      <Teleport to="body">
-        <div v-if="mapOpen && map" class="fixed inset-0 z-[80] flex items-center justify-center bg-[#0A1024]/50 p-4 backdrop-blur-sm" @click.self="mapOpen = false">
-          <section class="w-full max-w-3xl overflow-hidden rounded-[20px] bg-white font-brand shadow-cm-panel" role="dialog" aria-modal="true" aria-labelledby="map-title" @keydown.esc="mapOpen = false">
-            <header class="flex items-center justify-between px-5 py-4">
-              <div>
-                <h2 id="map-title" class="text-[17px] font-bold text-cm-ink">{{ t('community.trip.mapTitle') }}</h2>
-                <p class="text-[13px] text-cm-muted">{{ t('community.trip.mapCaption', { destination: placeName(map.city) }) }}</p>
-              </div>
-              <button type="button" class="flex h-10 w-10 items-center justify-center rounded-full text-cm-muted hover:bg-cm-canvas" :aria-label="t('community.customize.close')" @click="mapOpen = false"><CmIcon name="close" :size="20" /></button>
-            </header>
-            <iframe :src="map.src" :title="t('community.trip.mapCaption', { destination: placeName(map.city) })" loading="lazy" referrerpolicy="no-referrer" class="h-[60vh] max-h-[520px] w-full border-0"></iframe>
-          </section>
-        </div>
-      </Teleport>
+      <TripMap :open="mapOpen" :slug="trip.slug" :destination="trip.destination" :day="mapDay" :fallback="map" @close="mapOpen = false" />
     </template>
   </div>
 </template>
@@ -224,10 +210,11 @@ import ShareButtons from '~/components/community/ShareButtons.vue'
 import BookingSheet from '~/components/community/detail/BookingSheet.vue'
 import CustomizeModal from '~/components/community/detail/CustomizeModal.vue'
 import DayTimeline from '~/components/community/detail/DayTimeline.vue'
+import TripMap from '~/components/community/detail/TripMap.vue'
 import type { LiveActivity, RecommendedActivity } from '~/types/trip'
 import type { PublishedTripView } from '~/types/community'
 import { communityEnabled } from '~/utils/feature-flags'
-import { daySuggestions, klookSearchUrl } from '~/utils/community-booking'
+import { daySuggestions, klookSearchUrl, localizedPartnerUrl, withMatchedProducts, type StopMatch } from '~/utils/community-booking'
 import { canonicalSiteOrigin } from '~/utils/site-origin'
 import { destinationPhoto } from '~/utils/destination-photos'
 import { plannerMapFor } from '~/utils/planner-map'
@@ -295,9 +282,11 @@ const followers = computed(() => {
 })
 
 // Booking suggestions per day (honesty rules in utils/community-booking.ts). None on private trips.
+// Stops that would be a Klook search get the partner product page once AI web search has found it.
+const partnerLinks = ref<Record<string, StopMatch>>({})
 const suggestions = computed(() =>
   trip.value && trip.value.visibility !== 'PRIVATE'
-    ? daySuggestions(trip.value.itinerary.days, activities.value, trip.value.destination)
+    ? withMatchedProducts(daySuggestions(trip.value.itinerary.days, activities.value, trip.value.destination), partnerLinks.value)
     : (trip.value?.itinerary.days ?? []).map((_, index) => ({ day: index + 1, hotels: null, activities: [] }))
 )
 const hasSuggestions = computed(() => suggestions.value.some((day) => day.hotels || day.activities.length))
@@ -343,7 +332,22 @@ const openCustomize = (placement: string) => {
 // Partner searches: tracked through /api/affiliate/click, no prices shown here
 const klookPath = computed(() => ({ en: 'en-SG', vi: 'vi', zh: 'zh-CN' } as const)[locale.value])
 const openKlook = (query: string) => {
-  if (trip.value) openSearch('klook', klookSearchUrl(klookPath.value, query), 'activity', { destination: trip.value.destination, tripId: trip.value.id })
+  if (!trip.value) return
+  const match = partnerLinks.value[query]
+  const metadata = { destination: trip.value.destination, tripId: trip.value.id }
+  // A matched product page when there is one, else the best search wording; the click API adds our affiliate ids either way
+  if (match?.product) openSearch(match.product.provider, localizedPartnerUrl(match.product, klookPath.value), 'activity', { ...metadata, match: 'product' })
+  else openSearch('klook', klookSearchUrl(klookPath.value, match?.search || query), 'activity', { ...metadata, match: match?.search ? 'keyword' : 'search' })
+}
+const loadPartnerLinks = async (retry = true) => {
+  try {
+    const response = await $api<{ data: Record<string, StopMatch>; pending: boolean }>(`/api/community/trips/${encodeURIComponent(slug)}/partner-links`)
+    partnerLinks.value = { ...partnerLinks.value, ...response.data }
+    // Lookups still running on the server land in its cache; ask once more
+    if (response.pending && retry) setTimeout(() => loadPartnerLinks(false), 20_000)
+  } catch {
+    // Stops keep their Klook search links
+  }
 }
 const openHotels = () => {
   const hotels = suggestions.value.find((day) => day.hotels)?.hotels
@@ -352,6 +356,11 @@ const openHotels = () => {
 
 const sheetOpen = ref(false)
 const mapOpen = ref(false)
+const mapDay = ref<number | null>(null)
+const openMap = (day: number | null) => {
+  mapDay.value = day
+  mapOpen.value = true
+}
 const shareOpen = ref(false)
 const closeShare = (event: MouseEvent) => {
   if (shareOpen.value && !(event.target as HTMLElement).closest('[data-share-menu]')) shareOpen.value = false
@@ -381,6 +390,7 @@ onMounted(async () => {
   }
 
   if (trip.value.visibility !== 'PRIVATE') {
+    loadPartnerLinks()
     try {
       const options = await $api<{ data: RecommendedActivity[] }>(`/api/community/trips/${encodeURIComponent(slug)}/booking-options`)
       bookingOptions.value = options.data

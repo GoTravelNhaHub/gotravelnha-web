@@ -40,17 +40,18 @@
                   <div class="relative h-[96px] w-[110px] shrink-0 overflow-hidden rounded-xl bg-[#FFF1E8]">
                     <img v-if="entry.kind === 'offer' && entry.activity.image" :src="entry.activity.image" alt="" width="220" height="192" class="h-full w-full object-cover" />
                     <span v-else class="flex h-full w-full items-center justify-center text-[#FC6008]" aria-hidden="true"><CmIcon name="search" :size="26" /></span>
-                    <PartnerBadge provider="klook" class="absolute left-1.5 top-1.5" />
+                    <PartnerBadge :provider="entry.kind === 'search' && entry.link ? entry.link.provider : 'klook'" class="absolute left-1.5 top-1.5" />
                   </div>
                   <div class="min-w-0">
-                    <p class="line-clamp-2 text-[15px] font-semibold leading-5 text-cm-ink">{{ entry.kind === 'offer' ? entry.activity.title : entry.label }}</p>
+                    <p class="line-clamp-2 text-[15px] font-semibold leading-5 text-cm-ink">{{ entry.kind === 'offer' ? entry.activity.title : entry.link?.title || entry.label }}</p>
                     <p v-if="entry.kind === 'offer'" class="mt-1.5 text-[16px] font-bold text-cm-ink">{{ priceLabel(entry.activity) }}</p>
+                    <p v-else-if="entry.link" class="mt-1 text-[13px] leading-[18px] text-cm-muted">{{ t('community.booking.matchedHint', { partner: entry.link.provider === 'trip' ? 'Trip.com' : 'Klook' }) }}</p>
                     <p v-else class="mt-1 text-[13px] leading-[18px] text-cm-muted">{{ t('community.booking.searchHint') }}</p>
                   </div>
                 </div>
                 <NuxtLink v-if="entry.kind === 'offer' && entry.activity.href" :to="entry.activity.href" class="flex h-11 w-full items-center justify-center bg-[#FC6008] text-[15px] font-semibold text-white">{{ t('planner.itinerary.seeTickets') }}</NuxtLink>
-                <button v-else type="button" class="flex h-11 w-full items-center justify-center bg-[#FC6008] text-[15px] font-semibold text-white" @click="entry.kind === 'offer' ? openOffer(entry.activity) : emit('search', entry.query)">
-                  {{ entry.kind === 'offer' ? t('community.booking.viewOnKlook') : t('community.booking.searchKlook') }}
+                <button v-else type="button" class="flex h-11 w-full items-center justify-center text-[15px] font-semibold text-white" :class="entry.kind === 'search' && entry.link?.provider === 'trip' ? 'bg-[#0068FC]' : 'bg-[#FC6008]'" @click="entry.kind === 'offer' ? openOffer(entry.activity) : emit('search', entry.query)">
+                  {{ actionLabel(entry) }}
                 </button>
               </div>
               <button type="button" class="cm-btn-outline h-11 w-full text-[14px]" @click="emit('activities')">{{ t('community.booking.moreActivities') }}</button>
@@ -80,5 +81,10 @@ const tabs = computed(() => [
   { key: 'activities' as const, label: t('community.booking.tabActivities') }
 ])
 const hotels = computed(() => props.suggestions.find((day) => day.hotels)?.hotels ?? null)
+const actionLabel = (entry: KlookSuggestion) => {
+  if (entry.kind === 'offer') return t('community.booking.viewOnKlook')
+  if (entry.link) return entry.link.provider === 'trip' ? t('community.booking.viewOnTrip') : t('community.booking.viewOnKlook')
+  return t('community.booking.searchKlook')
+}
 const activities = computed<KlookSuggestion[]>(() => props.suggestions.flatMap((day) => day.activities))
 </script>
